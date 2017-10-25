@@ -1,17 +1,17 @@
-## What does this MR do?
+## Beschreibe den Merge Request
 
-*Describe*
 
-## Are there points in the code the reviewer needs to double check?
 
-- TODO/REMOVE
+## Punkte, die besonders beachtet werden müssen
 
-## Defintion of Done Checklist
+- [ ] Oracle code conventions eingehalten
+
+## 'Defintion of Done' Checkliste
 
 - [ ] Alle zur User Story assoziierten Test sind erfolgreich durchgelaufen.
 - [ ] Die Testabdeckung beträgt mindestens 75 %.
 - [ ] Der Entwurf wurde aktualisiert.
-- [ ] Der Code ist kommentiert.
-- [ ] *TODO zusätzliches Kriterium 1/[EDIT .gitlab/merge_reqeust_templates/General.md](/.gitlab/merge_request_templates/General.md)*
-- [ ] *TODO zusätzliches Kriterium 2/[EDIT .gitlab/merge_reqeust_templates/General.md](/.gitlab/merge_request_templates/General.md)*
-- [ ] *TODO zusätzliches Kriterium 3/[EDIT .gitlab/merge_reqeust_templates/General.md](/.gitlab/merge_request_templates/General.md)*
+- [ ] Der Code ist (englisch) kommentiert.
+- [ ] Keine offenen GitLab 'issues' oder 'discussions'.
+- [ ] Der Code wurde von mindestens einem anderen Entwickler reviewt (Code-Review).
+- [ ] Die APK-Datei wurde erfolgreich auf mindestens einem Android-Gerät installiert.
