@@ -12,13 +12,14 @@ In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Ben
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ] *Das Design soll den **Benutzer** ansprechen.*
+    - [ ] *Das Design soll den* **Benutzer** *ansprechen.*
     - [ ] *Die Farben sollen mit positiven Emotionen verbunden sein.*
     - [ ] *Der Wiedererkennungwert soll hoch sein.*
-    
+
 ### Feature 1.2 *Login-Ansicht*
 
 > Als **Benutzer** möchte ich *mich einloggen*, um *die App sinngemäß zu nutzen.*
+
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
     - [ ] *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
@@ -41,13 +42,14 @@ In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Ben
 ### Feature 1.4 *Kontrollzentrum*
 
 > Als **Benutzer** möchte ich *die Kontrolle über für mich relevante Anwendungsdaten/-optionen haben.*
+
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ]*Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
-    - [ ]*Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.*
-    - [ ]*Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
-    - [ ]*Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
-    - [ ]*Der **Benutzer** muss sich ausloggen können.*
+    - [ ] *Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
+    - [ ] *Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.*
+    - [ ] *Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
+    - [ ] *Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
+    - [ ] *Der* **Benutzer** *muss sich ausloggen können.*
 
 ### Feature 1.5 *Detail-Ansicht*
 
@@ -70,10 +72,10 @@ Keine Uhr ohne ausgeklügeltes Uhrwerk! Hier werden alle integralen Hintergrundp
 
 - Aufwandsschätzung: <span style="color:red">[XL]</span>
 - Akzeptanztests:
-    - [ ]*Alle markierten Flächen/Punkte der Karte werden offline angezeigt.*
-    - [ ]*Flächeninhalte von Polygonen werden automatisch berechnet und angezeigt.*
-    - [ ]*Vorgeladene/bereits betrachtete Areale der Karte können offline dargestellt werden.*
-    - [ ]*Die Ansicht der Polygone ist ohne Internetverbindung möglich.*
+    - [ ] *Alle markierten Flächen/Punkte der Karte werden offline angezeigt.*
+    - [ ] *Flächeninhalte von Polygonen werden automatisch berechnet und angezeigt.*
+    - [ ] *Vorgeladene/bereits betrachtete Areale der Karte können offline dargestellt werden.*
+    - [ ] *Die Ansicht der Polygone ist ohne Internetverbindung möglich.*
 
 ### Feature 2.2 *Lokalisierungs-Schnittstelle*
 
@@ -81,20 +83,20 @@ Keine Uhr ohne ausgeklügeltes Uhrwerk! Hier werden alle integralen Hintergrundp
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Die Lokalisierung muss ohne Mobilfunk funktionieren.*
-    - [ ]*Berechtigungen für Lokalisierungsdienste/GPS müssen vom Nutzer eingeholt werden.*
-    - [ ]*Aktivierung der Lokalisierungsdienste (Google-Services/)Mobilfunk/GPS muss abgefragt werden, falls diese deaktiviert sind.*
+    - [ ] *Die Lokalisierung muss ohne Mobilfunk funktionieren.*
+    - [ ] *Berechtigungen für Lokalisierungsdienste/GPS müssen vom Nutzer eingeholt werden.*
+    - [ ] *Aktivierung der Lokalisierungsdienste (Google-Services/)Mobilfunk/GPS muss abgefragt werden, falls diese deaktiviert sind.*
 
 ### Feature 2.3 *Benutzerverwaltung*
 
-> Als **Admin** möchte ich ***Benutzer** verwalten und deren **Rollen** ändern.*
+> Als **Admin** möchte ich **Benutzer** verwalten und deren **Rollen** ändern.
 > 
-> Als **Sachbearbeiter** möchte ich ***Kunden** hinzufügen und verwalten.*
+> Als **Sachbearbeiter** möchte ich **Kunden** hinzufügen und verwalten.
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Es gibt die Rollen **Admin**, **Sachbearbeiter** und **Kunde**.*
-    - [ ]*Alle Rollen können stets nur die Rechte ausüben, die ihnen zustehen.*
+    - [ ] *Es gibt die Rollen* **Admin**, **Sachbearbeiter** *und* **Kunde**.
+    - [ ] *Alle Rollen können stets nur die Rechte ausüben, die ihnen zustehen.*
 
 ### Feature 2.4 *Verwaltung von Versicherungsverträgen*
 
@@ -103,30 +105,33 @@ Keine Uhr ohne ausgeklügeltes Uhrwerk! Hier werden alle integralen Hintergrundp
 > Als **Sachbearbeiter** möchte ich *Versicherungsverträge einsehen und zuweisen.*
 >
 > Als **Kunde** möchte ich *meine aktuellen Versicherungsverträge sehen.*
+
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Die Versicherungsverträge werden verschlüsselt gespeichert.*
-    - [ ]*Nur **Admins** und Sachbearbeiter dürfen alle Verträge sehen.*
-    - [ ]*Nur **Admins** dürfen Verträge anlegen und bearbeiten.*
+    - [ ] *Die Versicherungsverträge werden verschlüsselt gespeichert.*
+    - [ ] *Nur* **Admins** *und* **Sachbearbeiter** *dürfen alle Verträge sehen.*
+    - [ ] *Nur* **Admins** *dürfen Verträge anlegen und bearbeiten.*
 
 ### Feature 2.5 *Verwaltung von Versicherungsobjekten*
 
 > Als **Benutzer** möchte ich *einzelne Versicherungsobjekte anlegen, löschen und verwalten.*
+
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Die Versicherungsobjekte werden verschlüsselt gespeichert.*
-    - [ ]*Es soll sichergestellt werden, dass nur berechtigte **Benutzer** Einsicht in die Versicherungsobjekte nehmen können.*
+    - [ ] *Die Versicherungsobjekte werden verschlüsselt gespeichert.*
+    - [ ] *Es soll sichergestellt werden, dass nur berechtigte* **Benutzer** *Einsicht in die Versicherungsobjekte nehmen können.*
 
 ### Feature 2.6 *Verwaltung von Schadensfällen*
 
 > Als **Benutzer** möchte ich *vorhandene Schäden dokumentieren.*
+
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ]*Das Dokumentieren von Schäden ist möglich.*
-    - [ ]*Die Verwaltung ist ohne Internetverbindung möglich.*
-    - [ ]*Schadensfälle können nach Name des Versicherungsnehmers gesucht werden.*
-    - [ ]*Die Erfassung von Schadensfällen/-Koordinaten verwendet tatsächliche Sensorwerte eines Positionssensors im Gerät.*
-    - [ ]*Schadensfälle können mit der Angabe des Versicherungsobjekts (Name des Versicherungsnehmers, Fläche und Koordinaten des Objekts, Region (mind. Landkreis)), Schadensinformationen (Schadensfläche, Schadensposition, Schadens-Koordinaten/-Polygon, Datum) und Name des Gutachters erfasst werden.*
+    - [ ] *Das Dokumentieren von Schäden ist möglich.*
+    - [ ] *Die Verwaltung ist ohne Internetverbindung möglich.*
+    - [ ] *Schadensfälle können nach Name des Versicherungsnehmers gesucht werden.*
+    - [ ] *Die Erfassung von Schadensfällen/-Koordinaten verwendet tatsächliche Sensorwerte eines Positionssensors im Gerät.*
+    - [ ] *Schadensfälle können mit der Angabe des Versicherungsobjekts (Name des Versicherungsnehmers, Fläche und Koordinaten des Objekts, Region (mind. Landkreis)), Schadensinformationen (Schadensfläche, Schadensposition, Schadens-Koordinaten/-Polygon, Datum) und Name des* **Sachbearbeiters** *erfasst werden.*
 
 ### Feature 2.7 Datenverschlüsselung
 
@@ -134,23 +139,23 @@ Keine Uhr ohne ausgeklügeltes Uhrwerk! Hier werden alle integralen Hintergrundp
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Die Daten werden nicht im Klartext gespeichert.*
-    - [ ]*Es kommen mindestens 256-Bit-Schlüssel zum Einsatz.*
-    
+    - [ ] *Die Daten werden nicht im Klartext gespeichert.*
+    - [ ] *Es kommen mindestens 256-Bit-Schlüssel zum Einsatz.*
+
 ### Feature 2.8 Laden/Speichern der Nutzerdaten
 
 > Als **Benutzer** möchte ich, *dass beim Schließen der App der aktuelle Zustand gespeichert wird*, um *beim nächsten Öffnen nahtlos weiterzuarbeiten.*
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ]*Vor dem Schließen der App werden aktuelle Daten im Hauptspeicher verschlüsselt abgelegt.*
-    - [ ]*Nach dem Wiederöffnen der App befindet man sich an derselben Stelle.*
-    
+    - [ ] *Vor dem Schließen der App werden aktuelle Daten im Hauptspeicher verschlüsselt abgelegt.*
+    - [ ] *Nach dem Wiederöffnen der App befindet man sich an derselben Stelle.*
+
 ### Feature 2.9 Datenexport
 
 > Als **Benutzer** möchte ich *meine Daten exportieren*, um *diese mit anderen zu teilen oder um Backups anzufertigen.*
 
 - Aufwandsschätzung: <span style="color:lime">[S]</span>
 - Akzeptanztests:
-    - [ ]*Die Daten können in Textform oder JSON/XML-Format geteilt werden.*
-    - [ ]*Die Daten können auf dem Hauptspeicher abgelegt werden.*
+    - [ ] *Die Daten können in Textform oder JSON/XML-Format geteilt werden.*
+    - [ ] *Die Daten können auf dem Hauptspeicher abgelegt werden.*
