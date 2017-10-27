@@ -2,150 +2,155 @@
 
 ## Epic 1 *Oberfläche*
 
-> Als **Benutzer** möchte ich *eine einfache, funktionale Benutzeroberfläche bedienen*, um *effizient meine Arbeit zu verrichten*.
+> Als **Benutzer** möchte ich *eine einfache, funktionale Benutzeroberfläche bedienen*, um *effizient meine Arbeit zu verrichten.*
 
-In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt,
-die der **Benutzer** (**Admin**, **Sachbearbeiter** und **Kunde**) während der Interaktion zu sehen bekommt. Darunter fallen Login-, Karten-, Kontroll-, und Detailansichten.
+In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Benutzer** von der App zu sehen bekommt.
 
 ### Feature 1.1 *Design/Branding*
 
-> Als **Kunde** möchte ich *eine schöne Oberfläche*, um *ein gutes Gefühl bei der Nutzung der App zu bekommen*.
+> Als **Kunde** möchte ich *eine schöne Programmoberfläche*, um *beim Arbeiten mit der App konzentriert zu bleiben.*
 
-- Aufwandsschätzung: [L]
+- Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - *Das Design soll den **Benutzer** ansprechen.*
-    - *Die Farben sollen mit positiven Emotionen verbunden sein.*
-    - *Der Wiedererkennungwert soll hoch sein.*
-    - *Das Design soll einen professionellen Eindruck machen.*
+    - [ ] *Das Design soll den **Benutzer** ansprechen.*
+    - [ ] *Die Farben sollen mit positiven Emotionen verbunden sein.*
+    - [ ] *Der Wiedererkennungwert soll hoch sein.*
     
 ### Feature 1.2 *Login-Ansicht*
 
-> Als **Benutzer** möchte ich *mich einloggen*, um *die App sinngemäß nutzen zu können*.
-
-- Aufwandsschätzung: [M]
+> Als **Benutzer** möchte ich *mich einloggen*, um *die App sinngemäß zu nutzen.*
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *Es gibt die Rollen **Admin**, **Sachbearbeiter** und **Kunde**.*
-    - *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
-    - *Nach erfolgreichen Einloggen soll der nächste Screen (Activity) aufgerufen werden.*
+    - [ ] *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
+    - [ ] *Nach erfolgreichem Einloggen soll die Hauptansicht aufgerufen werden.*
 
 ### Feature 1.3 *Hauptansicht (Karte)*
 
-> Als **Benutzer** möchte ich *eine übersichtlich strukturierte Kartenansicht haben*, um *effizient mit der App arbeiten zu können.*.
+> Als **Benutzer** möchte ich *eine übersichtliche Karte*, um *positionsabhängige Aufgaben zu erledigen.*
 
-- Aufwandsschätzung: [XL]
+- Aufwandsschätzung: <span style="color:red">[XL]</span>
 - Akzeptanztests:
-    - *Die Kartenansicht soll übersichtlich sein.*
-    - *Die Kartenansicht soll intuitiv sein.*
-    - *Die Kartenansicht enthält Eingabemöglichkeiten, um Marker setzen zu können.*
+    - [ ] *Die Kartenansicht enthält Eingabemöglichkeiten, um Positionsmarker/Polygone setzen zu können.*
+    - [ ] *Auf der Karte platzierte Elemente können für weitere Informationen angetippt werden.*
+    - [ ] *Schadensfälle können während der Erfassung/Bearbeitung in der Kartenansicht dargestellt werden.*
+    - [ ] *Die Ansicht der Polygone ist ohne Internetverbindung möglich.*
+    - [ ] *Die Kartenansicht des Schadens zeigt den Schaden als Polygon/Fläche innerhalb der versicherten Objekte.*
+    - [ ] *Die Kartenansicht des Schadens zeigt Polygone der versicherten Objekte.*
+    - [ ] *Die Kartenansicht soll nicht mehr als 3 zusätzliche Schaltflächen/Buttons enthalten.*
 
 ### Feature 1.4 *Kontrollzentrum*
 
-> Als **Benutzer** möchte ich *Kontrolle über für mich relevante Metadaten/Optionen haben*, um *korrekte Programmabläufe sicherzustellen.*
-- Aufwandsschätzung: [M]
+> Als **Benutzer** möchte ich *die Kontrolle über für mich relevante Anwendungsdaten/-optionen haben.*
+- Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - *Die Metadaten (Name, Kundennummer) werden in der Verwaltungs-Ansicht aufbereitet dargestellt.*
-    - *Die Metadaten sind im Rahmen der Benutzerrolle editierbar.*
-    - *Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
-    - *Der **Benutzer** muss sich ausloggen können.*
+    - [ ]*Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
+    - [ ]*Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.*
+    - [ ]*Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
+    - [ ]*Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
+    - [ ]*Der **Benutzer** muss sich ausloggen können.*
 
 ### Feature 1.5 *Detail-Ansicht*
 
-> Als **Benutzer** möchte ich *Details zu einem Element einsehen/eingeben können*, um *auf kürzestem Wege gewünschte Aktionen durchzuführen*.
+> Als **Benutzer** möchte ich *Details zu einem Programminhalt einsehen/eingeben können.*
 
-- Aufwandsschätzung: [L]
+- Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - *Wichtige Informationen sollen hervorgehoben werden.*
-    - *Die Ansicht soll übersichtlich und intuitiv sein.*
-    - *Man soll Detailansichten jederzeit über den Zurück-Button verlassen können und zum letzten Zustand zurückkehren.*
-    - *Die Detailansicht erlaubt einen Export der aktuellen Inhalte.*
+    - [ ] *Man soll die Detailansicht jederzeit über den Zurück-Button verlassen können um zum letzten Zustand zurückzukehren.*
+    - [ ] *Die Detailansicht besitzt eine Schaltfläche zum Teilen/Exportieren der Daten.*
     
-## Epic 2 *Schnittstellen*
+## Epic 2 *Hintergrundprozesse*
 
-> Als **Benutzer** möchte ich *KP! *, um *Nutzen*.
+> Als **Benutzer** möchte ich *mir über die Programmlogik keine Gedanken machen, erwarte aber, dass die App funktioniert.*
 
-Die Schnittstellen agieren als Middleware zwischen den einzelnen Ansichten und den mit dem Backend andgebunden Systemen. Über die Schnittstellen sollen Daten geladen und für die jeweiligen Ansichten aufbereitet werden.
+Keine Uhr ohne ausgeklügeltes Uhrwerk! Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunktion der App gewährleisten sollen.
 
+### Feature 2.1 *Map-Schnittstelle*
 
-### Feature 2.1 *Benutzerverwaltung*
+> Als **Benutzer** möchte ich, *dass die Karte der App einen  großen Funktionsumfang hat, der mir meine Arbeit erleichtert.*
 
-> Als **Admin** möchte ich **Benutzer** verwalten und deren **Rollen** ändern können*, um *die volle Kontrolle über alle **Benutzer** zu haben*.
-> Als *Sachbearbeiter* möchte ich *ich Kunden hinzufügen und verwalten können*, um *nicht auf externe Systeme zur Verwaltung der **Benutzer** angewiesen zu sein*.
-
-- Aufwandsschätzung: [M]
+- Aufwandsschätzung: <span style="color:red">[XL]</span>
 - Akzeptanztests:
-    - *Die Benutzerverwaltung soll ein klar geteiltes Rechtesystem haben, wo ersichtlich ist, wer welche Rechte hat.*
-    - *Es soll sichergestellt werden, dass der einzelne **Benutzer** nur die ihm zugewisenen Rechte hat.*
+    - [ ]*Alle markierten Flächen/Punkte der Karte werden offline angezeigt.*
+    - [ ]*Flächeninhalte von Polygonen werden automatisch berechnet und angezeigt.*
+    - [ ]*Vorgeladene/bereits betrachtete Areale der Karte können offline dargestellt werden.*
+    - [ ]*Die Ansicht der Polygone ist ohne Internetverbindung möglich.*
 
-### Feature 2.2 *Verwaltung von Versicherungsverträgen*
+### Feature 2.2 *Lokalisierungs-Schnittstelle*
 
-> Als **Kunde** möchte ich *alle meine Versicherungsverträge einsehen und verwalten können*, um *diese immer an den aktuellen Stand anpassen zu können*.
+> Als **Benutzer** möchte ich, *dass meine Position mit hoher Präzision und Genauigkeit bestimmt wird.*
 
-- Aufwandsschätzung: [M]
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *Die Versicherungsverträge sollen wie sensible Daten behandelt werden.*
-    - *Es soll sichergestellt werden, dass nur berechtigte **Benutzer** Einsicht in die Versicherungsverträge haben.*
+    - [ ]*Die Lokalisierung muss ohne Mobilfunk funktionieren.*
+    - [ ]*Berechtigungen für Lokalisierungsdienste/GPS müssen vom Nutzer eingeholt werden.*
+    - [ ]*Aktivierung der Lokalisierungsdienste (Google-Services/)Mobilfunk/GPS muss abgefragt werden, falls diese deaktiviert sind.*
 
-### Feature 2.3 *Verwaltung von Versicherungsobjekten*
+### Feature 2.3 *Benutzerverwaltung*
 
-> Als **Kunde** möchte ich *einzelne Versicherungsobjekte anlegen, löschen und verwalten können*, um *TODO*.
+> Als **Admin** möchte ich ***Benutzer** verwalten und deren **Rollen** ändern.*
+> 
+> Als **Sachbearbeiter** möchte ich ***Kunden** hinzufügen und verwalten.*
 
-- Aufwandsschätzung: [M]
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *Die Versicherungsobjekte sollen wie sensible Daten behandelt werden.*
-    - *Es soll sichergestellt werden, dass nur berechtigte **Benutzer** Einsicht in die Versicherungsobjekte nehmen können.*
-    - *TODO*
+    - [ ]*Es gibt die Rollen **Admin**, **Sachbearbeiter** und **Kunde**.*
+    - [ ]*Alle Rollen können stets nur die Rechte ausüben, die ihnen zustehen.*
 
-### Feature 2.4 *Map-Schnittstelle*
+### Feature 2.4 *Verwaltung von Versicherungsverträgen*
 
-> Als **Benutzer** möchte ich *TODO*, um *TODO*.
-
-- Aufwandsschätzung: [XL]
+> Als **Admin** möchte ich *Versicherungsverträge erstellen, einsehen und verwalten.*
+> 
+> Als **Sachbearbeiter** möchte ich *Versicherungsverträge einsehen und zuweisen.*
+>
+> Als **Kunde** möchte ich *meine aktuellen Versicherungsverträge sehen.*
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *TODO (Beschreibung von Testfällen die das erwartete Verhalten des gesamten Features überprüfen.)*
-    - *TODO*
-    - *TODO*
+    - [ ]*Die Versicherungsverträge werden verschlüsselt gespeichert.*
+    - [ ]*Nur **Admins** und Sachbearbeiter dürfen alle Verträge sehen.*
+    - [ ]*Nur **Admins** dürfen Verträge anlegen und bearbeiten.*
 
-### Feature 2.5 *Lokalisierungs-Schnittstelle*
+### Feature 2.5 *Verwaltung von Versicherungsobjekten*
 
-> Als **Rolle** möchte ich *TODO*, um *TODO*.
-
-- Aufwandsschätzung: [M]
+> Als **Benutzer** möchte ich *einzelne Versicherungsobjekte anlegen, löschen und verwalten.*
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *TODO (Beschreibung von Testfällen die das erwartete Verhalten des gesamten Features überprüfen.)*
-    - *TODO*
-    - *TODO*
+    - [ ]*Die Versicherungsobjekte werden verschlüsselt gespeichert.*
+    - [ ]*Es soll sichergestellt werden, dass nur berechtigte **Benutzer** Einsicht in die Versicherungsobjekte nehmen können.*
 
+### Feature 2.6 *Verwaltung von Schadensfällen*
 
-## Epic 3 *Backend*
-
-> Als **Benutzer** möchte ich *nur indirekt mit dem Backend agieren*, um *eine möglichst intuitive App zu ermöglichen*.
-
-Mit dem Backend können einzelne Zustände der App zwischengespeichert und archiviert werden. Es muss sichergestellt werden, dass niemand unberechtigten Zugriff auf die einzelnen Daten hat. Es darf nur über vorgegebene Schnittstellen mit dem Backend kommuniziert werden und der **Benutzer** darf unter keinen einfachen Umständen direkten Zugriff erlangen. 
-
-### Feature 3.1 Datenverschlüsselung
-
-> Als **Benutzer** möchte ich *meine Daten verschlüsselt wissen*, um *sie vor dem Zugriff durch Dritte zu schützen*.
-
-- Aufwandsschätzung: [M]
+> Als **Benutzer** möchte ich *vorhandene Schäden dokumentieren.*
+- Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - *Die Daten werden nicht im Klartext gespeichert.*
-    - *Nach dem Beenden der App werden alle temporären Dateien gelöscht.*
+    - [ ]*Das Dokumentieren von Schäden ist möglich.*
+    - [ ]*Die Verwaltung ist ohne Internetverbindung möglich.*
+    - [ ]*Schadensfälle können nach Name des Versicherungsnehmers gesucht werden.*
+    - [ ]*Die Erfassung von Schadensfällen/-Koordinaten verwendet tatsächliche Sensorwerte eines Positionssensors im Gerät.*
+    - [ ]*Schadensfälle können mit der Angabe des Versicherungsobjekts (Name des Versicherungsnehmers, Fläche und Koordinaten des Objekts, Region (mind. Landkreis)), Schadensinformationen (Schadensfläche, Schadensposition, Schadens-Koordinaten/-Polygon, Datum) und Name des Gutachters erfasst werden.*
+
+### Feature 2.7 Datenverschlüsselung
+
+> Als **Benutzer** möchte ich, dass *meine Daten verschlüsselt gespeichert werden*, um *sie vor dem Zugriff durch Dritte zu schützen.*
+
+- Aufwandsschätzung: <span style="color:green">[M]</span>
+- Akzeptanztests:
+    - [ ]*Die Daten werden nicht im Klartext gespeichert.*
+    - [ ]*Es kommen mindestens 256-Bit-Schlüssel zum Einsatz.*
     
-### Feature 3.2 Laden/Speichern der Nutzerdaten
+### Feature 2.8 Laden/Speichern der Nutzerdaten
 
-> Als **Benutzer** möchte ich, *dass beim Verlassen der App aktuelle Daten gespeichert werden*, um *beim nächsten Öffnen nahtlos weiterarbeiten zu können*.
+> Als **Benutzer** möchte ich, *dass beim Schließen der App der aktuelle Zustand gespeichert wird*, um *beim nächsten Öffnen nahtlos weiterzuarbeiten.*
 
-- Aufwandsschätzung: [M]
+- Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - *Vor dem Schließen der App werden aktuelle Daten im Hauptspeicher verschlüsselt abgelegt.*
-    - *Nach dem Wiederöffnen der App befindet man sich an derselben Stelle.*
+    - [ ]*Vor dem Schließen der App werden aktuelle Daten im Hauptspeicher verschlüsselt abgelegt.*
+    - [ ]*Nach dem Wiederöffnen der App befindet man sich an derselben Stelle.*
     
-### Feature 3.3 Datenexport
+### Feature 2.9 Datenexport
 
-> Als **Benutzer** möchte ich *meine Daten exportieren*, um *sie einerseits sichern und andererseits teilen zu können.*.
+> Als **Benutzer** möchte ich *meine Daten exportieren*, um *diese mit anderen zu teilen oder um Backups anzufertigen.*
 
-- Aufwandsschätzung: [S]
+- Aufwandsschätzung: <span style="color:lime">[S]</span>
 - Akzeptanztests:
-    - *Die Daten liegen beim Teilen im Textformat vor.*
-    - *Die Daten liegen beim Export im JSON/XML-Format vor.*
-    - *Die Daten werden beim Export auf dem internen Speicher des Smartphones abgelegt.*
+    - [ ]*Die Daten können in Textform oder JSON/XML-Format geteilt werden.*
+    - [ ]*Die Daten können auf dem Hauptspeicher abgelegt werden.*
