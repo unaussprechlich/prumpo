@@ -155,8 +155,3 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 - Akzeptanztests:
     - [ ] *Die Daten können in Textform oder JSON/XML-Format geteilt werden.*
     - [ ] *Die Daten können auf dem Hauptspeicher abgelegt werden.*
-
-# Anmerkungen zur Überarbeitung
-### Befund 9
-> Die Aufwandseinschätzung wurde intern erneut reviewt und wir bleiben bei den bisherigen Werten. Wir möchten das gesamte Spektrum an Aufwandseinschätzungen (S-XL) verwenden, um Aufwände besser voneinander abzugrenzen.
-
