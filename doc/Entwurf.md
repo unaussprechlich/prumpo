@@ -69,7 +69,7 @@ Die Hauptansicht (Karte) bietet abseits des Menüs und einer Suchleiste oben auc
 
 ![Sidebar-GUI](images/screenshots/Sidebar.png)
 
-### Hinzufügen con Schadensfällen GUI
+### Hinzufügen von Schadensfällen GUI
 Die Felderfassung beginnt damit, dass an der aktuellen Position des Nutzers  ein Marker auf der Karte erscheint und ein Menü für das aktuelle Feld von unten animiert eingeblendet wird. Über das Menü werden Daten zum Feld, zum Beispiel Art des Feldes (Felder des Landwirts, Schadensflächen, Versicherungsflächen (Admin)) und deren Metadaten eingegeben. Ab drei hinzugefügten Markern auf der Karte kann der Benutzer ein Feld speichern, sofern alle Mandatory-Daten eingegeben wurden.
 
 ![Hinzufügen von Schäden-GUI](images/screenshots/HinzufügenVonSchäden.png)
