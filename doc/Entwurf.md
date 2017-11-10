@@ -18,13 +18,13 @@ Die bereits genannten grundlegenden Komponenten werden nachfolgend näher beschr
 
 ## Security
 
->Diese Komponente stellt sicher, dass der User eingeloggt ist und all seine Daten sicher gespeichert werden. *Security* stellt lediglich eine Schnittstelle zu Verschlüsseling und Authentifizierung bereit. Die eigentlichen Authorizierung findet an anderer Stelle statt.
+>Diese Komponente stellt sicher, dass der User eingeloggt ist und all seine Daten sicher gespeichert werden. *Security* stellt lediglich eine Schnittstelle zu Verschlüsseling und Authentifizierung  bereit. Die eigentlichen Autorisierung findet an anderer Stelle statt.
 
 ### Authentication
 Hier wird eine Login-Schnittstelle mit den anderen *Authetication Components* bereitgestellt. Der User kann sich im *Login UI* mit den vom *User Manager* breitgestellten Daten anmelden.
 
 ### Android Keystore (extern)
-Der Android Keystore stellt eine Schittstelle bereit, um die für die Verschlüsselung und Authentifizierung benötigten sensiblen Daten zu speichern.
+Der Android Keystore stellt eine Schnittstelle bereit, um die für die Verschlüsselung und Authentifizierung benötigten sensiblen Daten zu speichern.
 
 ### Encryption (extern)
 Eine externe Verschlüsselungsbibliothek wird verwendet um die eigentliche Verschlüsselung zu gewährleisten. Es wird dabei auf eine ausgereifte Verschlüsselungstechnik zurückgegriffen. 
@@ -43,7 +43,7 @@ Der StorageManager interagiert mit den einzelnen *Datamodels* um sicherzustellen
 Eine Datenbank ([SQL Lite](https://developer.android.com/training/data-storage/room/index.html)) wird verwendet, um die Möglichkeit zu haben die Daten mithilfe einer Querry schon sortiert oder nur in gewünschter Anzahl zu bekommen. Es wird bewusst darauf verzichtet, die Daten in normalen Textdateien zu speichern, um eine höhere Kontrolle über den Datenfluss zu haben.
 
 ### Filesytem (extern)
-Im *Filesystem* werden Dateien wie Bilder und andere große Dateien abgelegt. Über die Encryption-Schnittstelle wird gerantiert, dass es keinen unberechtigten Zugriff auf diese Dateien gibt. Die Pfade und Dateinamen werden in der Datenbank hinterlegt.
+Im *Filesystem* werden Dateien wie Bilder und andere große Dateien abgelegt. Über die Encryption-Schnittstelle wird garantiert, dass es keinen unberechtigten Zugriff auf diese Dateien gibt. Die Pfade und Dateinamen werden in der Datenbank hinterlegt.
 
 ## UI
 
@@ -79,7 +79,7 @@ Die Google-Location-API stellt Funktionen und Klassen bereit, um eine Standorter
 Der AuthorizationManager stellt sicher, dass der User nur Aktionen ausführen kann, die für seine Benutzerrolle zugelassen sind. Ein Landwirt kann zum Beispiel nicht ohne Weiteres seine versicherten Flächen anpassen, ein Gutachter dagegen schon.
 
 ### UserManager
-Der UserManager verwaltet die Benutzer, sowie dessen Brechtigungen und Rollen. Über ein *DataModel* werden diese Informationen dann sicher in der Datenbank verwahrt.
+Der UserManager verwaltet die Benutzer, sowie dessen Berechtigungen  und Rollen. Über ein *DataModel* werden diese Informationen dann sicher in der Datenbank verwahrt.
 
 ## Datamodels
 
@@ -92,11 +92,11 @@ Nachfolgend werden einige der internen Komponenten näher beschrieben.
 
 ![SingetonUML](images/concept/SingetonUML.png)
 
-Alle Manager verwenden hier das Singleton-Pattern um zu gewähleisten, dass es keine Duplikate der einzelnen Manager geben kann. Damit lässt sich die Zugriffskontrolle kontrollieren. Einige Mananger erlauben Laziness, wodurch die Komponenten erst zur Nutzung initialisiert werden.
+Alle Manager verwenden hier das Singleton-Pattern um zu gewährleisten, dass es keine Duplikate der einzelnen Manager geben kann. Damit lässt sich die Zugriffskontrolle kontrollieren. Einige Mananger erlauben Laziness, wodurch die Komponenten erst zur Nutzung initialisiert werden.
 
 ![UIComponentUML](images/concept/UIComponentUML.png)
 
-Die *UI Komponenten* verwenden das *Composite* Pattern, wessen Komponenten sich durch *Observer* synchronisieren. Es handelt sich hierbei mehr um eine sehr abstrahierte Demonstration des in Android verwendeten Patterns. Einige UI Komponenten wie z.B ein Textfeld sind hierbei natürlich schon bei Android standardmäßig dabei, in einigen Views jedoch, wie z.B. der Map werden aber eigene maßgeschneiderte Komponenten verwendet.
+Die *UI Komponenten* verwenden das *Composite* Pattern, wessen Komponenten sich durch *Observer* synchronisieren. Es handelt sich hierbei mehr um eine sehr abstrahierte Demonstration des in Android verwendeten Patterns. Einige UI Komponenten wie z.B. ein Textfeld sind hierbei natürlich schon bei Android standardmäßig dabei, in einigen Views jedoch, wie z.B. der Map werden aber eigene maßgeschneiderte Komponenten verwendet.
 
 ![DataModelsUML](images/concept/DataModelsUML.png)
 
@@ -104,7 +104,7 @@ Die abstrakte Klasse *AbstractDataModel* definiert eine Oberklasse, von der alle
 
 # GUI-Skizze
 
-Um einen möglichst realistischen Entwuf präsentieren zu können, unter dem sich vor allem der Kunde gut vorstellen kann, wie seine App im Endstadium aussieht, haben wir uns dazu entschieden die Software [Adobe XD](https://www.adobe.com/de/products/xd.html) zu verwenden. 
+Um einen möglichst realistischen Entwurf präsentieren zu können, unter dem sich vor allem der Kunde gut vorstellen kann, wie seine App im Endstadium aussieht, haben wir uns dazu entschieden die Software [Adobe XD](https://www.adobe.com/de/products/xd.html) zu verwenden. 
 
 ### Login GUI
 Sobald die App gestartet wird, erwartet den Benutzer ein Login-Screen (vgl. Screenshot). Der Benutzer gibt seine Zugangsdaten ein, und wird entsprechend seiner Benutzerrolle erkannt.
@@ -118,7 +118,7 @@ Die Hauptansicht (Karte) bietet abseits des Menüs und einer Suchleiste oben auc
 ![Map-GUI](images/screenshots/Map.png)
 
 ### Schadensfälle Listen GUI
-Über diese Menü bekommt der Banutzer eine Übersicht über alle seine Schadensfälle. Durch den Klick auf eines der Schadenfälle wird dem User die Detail-Ansicht zu dem Schadensfall geöffnet.
+Über dieses Menü bekommt der Benutzer eine Übersicht über alle seine Schadensfälle. Durch den Klick auf eines der Schadenfälle wird dem User die Detail-Ansicht zu dem Schadensfall geöffnet.
 
 ![Schadensfälle-GUI](images/screenshots/Schadensfälle.png)
 
@@ -128,7 +128,7 @@ Die Hauptansicht (Karte) bietet abseits des Menüs und einer Suchleiste oben auc
 ![Sidebar-GUI](images/screenshots/Sidebar.png)
 
 ### Hinzufügen con Schadensfällen GUI
-Die Felderfassung beginnt damit, dass an der aktuellen Position des Nutzers  ein Marker auf der Karte erscheint und ein Menü für das aktuelle Feld von unten animiert eingeblendet wird. Über das Menü werden Daten zum Feld, zum Beispiel Art des Feldes (Felder des Landwirts, Schadensflächen, Versicherungsflächen (Admin)) und deren Metadaten eingegeben. Ab drei hinzugefügten Markern auf der Karte kann der Benutzer ein Feld speichern, sofern alle Mandatory-Daten eingegeben wurden.
+Die Felderfassung beginnt damit, dass an der aktuellen Position des Nutzers ein Marker auf der Karte erscheint und ein Menü für das aktuelle Feld von unten animiert eingeblendet wird. Über das Menü werden Daten zum Feld, zum Beispiel Art des Feldes (Felder des Landwirts, Schadensflächen, Versicherungsflächen (Admin)) und deren Metadaten eingegeben. Ab drei hinzugefügten Markern auf der Karte kann der Benutzer ein Feld speichern, sofern alle benötigten Daten eingegeben wurden.
 
 ![Hinzufügen von Schäden-GUI](images/screenshots/HinzufügenVonSchäden.png)
 
