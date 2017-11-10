@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="339.0" y="224.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase</node>
+    <node x="248.0" y="822.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.DetailViewUI</node>
+    <node x="145.0" y="822.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.MapUI</node>
+    <node x="219.0" y="457.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.HailDamageCase</node>
+    <node x="268.0" y="896.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.DBManager</node>
+    <node x="222.0" y="553.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.ChildRegistry</node>
+    <node x="0.0" y="896.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.UserManager</node>
+    <node x="717.0" y="123.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel</node>
+    <node x="679.0" y="553.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AuthenticationManager</node>
+    <node x="528.0" y="896.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.StorageManager</node>
+    <node x="0.0" y="457.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.VerminDamageCase</node>
+    <node x="0.0" y="822.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.UserControllUI</node>
+    <node x="625.0" y="257.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.User</node>
+    <node x="382.0" y="822.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.LoginUI</node>
+    <node x="123.0" y="597.5">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.IChild</node>
+    <node x="516.0" y="553.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.DamageType</node>
+    <node x="560.75" y="11.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.IExportable</node>
+    <node x="171.75" y="721.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent</node>
+    <node x="808.0" y="457.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.WindDamageCase</node>
+    <node x="1003.0" y="553.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AuthorizationManager</node>
+    <node x="995.0" y="257.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.Area</node>
+    <node x="838.75" y="0.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.IStoreable</node>
+    <node x="389.0" y="457.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.FloodDamageCase</node>
+    <node x="830.0" y="290.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.InsuranceContract</node>
+    <node x="575.0" y="457.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.FireDamageCase</node>
+    <node x="813.0" y="896.0">de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.Export</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.FloodDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase">
+      <point x="0.0" y="-25.5" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.InsuranceContract" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel">
+      <point x="0.0" y="-25.5" />
+      <point x="902.5" y="204.0" />
+      <point x="833.25" y="204.0" />
+      <point x="23.25" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel">
+      <point x="0.0" y="-91.5" />
+      <point x="472.0" y="194.0" />
+      <point x="740.25" y="194.0" />
+      <point x="-69.75" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.IExportable">
+      <point x="-46.5" y="-25.5" />
+      <point x="763.5" y="98.0" />
+      <point x="689.75" y="98.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.User" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel">
+      <point x="0.0" y="-58.5" />
+      <point x="717.5" y="204.0" />
+      <point x="786.75" y="204.0" />
+      <point x="-23.25" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.ChildRegistry">
+      <point x="37.0" y="-25.5" />
+      <point x="282.75" y="696.0" />
+      <point x="329.0" y="696.0" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.IChild">
+      <point x="-37.0" y="-25.5" />
+      <point x="208.75" y="696.0" />
+      <point x="162.5" y="696.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.HailDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase">
+      <point x="0.0" y="-25.5" />
+      <point x="294.0" y="437.0" />
+      <point x="418.8" y="437.0" />
+      <point x="-53.19999999999999" y="91.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.WindDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase">
+      <point x="0.0" y="-25.5" />
+      <point x="916.0" y="427.0" />
+      <point x="578.4" y="427.0" />
+      <point x="106.39999999999998" y="91.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.Area" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel">
+      <point x="0.0" y="-58.5" />
+      <point x="1161.5" y="194.0" />
+      <point x="879.75" y="194.0" />
+      <point x="69.75" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.FireDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase">
+      <point x="0.0" y="-25.5" />
+      <point x="681.5" y="437.0" />
+      <point x="525.2" y="437.0" />
+      <point x="53.200000000000045" y="91.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDataModel" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.IStoreable">
+      <point x="46.5" y="-25.5" />
+      <point x="856.5" y="98.0" />
+      <point x="930.25" y="98.0" />
+      <point x="0.0" y="36.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.UserControllUI" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent">
+      <point x="0.0" y="-14.5" />
+      <point x="62.5" y="792.0" />
+      <point x="190.25" y="792.0" />
+      <point x="-55.5" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.MapUI" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent">
+      <point x="0.0" y="-14.5" />
+      <point x="186.5" y="802.0" />
+      <point x="227.25" y="802.0" />
+      <point x="-18.5" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.VerminDamageCase" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.AbstractDamageCase">
+      <point x="0.0" y="-25.5" />
+      <point x="99.5" y="427.0" />
+      <point x="365.6" y="427.0" />
+      <point x="-106.39999999999998" y="91.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.DetailViewUI" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent">
+      <point x="0.0" y="-14.5" />
+      <point x="305.0" y="802.0" />
+      <point x="264.25" y="802.0" />
+      <point x="18.5" y="25.5" />
+    </edge>
+    <edge source="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.component.LoginUI" target="de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite.UIViewComponent">
+      <point x="0.0" y="-14.5" />
+      <point x="426.5" y="792.0" />
+      <point x="301.25" y="792.0" />
+      <point x="55.5" y="25.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="797.0" y="634.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
