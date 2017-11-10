@@ -2,11 +2,13 @@
 
 Die App besteht aus den fünf grundlegenden Komponenten **Security**, **Storage**, **Datamodels**, **User Management** und **UI**. Die Verknüpfungen der Komponenten und ihrer Schnittstellen sind im Komponentendiagram visualisiert.
 
+Auswahl verwendete Entwurfsmuster und Standards 
 - Singleton
 - Observer Pattern
 - Decorator Pattern
 - Composite Pattern
 - SOLID (https://en.wikipedia.org/wiki/SOLID_(object-oriented_design))
+- KISS (https://de.wikipedia.org/wiki/KISS-Prinzip)
 
 # Komponentendiagram
 
@@ -86,17 +88,19 @@ Jedes für den Benutzer relevante Model hat ebenfalls die Möglichkeit, es zu ex
 
 # Klassendiagramm
 
+Nachfolgend werden einige der internen Komponenten näher beschrieben.
 
-**TODO:** Klassendiagramm der Aufteilung der eigenen Komponenten in Klassen darstellen.
+![SingetonUML](images/concept/SingetonUML.png)
 
-## Beschreibung der wichtigen Klassenhierarchie 1
+Alle Manager verwenden hier das Singleton-Pattern um zu gewähleisten, dass es keine Duplikate der einzelnen Manager geben kann. Damit lässt sich die Zugriffskontrolle kontrollieren. Einige Mananger erlauben Laziness, wodurch die Komponenten erst zur Nutzung initialisiert werden.
 
-**TODO:** Die wichtigen Klassen und ihre Hierarchie beschreiben.
+![UIComponentUML](images/concept/UIComponentUML.png)
 
-## Beschreibung der wichtigen Klasse 2
+Die *UI Komponenten* verwenden das *Composite* Pattern, wessen Komponenten sich durch *Observer* synchronisieren. Es handelt sich hierbei mehr um eine sehr abstrahierte Demonstration des in Android verwendeten Patterns. Einige UI Komponenten wie z.B ein Textfeld sind hierbei natürlich schon bei Android standardmäßig dabei, in einigen Views jedoch, wie z.B. der Map werden aber eigene maßgeschneiderte Komponenten verwendet.
 
-## Beschreibung der wichtigen Klasse 3
+![DataModelsUML](images/concept/DataModelsUML.png)
 
+Die abstrakte Klasse *AbstractDataModel* definiert eine Oberklasse, von der alle anderen *DataModels* erben. Alle *DataModel*-Klassen müssen die Eigenschaft aufweisen, dass sie in die Datenbank geschrieben werden können, wofür die Schnittstelle *IStorable* definiert wird. Einige DataModels wie zum Beispiel die Klassen, die AbstractDamageCase implementieren, sollen zudem exportierbar sein, wofür das *IExportable*-Interface zuständig ist.
 
 # GUI-Skizze
 
