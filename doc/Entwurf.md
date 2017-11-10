@@ -104,23 +104,28 @@ Um einen möglichst realistischen Entwuf präsentieren zu können, unter dem sic
 
 ### Login GUI
 Sobald die App gestartet wird, erwartet den Benutzer ein Login-Screen (vgl. Screenshot). Der Benutzer gibt seine Zugangsdaten ein, und wird entsprechend seiner Benutzerrolle erkannt.
+
 ![Login-GUI](images/screenshots/Login.png)
 
 ### Map GUI
 Nach erfolgreichem Login findet sich der Benutzer auf der Hauptansicht (Karte) wieder. Von hier aus werden alle weiteren Aktionen gestartet. Die Schaltfläche oben links öffnet das Sidebar GUI.
 Die Hauptansicht (Karte) bietet abseits des Menüs und einer Suchleiste oben auch zwei Schaltflächen unten rechts. Mit dem ersten Button lässt sich die Karte auf der aktuellen Position zentrieren während der zweite Button die Erfassung eines neuen Feldes startet.
+
 ![Map-GUI](images/screenshots/Map.png)
 
 ### Schadensfälle Listen GUI
 Über diese Menü bekommt der Banutzer eine Übersicht über alle seine Schadensfälle. Durch den Klick auf eines der Schadenfälle wird dem User die Detail-Ansicht zu dem Schadensfall geöffnet.
+
 ![Schadensfälle-GUI](images/screenshots/Schadensfälle.png)
 
 ### Sidebar GUI
 Über die Sidebar oben links kann der Benutzer sein Profil aufrufen, Schadensfälle, Versicherungsflächen und Verträge einsehen und weitere Einstellungen vornehmen.
+
 ![Sidebar-GUI](images/screenshots/Sidebar.png)
 
 ### Hinzufügen con Schadensfällen GUI
 Die Felderfassung beginnt damit, dass an der aktuellen Position des Nutzers  ein Marker auf der Karte erscheint und ein Menü für das aktuelle Feld von unten animiert eingeblendet wird. Über das Menü werden Daten zum Feld, zum Beispiel Art des Feldes (Felder des Landwirts, Schadensflächen, Versicherungsflächen (Admin)) und deren Metadaten eingegeben. Ab drei hinzugefügten Markern auf der Karte kann der Benutzer ein Feld speichern, sofern alle Mandatory-Daten eingegeben wurden.
+
 ![Hinzufügen von Schäden-GUI](images/screenshots/HinzufügenVonSchäden.png)
 
 

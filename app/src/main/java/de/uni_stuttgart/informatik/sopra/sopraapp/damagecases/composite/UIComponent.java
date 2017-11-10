@@ -4,7 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.damagecases.composite;
  * Component Created by Alexander on 10.11.2017.
  * Description:
  **/
-public abstract class UIViewComponent extends ChildRegistry implements IChild{
+public abstract class UIComponent extends ChildRegistry implements IChild{
 
     private ID id;
 

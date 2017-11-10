@@ -4,7 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.damagecases;
  * AbstractDamageCase Created by Alexander on 10.11.2017.
  * Description:
  **/
-public abstract class AbstractDamageCase extends AbstractDataModel{
+public abstract class AbstractDamageCase extends AbstractDataModelExportable{
     private String name;
     private final CaseID caseID;
     private final DamageType damageType;
