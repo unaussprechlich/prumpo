@@ -21,7 +21,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="map">Map</string>
     <string name="damageCases">Schadensfälle</string>
-    <string name="settings">Preferences</string>
-    <string name="nav_username">Username</string>
-    <string name="nav_role">Role</string>
+    <string name="settings">Einstellungen</string>
+    <string name="nav_username">Benutzername</string>
+    <string name="nav_role">Rolle</string>
 </resources>
