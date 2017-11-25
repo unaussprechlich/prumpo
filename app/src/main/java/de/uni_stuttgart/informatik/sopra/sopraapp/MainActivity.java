@@ -3,6 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -49,8 +51,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        LinearLayout header = headerView.findViewById(R.id.nav_header);
+        header.setOnClickListener(view -> displaySelectedActivity(R.id.profile_layout));
 
+        navigationView.setNavigationItemSelectedListener(this);
         displaySelectedScreen(R.id.nav_map);
     }
 
@@ -137,6 +142,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+    }
+
+    public void displaySelectedActivity(int itemId) {
+
+        switch (itemId) {
+            case R.id.profile_layout:
+                Intent myIntent = new Intent(this, ProfileActivity.class);
+                startActivity(myIntent);
+        }
 
     }
 }
