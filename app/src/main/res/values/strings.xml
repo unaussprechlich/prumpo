@@ -24,4 +24,7 @@
     <string name="settings">Einstellungen</string>
     <string name="nav_username">Benutzername</string>
     <string name="nav_role">Rolle</string>
+    <string name="profile_title">Your Name</string>
+    <string name="profile_subtitle">Subtitle</string>
+    <string name="profileLogoutButton">Log Out</string>
 </resources>
