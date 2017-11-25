@@ -8,4 +8,10 @@
     tools:context="de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <!-- Do not change anything in this file. Make changes in the fragment xml files. -->
+    <FrameLayout
+        android:id="@+id/content_main_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </android.support.constraint.ConstraintLayout>
