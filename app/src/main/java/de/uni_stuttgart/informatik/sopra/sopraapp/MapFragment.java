@@ -33,7 +33,7 @@ public class MapFragment extends Fragment {
         );
 
         // Set title of app bar
-        getActivity().setTitle("Map");
+        getActivity().setTitle(R.string.map);
     }
 
     @Override

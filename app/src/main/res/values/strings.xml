@@ -19,7 +19,7 @@
 
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_closed">Close navigation drawer</string>
-    <string name="map">Map</string>
+    <string name="map">Karte</string>
     <string name="damageCases">Schadensfälle</string>
     <string name="settings">Einstellungen</string>
     <string name="nav_username">Benutzername</string>
