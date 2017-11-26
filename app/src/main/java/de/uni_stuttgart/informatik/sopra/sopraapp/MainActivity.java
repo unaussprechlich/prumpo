@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private DrawerLayout drawer;
+
     /**
      * When Activity gets created
      */
@@ -32,11 +34,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle =
                 new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
+                        this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
                 );
 
         drawer.addDrawerListener(toggle);
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -79,11 +80,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.action_search) {
-            View parentLayout = findViewById(R.id.drawer_layout);
 
-            Snackbar.make(parentLayout, "I would suggest a library here :)", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
+            Snackbar.make(drawer, "I would suggest a library here :)", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .show();
             return true;
         }
 
@@ -118,11 +118,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_damageCases:
                 fragment = new DamageCasesFragment();
                 break;
-
-//            case R.id.nav_preferences:
-//
-//                break;
-
             default:
                 fragment = new MapFragment();
                 break;
@@ -132,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentTransaction.replace(R.id.content_main_frame, fragment);
         fragmentTransaction.commit();
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
     }
@@ -143,7 +137,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.profile_layout:
                 Intent myIntent = new Intent(this, ProfileActivity.class);
                 startActivity(myIntent);
+                break;
         }
 
+        // Close drawer when selecting any icon
+        drawer.postDelayed(() -> drawer.closeDrawer(GravityCompat.START), 500);
     }
 }
