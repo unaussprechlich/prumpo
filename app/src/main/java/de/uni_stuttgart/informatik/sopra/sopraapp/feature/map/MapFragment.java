@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 public class MapFragment extends Fragment {
 

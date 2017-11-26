@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
 import java.util.Collection;
 import java.util.GregorianCalendar;

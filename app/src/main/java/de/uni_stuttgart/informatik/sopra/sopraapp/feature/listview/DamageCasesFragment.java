@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465

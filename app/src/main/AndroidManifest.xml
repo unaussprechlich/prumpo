@@ -13,9 +13,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
-            android:name=".LoginActivity"
+            android:name=".feature.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:launchMode="singleTask">
             <intent-filter>
@@ -27,14 +28,14 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
-            android:parentActivityName=".LoginActivity"
+            android:parentActivityName=".feature.login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.LoginActivity" />
+                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.login.LoginActivity" />
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".feature.sidebar.profile.ProfileActivity"
             android:launchMode="singleTask" />
     </application>
 

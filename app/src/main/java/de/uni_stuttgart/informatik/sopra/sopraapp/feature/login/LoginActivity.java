@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -30,6 +30,9 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

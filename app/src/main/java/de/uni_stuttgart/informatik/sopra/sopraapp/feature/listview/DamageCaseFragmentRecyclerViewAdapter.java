@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DamageCaseFragmentRecyclerViewAdapter.DamageCaseViewHolder> {
 

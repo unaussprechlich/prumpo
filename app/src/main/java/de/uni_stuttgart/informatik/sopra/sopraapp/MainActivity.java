@@ -18,6 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCasesFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
