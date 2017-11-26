@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -106,10 +108,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
             Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(
-                                android.R.string.ok,
-                                v -> requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS)
-                        );
+                    .setAction(
+                            android.R.string.ok,
+                            v -> requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS)
+                    );
 
             return false;
         }
@@ -178,6 +180,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView.requestFocus();
 
         } else {
+
+            // hide keyboard
+            // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+            View view = this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                if (imm != null)
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
             // show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
@@ -241,8 +254,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // retrieve data rows from the 'contact' of of the users device's profile.
         Uri uriContacts =
                 Uri.withAppendedPath(
-                    ContactsContract.Profile.CONTENT_URI,
-                    ContactsContract.Contacts.Data.CONTENT_DIRECTORY
+                        ContactsContract.Profile.CONTENT_URI,
+                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY
                 );
 
         /* select email addresses only */
@@ -322,14 +335,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-
-                // simulate network access
-                Thread.sleep(2000);
-
-            } catch (InterruptedException e) {
-                return false;
-            }
+//            try {
+//
+//                // simulate network access
+//                Thread.sleep(2000);
+//
+//            } catch (InterruptedException e) {
+//                return false;
+//            }
 
             for (String credential : CREDENTIALS) {
                 String[] pieces = credential.split(":");
