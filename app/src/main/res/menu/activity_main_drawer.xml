@@ -22,11 +22,11 @@
         <!--android:title="Tools" />-->
     </group>
 
-    <group>
-        <item
-            android:id="@+id/nav_preferences"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/settings" />
-    </group>
+    <!--<group>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_preferences"-->
+    <!--android:icon="@drawable/ic_menu_manage"-->
+    <!--android:title="@string/settings" />-->
+    <!--</group>-->
 
 </menu>
