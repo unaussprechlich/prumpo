@@ -13,10 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -44,6 +41,20 @@ public class MapFragment extends Fragment {
     boolean gpsBound = false;
 
     private GoogleMap gMap;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
+
+            gpsService = binder.getService();
+            gpsBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            gpsBound = false;
+        }
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,9 +90,9 @@ public class MapFragment extends Fragment {
             PolygonOptions rectOptions =
                     new PolygonOptions()
                             .add(new LatLng(48.806575, 8.856634),
-                                 new LatLng(48.806545, 8.856913),
-                                 new LatLng(48.806429, 8.856890),
-                                 new LatLng(48.806459, 8.856608))
+                                    new LatLng(48.806545, 8.856913),
+                                    new LatLng(48.806429, 8.856890),
+                                    new LatLng(48.806459, 8.856608))
                             .geodesic(true)
                             .clickable(true)
                             .strokeColor(Color.RED)
@@ -130,8 +141,8 @@ public class MapFragment extends Fragment {
 
             gMap.addMarker(
                     new MarkerOptions()
-                    .position(new LatLng(lat, lng))
-                    .title(String.format("Latitude %s Longitude %s", lat, lng)));
+                            .position(new LatLng(lat, lng))
+                            .title(String.format("Latitude %s Longitude %s", lat, lng)));
 
             Snackbar.make(v,
                     String.format("Latitude %s\nLongitude %s", lat, lng),
@@ -143,23 +154,6 @@ public class MapFragment extends Fragment {
 
         // Set title of app bar
         getActivity().setTitle(R.string.map);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        // [Search icon not visible #1] https://stackoverflow.com/a/34799180/8596346
-        MenuItem item = menu.findItem(R.id.action_search);
-        item.setVisible(false);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // [Search icon not visible #2]
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -175,19 +169,4 @@ public class MapFragment extends Fragment {
         Intent intent = new Intent(getContext(), GpsService.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
-
-            gpsService = binder.getService();
-            gpsBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            gpsBound = false;
-        }
-    };
 }

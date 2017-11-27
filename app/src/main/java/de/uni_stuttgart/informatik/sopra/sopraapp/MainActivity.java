@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +27,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.Profil
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
+
     public static final int REQUEST_LOCATION = 202;
+
+    protected OnBackPressedListener dcOnBackPressedListener;
 
     private Fragment damageCasesFragment;
     private Fragment mapFragment;
@@ -64,7 +66,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        damageCasesFragment = new DamageCasesFragment();
+        DamageCasesFragment dcFragment = new DamageCasesFragment();
+        dcFragment.setNavigationDrawer(drawer);
+
+        damageCasesFragment = dcFragment;
         mapFragment = new MapFragment();
 
         displaySelectedScreen(R.id.nav_map);
@@ -80,7 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-
+        } else if (dcOnBackPressedListener != null && dcOnBackPressedListener.needsClose()) {
+            dcOnBackPressedListener.onBackPressed();
         } else {
             super.onBackPressed();
         }
@@ -98,14 +104,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int id = item.getItemId();
 
-        if (id == R.id.action_search) {
-
-            Snackbar.make(drawer, "I would suggest a library here :)", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .show();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -118,15 +116,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    /**
-     * When creating the Activity, this method is responsible for the toolbar menu layout
-     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public void displaySelectedScreen(int itemId) {
@@ -166,8 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void checkPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED)
-        {
+                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat
                     .requestPermissions(
                             this,
@@ -189,5 +180,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 checkPermissions();
             }
         }
+    }
+
+    public void setDcOnBackPressedListener(OnBackPressedListener dcOnBackPressedListener) {
+        this.dcOnBackPressedListener = dcOnBackPressedListener;
+    }
+
+    @Override
+    protected void onDestroy() {
+        dcOnBackPressedListener = null;
+        super.onDestroy();
+    }
+
+    public interface OnBackPressedListener {
+
+        /**
+         * Controll back press in fragment
+         */
+        void onBackPressed();
+
+        /**
+         * Tells if back button should be controlled by fragment
+         *
+         * @return
+         */
+        boolean needsClose();
     }
 }

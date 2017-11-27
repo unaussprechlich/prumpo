@@ -36,7 +36,7 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         DamageCase damageCase = damageCaseList.get(position);
 
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
-        holder.expertName.setText(damageCase.getNameExpert());
+        holder.expertName.setText(damageCase.getNamePolicyholder());
         holder.damageArea.setText(String.valueOf(damageCase.getArea()));
 
 

@@ -57,9 +57,9 @@ public class DamageCase {
     /**
      * For demonstrating purposes.
      */
-    public DamageCase(String nameDamageCase, String nameExpert, float area) {
+    public DamageCase(String nameDamageCase, String namePolicyholder, float area) {
         this.nameDamageCase = nameDamageCase;
-        this.nameExpert = nameExpert;
+        this.namePolicyholder = namePolicyholder;
         this.area = area;
     }
 
