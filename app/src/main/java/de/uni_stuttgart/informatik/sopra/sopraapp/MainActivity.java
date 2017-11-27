@@ -1,13 +1,16 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp;
 
 
+import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,15 +21,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCasesFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private Fragment damageCasesFragment = new DamageCasesFragment();
-    private Fragment mapFragment = new MapFragment();
+    public static final int REQUEST_LOCATION = 202;
+
+    private Fragment damageCasesFragment;
+    private Fragment mapFragment;
 
     private DrawerLayout drawer;
 
@@ -42,6 +47,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        LinearLayout header = headerView.findViewById(R.id.nav_header);
+        header.setOnClickListener(view -> displaySelectedActivity(R.id.profile_layout));
+
+        navigationView.setNavigationItemSelectedListener(this);
+
         drawer = findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle =
@@ -52,15 +64,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        LinearLayout header = headerView.findViewById(R.id.nav_header);
-        header.setOnClickListener(view -> displaySelectedActivity(R.id.profile_layout));
+        damageCasesFragment = new DamageCasesFragment();
+        mapFragment = new MapFragment();
 
-        navigationView.setNavigationItemSelectedListener(this);
         displaySelectedScreen(R.id.nav_map);
 
-
+        checkPermissions();
     }
 
     /**
@@ -153,5 +162,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Close drawer when selecting any icon
         drawer.postDelayed(() -> drawer.closeDrawer(GravityCompat.START), 500);
+    }
+
+    private void checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat
+                    .requestPermissions(
+                            this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_LOCATION
+                    );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+
+                checkPermissions();
+            }
+        }
     }
 }
