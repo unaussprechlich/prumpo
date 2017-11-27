@@ -1,12 +1,19 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.app.Fragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,16 +27,21 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper;
 
 public class MapFragment extends Fragment {
 
     View rootView;
     MapView mMapView;
+
+    GpsService gpsService;
+    boolean gpsBound = false;
 
     private GoogleMap gMap;
 
@@ -54,7 +66,12 @@ public class MapFragment extends Fragment {
             e.printStackTrace();
         }
 
+        // bind GPS service
+        bindServices();
+
         /* dummy-code ahead! */
+
+        // TODO: extract into features
 
         mMapView.getMapAsync(googleMap -> {
             gMap = googleMap;
@@ -74,10 +91,12 @@ public class MapFragment extends Fragment {
 
             // show estimated area of polygon, when clicked
             gMap.setOnPolygonClickListener(p ->
-                    Toast.makeText(getContext(),
-                            String.valueOf(Math.round(Helper.areaOfPolygon(p.getPoints()))) + "m²",
-                            Toast.LENGTH_SHORT)
-                            .show());
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(getContext(),
+                                    String.valueOf(Math.round(Helper.areaOfPolygon(p.getPoints()))) + "m²",
+                                    Toast.LENGTH_SHORT)
+                                    .show()));
+
 
             // zooming to the location of the polygon
             CameraPosition cameraPosition =
@@ -96,11 +115,30 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // TODO: extract into features
+
         FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(v ->
-                Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show()
+        fab.setOnClickListener(v -> {
+            if (!gpsBound) return;
+
+            Location lastLocation = gpsService.getLastLocation();
+
+            if (lastLocation == null) return;
+
+            double lat = lastLocation.getLatitude();
+            double lng = lastLocation.getLongitude();
+
+            gMap.addMarker(
+                    new MarkerOptions()
+                    .position(new LatLng(lat, lng))
+                    .title(String.format("Latitude %s Longitude %s", lat, lng)));
+
+            Snackbar.make(v,
+                    String.format("Latitude %s\nLongitude %s", lat, lng),
+                    Snackbar.LENGTH_LONG)
+                    .setAction("Action", null)
+                    .show();
+                }
         );
 
         // Set title of app bar
@@ -123,4 +161,33 @@ public class MapFragment extends Fragment {
         // [Search icon not visible #2]
         setHasOptionsMenu(true);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mConnection != null) {
+            getActivity().unbindService(mConnection);
+        }
+    }
+
+    private void bindServices() {
+        Intent intent = new Intent(getContext(), GpsService.class);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
+
+            gpsService = binder.getService();
+            gpsBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            gpsBound = false;
+        }
+    };
 }
