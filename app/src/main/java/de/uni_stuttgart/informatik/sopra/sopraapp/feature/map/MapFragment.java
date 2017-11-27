@@ -161,7 +161,11 @@ public class MapFragment extends Fragment {
         super.onDestroy();
 
         if (mConnection != null) {
-            getActivity().unbindService(mConnection);
+            Context applicationContext = getActivity().getApplicationContext();
+            boolean isBound = applicationContext.bindService(new Intent(applicationContext, MapFragment.class), mConnection, Context.BIND_AUTO_CREATE);
+
+            if (isBound)
+                getActivity().unbindService(mConnection);
         }
     }
 
