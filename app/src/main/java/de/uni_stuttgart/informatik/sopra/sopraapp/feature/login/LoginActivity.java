@@ -30,11 +30,11 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.UserDB;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -152,23 +152,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
-        // check for a valid password, if the user entered one
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // check for a valid email address
+        // check if email is empty
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
+        } else if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = false;
         }
 
         if (cancel) {
@@ -194,16 +186,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        // TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        // TODO: Replace this with your own logic
-        return true;
     }
 
     /**
@@ -332,11 +314,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
 
             //TODO just for testing
-            if(mEmail.equals("@") && mPassword.equals("")) return true;
+            if (mEmail.equals("@") && mPassword.equals("")) return true;
 
-            return DatabaseManager.getInstance(getApplicationContext())
+            UserDB userDB = DatabaseManager.getInstance(getApplicationContext())
                     .userDao()
-                    .getByName(mEmail)
+                    .getByName(mEmail);
+
+            return userDB != null && userDB
                     .password
                     .equals(mPassword);
         }
