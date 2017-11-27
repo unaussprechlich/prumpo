@@ -33,6 +33,7 @@ import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -46,14 +47,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] CREDENTIALS = {
-            "user1@stuttgart.de:pw1",
-            "user2@stuttgart.de:pw2"
-    };
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -336,30 +329,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
-//            try {
-//
-//                // simulate network access
-//                Thread.sleep(2000);
-//
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
-
-            for (String credential : CREDENTIALS) {
-                String[] pieces = credential.split(":");
-
-                if (pieces[0].equals(mEmail)) {
-
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-
-            return true;
+            return DatabaseManager.getInstance(getApplicationContext())
+                    .userDao()
+                    .getByName(mEmail)
+                    .password
+                    .equals(mPassword);
         }
 
         @Override
