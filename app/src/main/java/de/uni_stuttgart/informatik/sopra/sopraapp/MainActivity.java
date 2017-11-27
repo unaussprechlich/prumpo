@@ -24,6 +24,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.Profil
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Fragment damageCasesFragment = new DamageCasesFragment();
+    private Fragment mapFragment = new MapFragment();
+
     private DrawerLayout drawer;
 
     /**
@@ -120,10 +123,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (itemId) {
 
             case R.id.nav_damageCases:
-                fragment = new DamageCasesFragment();
+                fragment = damageCasesFragment;
                 break;
+
             default:
-                fragment = new MapFragment();
+                fragment = mapFragment;
                 break;
         }
 
