@@ -30,6 +30,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -329,6 +330,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
+            //TODO just for testing
+            if(mEmail.equals("@") && mPassword.equals("")) return true;
 
             return DatabaseManager.getInstance(getApplicationContext())
                     .userDao()
