@@ -19,6 +19,9 @@ import android.support.v4.app.ActivityCompat;
  */
 public class GpsService extends Service {
 
+    // TODO: ask to enable GPS
+    // TODO: pause service while app in background
+
     // Binder given to clients
     private IBinder mBinder = new LocalBinder();
     private Location lastLocation;
