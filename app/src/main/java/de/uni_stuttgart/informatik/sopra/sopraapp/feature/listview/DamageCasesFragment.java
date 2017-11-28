@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,6 +77,25 @@ public class DamageCasesFragment extends Fragment implements
         // recycler view adapter
         DamageCaseFragmentRecyclerViewAdapter viewAdapter = new DamageCaseFragmentRecyclerViewAdapter(damageCases);
         recyclerView.setAdapter(viewAdapter);
+        recyclerView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+                        recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                            View v = recyclerView.getChildAt(i);
+                            v.setAlpha(0.0f);
+                            v.animate().alpha(1.0f)
+                                    .setDuration(500)
+                                    .setStartDelay(i * 40)
+                                    .start();
+                        }
+
+                        return true;
+                    }
+                });
 
         // title of app-bar
         getActivity().setTitle(R.string.damageCases);
