@@ -2,11 +2,11 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -68,8 +68,6 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
         holder.expertName.setText(damageCase.getNamePolicyholder());
         holder.damageArea.setText(String.valueOf(damageCase.getArea()));
-
-        Log.i("VIEW", "BIND" + position);
     }
 
     /**
@@ -91,17 +89,13 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     @Override
     public void onClick(View view) {
         DamageCase damageCase = getDamageCase(view);
+        Toast.makeText(view.getContext(), damageCase.getNameDamageCase(), Toast.LENGTH_SHORT).show();
 
-        Log.i("VIEW", "cl" + damageCase.getNameDamageCase());
     }
 
     private DamageCase getDamageCase(View view) {
         DamageCaseViewHolder holder = (DamageCaseViewHolder) view.getTag();
-        int adapterPosition = holder.getLayoutPosition();
-
-        System.out.println("Pos to call from list:" + adapterPosition);
-        System.out.println("List size:" + damageCaseList.size());
-
+        int adapterPosition = holder.getAdapterPosition();
         return damageCaseList.get(adapterPosition);
     }
 

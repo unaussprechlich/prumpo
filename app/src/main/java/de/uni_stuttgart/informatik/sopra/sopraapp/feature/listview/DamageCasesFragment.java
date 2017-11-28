@@ -35,13 +35,13 @@ public class DamageCasesFragment extends Fragment
      */
     List<DamageCase> damageCases = new LinkedList<DamageCase>() {
         {
-            add(new DamageCase("Name des neunten Schadensfalls", "Gutachters", 9.32f));
-            add(new DamageCase("Name des achten Schadensfalls", "Gutachter", 9.32f));
-            add(new DamageCase("Name des siebten Schadensfalls", "Gutachte", 9.32f));
-            add(new DamageCase("Name des sechsten Schadensfalls", "Gutach", 9.32f));
-            add(new DamageCase("Name des fünften Schadensfalls", "Gutac", 9.32f));
-            add(new DamageCase("Name des vierten Schadensfalls", "Guta", 0.18f));
-            add(new DamageCase("Name des dritten Schadensfalls", "Gut", 6.11f));
+            add(new DamageCase("Name des neunten Schadensfalls", "A", 9.32f));
+            add(new DamageCase("Name des achten Schadensfalls", "AA", 9.32f));
+            add(new DamageCase("Name des siebten Schadensfalls", "AAB", 9.32f));
+            add(new DamageCase("Name des sechsten Schadensfalls", "AABB", 9.32f));
+            add(new DamageCase("Name des fünften Schadensfalls", "B", 9.32f));
+            add(new DamageCase("Name des vierten Schadensfalls", "CD", 0.18f));
+            add(new DamageCase("Name des dritten Schadensfalls", "BAS", 6.11f));
             add(new DamageCase("Name des zweiten Schadensfalls", "Gu", 11.76f));
             add(new DamageCase("Name des ersten Schadensfalls", "G", 34.25f));
             add(new DamageCase("Name des zehnten Schadensfalls", "zugehörigen Gutachters", 9.32f));
@@ -147,8 +147,7 @@ public class DamageCasesFragment extends Fragment
                 damageCases.add(damageCase);
 
         // swap adapter to adapter with new items
-        recyclerView.swapAdapter(new DamageCaseFragmentRecyclerViewAdapter(damageCases), true);
-        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setAdapter(new DamageCaseFragmentRecyclerViewAdapter(damageCases));
 
         return false;
     }
@@ -163,5 +162,6 @@ public class DamageCasesFragment extends Fragment
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
+
 
 }
