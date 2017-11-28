@@ -38,6 +38,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.UserDB;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
+// TODO: deal with lags (and maybe introduce separate threads)
 /**
  * A login screen that offers login via email/password.
  */
@@ -313,7 +314,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            //TODO just for testing
+            // TODO: just for testing
             if (mEmail.equals("@") && mPassword.equals("")) return true;
 
             UserDB userDB = DatabaseManager.getInstance(getApplicationContext())

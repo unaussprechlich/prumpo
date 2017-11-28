@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 public class DamageCase {
 
     /*
-     * TODO! Make a data base / persistence object
+     * TODO! Make a database/persistent object.
      * Schadensfälle können mit der Angabe des
      *
      * Versicherungsobjekts
@@ -24,16 +24,16 @@ public class DamageCase {
      */
 
     private String nameDamageCase;
-    private String namePolicyholder; // Name Versicherungsnehmer
+    private String namePolicyholder;
     private String nameExpert; // Name Gutachter
     private float area;
     private Collection<Float> coordinates;
     private String region;
     private float damageArea;
     private float damagePositon;
-    //    private Polygon damagePolygon;
     private GregorianCalendar date;
 
+    // TODO: Builder alert, builder alert!
     public DamageCase(String nameDamageCase,
                       String namePolicyholder,
                       String nameExpert,
@@ -56,7 +56,7 @@ public class DamageCase {
     }
 
     /**
-     * For demonstrating purposes.
+     * For demonstration purposes.
      */
     public DamageCase(String nameDamageCase, String namePolicyholder, float area) {
         this.nameDamageCase = nameDamageCase;

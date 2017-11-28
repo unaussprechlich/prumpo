@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper.areaOfPolygon;
 
 public class MapFragment extends Fragment implements OnBackPressedListener {
 
@@ -43,17 +43,22 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
     boolean gpsBound = false;
 
     private GoogleMap gMap;
+
     private ServiceConnection mConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
 
             gpsService = binder.getService();
             gpsBound = true;
+
+            Log.i("Inf", "GpsService CONNECTED!");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            Log.i("Inf", "GpsService DISCONNECTED!");
             gpsBound = false;
         }
     };
@@ -106,7 +111,7 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
             gMap.setOnPolygonClickListener(p ->
                     getActivity().runOnUiThread(() ->
                             Toast.makeText(getContext(),
-                                    String.valueOf(Math.round(Helper.areaOfPolygon(p.getPoints()))) + "m²",
+                                    String.valueOf(Math.round(areaOfPolygon(p.getPoints())))+"m²",
                                     Toast.LENGTH_SHORT)
                                     .show()));
 
@@ -178,7 +183,7 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
 
     @Override
     public void onBackPressed() {
-        Log.i("TAG", "B");
+        Log.i("TAG", "Back");
     }
 
     /**
@@ -187,7 +192,7 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
      * @return true, if fragmants wants to controll the back button
      */
     @Override
-    public boolean requestBackButtonControll() {
+    public boolean requestBackButtonControl() {
         return false;
     }
 

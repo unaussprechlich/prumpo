@@ -26,13 +26,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedL
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
  */
-public class DamageCasesFragment extends Fragment implements
-        OnBackPressedListener,
-        SearchView.OnQueryTextListener {
+public class DamageCasesFragment extends Fragment
+        implements OnBackPressedListener, SearchView.OnQueryTextListener {
 
     /**
      * Dummy data
-     * TODO! Replace with SQLite data
+     * TODO! Replace with Room data!
      */
     List<DamageCase> damageCases = new LinkedList<DamageCase>() {
         {
@@ -109,7 +108,7 @@ public class DamageCasesFragment extends Fragment implements
     }
 
     @Override
-    public boolean requestBackButtonControll() {
+    public boolean requestBackButtonControl() {
 
         // If search view is open -> true
         return searchView != null && !searchView.isIconified();
@@ -132,10 +131,11 @@ public class DamageCasesFragment extends Fragment implements
     }
 
     /**
-     * When search query changes
+     * Called when the search query changes.
      *
-     * @param newText
-     * @return
+     * @param newText   the updated query.
+     *
+     * @return          <code>false</code> TODO: implement me!
      */
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -154,10 +154,11 @@ public class DamageCasesFragment extends Fragment implements
     }
 
     /**
-     * When search is submitted
+     * Called when search is submitted.
      *
-     * @param query
-     * @return
+     * @param query     the submitted query.
+     *
+     * @return          <code>false</code> TODO: implement me!
      */
     @Override
     public boolean onQueryTextSubmit(String query) {

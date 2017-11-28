@@ -13,7 +13,7 @@ import android.provider.BaseColumns;
 @Entity(tableName = UserDB.TABLE_NAME)
 public class UserDB{
 
-    //TODO: remove thizzzzzz!
+    // TODO: remove thizzzzzz!
     public static final String[] CREDENTIALS = {
             "@:",
             "user1@stuttgart.de:pw1",
@@ -27,7 +27,7 @@ public class UserDB{
     @ColumnInfo(index = true, name = BaseColumns._ID)
     public long id;
 
-    //PLZZZ don't change the names without updating the querys, they are used as column name
+    // Don't change the names without updating the queries, they are used as column name!
     @ColumnInfo(index = true)
     public String name;
 

@@ -27,10 +27,11 @@ public abstract class DatabaseManager extends RoomDatabase {
     public static synchronized DatabaseManager getInstance(Context context) {
         if (INSTANCE == null) {
             INSTANCE = Room
-                    .databaseBuilder(context, DatabaseManager.class, "SopaApp.db")
-                    .build();
+                        .databaseBuilder(context, DatabaseManager.class, "SopaApp.db")
+                        .build();
             INSTANCE.populateInitialData();
         }
+
         return INSTANCE;
     }
 
@@ -43,8 +44,10 @@ public abstract class DatabaseManager extends RoomDatabase {
      */
     @VisibleForTesting
     public static void switchToInMemory(Context context) {
-        INSTANCE = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
-                DatabaseManager.class).build();
+        INSTANCE = Room
+                    .inMemoryDatabaseBuilder(context.getApplicationContext(),
+                            DatabaseManager.class)
+                    .build();
     }
 
     /**
@@ -54,8 +57,8 @@ public abstract class DatabaseManager extends RoomDatabase {
         if (userDao().count() == 0) {
             UserDB user = new UserDB();
 
-            try {
-                beginTransaction(); //some fancy wrapper stuff :3
+            try { // some fancy wrapper stuff :3
+                beginTransaction();
 
                 for (String s : UserDB.CREDENTIALS) {
                     String[] split = s.split(":");
@@ -64,9 +67,11 @@ public abstract class DatabaseManager extends RoomDatabase {
                     userDao().insert(user);
                 }
 
-                setTransactionSuccessful(); //this does set the transaction to successful
+                setTransactionSuccessful();
+
             } finally {
-                endTransaction(); //if the transaction was not successful changes will be reverted
+                // If the transaction wasn't successful, changes will be reverted!
+                endTransaction();
             }
         }
     }

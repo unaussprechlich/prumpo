@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements
         NavigationDrawLocker {
 
 
-    public static final int REQUEST_LOCATION = 202;
+    public static final int REQUEST_LOCATION_PERMISSION = 202;
 
     private Fragment damageCasesFragment;
     private Fragment mapFragment;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // if active fragment wants to override back button -> perform fragment back button action
         OnBackPressedListener activeFragment = (OnBackPressedListener) getCurrentlyActiveFragment();
-        if (activeFragment != null && activeFragment.requestBackButtonControll()) {
+        if (activeFragment != null && activeFragment.requestBackButtonControl()) {
             activeFragment.onBackPressed();
             return;
         }
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
                     .requestPermissions(
                             this,
                             new String[]{permission},
-                            REQUEST_LOCATION
+                            REQUEST_LOCATION_PERMISSION
                     );
     }
 
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_LOCATION: {
+            case REQUEST_LOCATION_PERMISSION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     return;
 
@@ -202,8 +202,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void setDrawerEnabled(boolean enabled) {
-        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
-                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        int lockMode = enabled
+                        ? DrawerLayout.LOCK_MODE_UNLOCKED
+                        : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+
         drawer.setDrawerLockMode(lockMode);
     }
 

@@ -31,10 +31,13 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     }
 
     /**
-     * Creates the view of a recycler view list item. Inflates the layout of the list item.
+     * Creates the view of a recycler view list item.
+     * Inflates the layout of the list item.
      *
-     * @param parent   - The parent view group
-     * @param viewType - The view type of the new view.
+     * @param parent    The parent view group
+     *
+     * @param viewType  The view type of the new view.
+     *
      * @return
      */
     @Override
@@ -53,6 +56,7 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
      * Binds the view holder to the item at the {@code position}.
      *
      * @param holder   The holder at {@code position} of the recycler view.
+     *
      * @param position The position in the recycler view
      */
     @Override
@@ -72,9 +76,9 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     /**
      * Returns the item count of the data handled by the adapter.
-     * Must always equals the current data size of the adapter.
+     * Must always be equal to the current data size of the adapter.
      *
-     * @return
+     * @return  amount of items
      */
     @Override
     public int getItemCount() {
@@ -96,9 +100,9 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
      */
     static class DamageCaseViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        ImageView damageCaseImage; // Not used currently
+        ImageView damageCaseImage; // NOT in use as of now
 
-        // define attribues to change them later
+        /* define attributes to change them later */
         TextView damageCaseName;
         TextView expertName;
         TextView damageArea;
