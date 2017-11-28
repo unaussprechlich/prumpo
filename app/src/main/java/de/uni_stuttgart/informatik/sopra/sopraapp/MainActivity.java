@@ -21,8 +21,8 @@ import android.widget.LinearLayout;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCasesFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
 public class MainActivity extends AppCompatActivity implements
@@ -101,13 +101,12 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // if active fragment wants to override back button -> perform fragment back button action
-        OnBackPressedListener activeFragment = (OnBackPressedListener) getCurrentlyActiveFragment();
-        if (activeFragment != null && activeFragment.requestBackButtonControl()) {
-            activeFragment.onBackPressed();
-            return;
-        }
+        FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
+        FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
 
-        // Else perform default action
+        if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
+            return;
+
         super.onBackPressed();
 
     }
@@ -203,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled
-                        ? DrawerLayout.LOCK_MODE_UNLOCKED
-                        : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+                ? DrawerLayout.LOCK_MODE_UNLOCKED
+                : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
 
         drawer.setDrawerLockMode(lockMode);
     }

@@ -30,11 +30,12 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
+
 import static de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper.areaOfPolygon;
 
-public class MapFragment extends Fragment implements OnBackPressedListener {
+public class MapFragment extends Fragment implements FragmentBackPressed {
 
     View rootView;
     MapView mMapView;
@@ -111,7 +112,7 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
             gMap.setOnPolygonClickListener(p ->
                     getActivity().runOnUiThread(() ->
                             Toast.makeText(getContext(),
-                                    String.valueOf(Math.round(areaOfPolygon(p.getPoints())))+"m²",
+                                    String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
                                     Toast.LENGTH_SHORT)
                                     .show()));
 
@@ -181,18 +182,17 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
     }
 
     @Override
-    public void onBackPressed() {
-        Log.i("TAG", "Back");
-    }
+    public BackButtonProceedPolicy onBackPressed() {
+        boolean meetsCondition = false;
 
-    /**
-     * Indicates whether the fragment wants to controll the back button
-     *
-     * @return true, if fragmants wants to controll the back button
-     */
-    @Override
-    public boolean requestBackButtonControl() {
-        return false;
+        //noinspection ConstantConditions
+        if (meetsCondition) {
+
+            // Proceed with fragment back pressed action
+            return BackButtonProceedPolicy.SKIP_ACTIVITY;
+        }
+
+        return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
 
 

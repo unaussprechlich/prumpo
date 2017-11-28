@@ -19,15 +19,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
  */
 public class DamageCasesFragment extends Fragment
-        implements OnBackPressedListener, SearchView.OnQueryTextListener {
+        implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
     /**
      * Dummy data
@@ -101,17 +101,17 @@ public class DamageCasesFragment extends Fragment
     }
 
     @Override
-    public void onBackPressed() {
+    public BackButtonProceedPolicy onBackPressed() {
 
-        // close search menu
-        searchView.setIconified(true);
-    }
+        // if search view is open -> fragment handles back button
+        if (searchView != null && !searchView.isIconified()) {
 
-    @Override
-    public boolean requestBackButtonControl() {
+            // close search menu
+            searchView.setIconified(true);
+            return BackButtonProceedPolicy.SKIP_ACTIVITY;
+        }
 
-        // If search view is open -> true
-        return searchView != null && !searchView.isIconified();
+        return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
 
     @Override
@@ -133,9 +133,8 @@ public class DamageCasesFragment extends Fragment
     /**
      * Called when the search query changes.
      *
-     * @param newText   the updated query.
-     *
-     * @return          <code>false</code> TODO: implement me!
+     * @param newText the updated query.
+     * @return <code>false</code> TODO: implement me!
      */
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -156,9 +155,8 @@ public class DamageCasesFragment extends Fragment
     /**
      * Called when search is submitted.
      *
-     * @param query     the submitted query.
-     *
-     * @return          <code>false</code> TODO: implement me!
+     * @param query the submitted query.
+     * @return <code>false</code> TODO: implement me!
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
