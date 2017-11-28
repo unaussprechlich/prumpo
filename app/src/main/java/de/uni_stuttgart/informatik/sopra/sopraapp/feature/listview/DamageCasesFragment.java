@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -18,13 +17,17 @@ import android.view.ViewGroup;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
  */
-public class DamageCasesFragment extends Fragment implements MainActivity.OnBackPressedListener, SearchView.OnQueryTextListener {
+public class DamageCasesFragment extends Fragment implements
+        OnBackPressedListener,
+        SearchView.OnQueryTextListener {
 
     /**
      * Dummy data
@@ -44,14 +47,16 @@ public class DamageCasesFragment extends Fragment implements MainActivity.OnBack
             add(new DamageCase("Name des ersten Schadensfalls", "G", 34.25f));
         }
     };
-    private DrawerLayout drawer;
 
     private RecyclerView recyclerView;
     private SearchView searchView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        // specify that fragment controls toolbar
         setHasOptionsMenu(true);
+
         return inflater.inflate(R.layout.activity_main_fragment_damagecases, container, false);
     }
 
@@ -59,9 +64,6 @@ public class DamageCasesFragment extends Fragment implements MainActivity.OnBack
     @SuppressWarnings("ConstantConditions")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Register Back Pressed
-        ((MainActivity) getActivity()).setDcOnBackPressedListener(this);
 
         // recycler view
         View fragmentView = getView();
@@ -81,15 +83,15 @@ public class DamageCasesFragment extends Fragment implements MainActivity.OnBack
 
     @Override
     public void onBackPressed() {
-        if (searchView.isIconified()) {
-            getActivity().onBackPressed();
-        } else {
-            searchView.setIconified(true);
-        }
+
+        // close search menu
+        searchView.setIconified(true);
     }
 
     @Override
-    public boolean needsClose() {
+    public boolean requestBackButtonControll() {
+
+        // If search view is open -> true
         return searchView != null && !searchView.isIconified();
     }
 
@@ -98,31 +100,15 @@ public class DamageCasesFragment extends Fragment implements MainActivity.OnBack
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.damage_cases, menu);
 
-
-        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
-
-        searchView = (SearchView) myActionMenuItem.getActionView();
+        // init search view and attach listener
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
 
-        myActionMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                if (drawer != null) drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                return true;
-            }
+        // attach navigation blocker if search menu item is opened
+        NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
+        searchMenuItem.setOnActionExpandListener(navMenuBlocker);
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                if (drawer != null) drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                return true;
-            }
-        });
-
-
-    }
-
-    public void setNavigationDrawer(DrawerLayout drawer) {
-        this.drawer = drawer;
     }
 
     /**
@@ -133,12 +119,15 @@ public class DamageCasesFragment extends Fragment implements MainActivity.OnBack
      */
     @Override
     public boolean onQueryTextChange(String newText) {
+
+        // filter damage cases with newText
         List<DamageCase> damageCases = new LinkedList<>();
 
         for (DamageCase damageCase : this.damageCases)
             if (damageCase.getNamePolicyholder().toUpperCase().contains(newText.toUpperCase()))
                 damageCases.add(damageCase);
 
+        // swap adapter to adapter with new items
         recyclerView.swapAdapter(new DamageCaseFragmentRecyclerViewAdapter(damageCases), true);
 
         return false;

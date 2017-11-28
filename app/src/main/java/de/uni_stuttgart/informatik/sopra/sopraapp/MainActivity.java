@@ -3,7 +3,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp;
 
 import android.Manifest;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,15 +21,17 @@ import android.widget.LinearLayout;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCasesFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        NavigationDrawLocker {
 
 
     public static final int REQUEST_LOCATION = 202;
-
-    protected OnBackPressedListener dcOnBackPressedListener;
 
     private Fragment damageCasesFragment;
     private Fragment mapFragment;
@@ -44,35 +45,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // set main layout
         setContentView(R.layout.activity_main);
 
+        // set toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // set navigation menu view
         NavigationView navigationView = findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        LinearLayout header = headerView.findViewById(R.id.nav_header);
-        header.setOnClickListener(view -> displaySelectedActivity(R.id.profile_layout));
-
         navigationView.setNavigationItemSelectedListener(this);
 
+        // set navigation menu header
+        View headerView = navigationView.getHeaderView(0);
+        LinearLayout header = headerView.findViewById(R.id.nav_header);
+
+        // set navigation header listener to display profile view
+        header.setOnClickListener(view -> displayActivity(R.id.profile_layout));
+
+        // set navigation menu drawer
         drawer = findViewById(R.id.drawer_layout);
 
+        // set navigation menu drawer toggle
         ActionBarDrawerToggle toggle =
                 new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
                 );
-
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        DamageCasesFragment dcFragment = new DamageCasesFragment();
-        dcFragment.setNavigationDrawer(drawer);
-
-        damageCasesFragment = dcFragment;
+        // set fragments
+        damageCasesFragment = new DamageCasesFragment();
         mapFragment = new MapFragment();
 
-        displaySelectedScreen(R.id.nav_map);
+        // set initial fragment
+        displayFragment(R.id.nav_map);
+
+        /* set initial fragment as active,
+        following items will be handled by fragment manager */
+        navigationView.setCheckedItem(R.id.nav_map);
 
         checkPermissions();
     }
@@ -83,28 +94,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
 
+        // if drawer is open -> close it
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (dcOnBackPressedListener != null && dcOnBackPressedListener.needsClose()) {
-            dcOnBackPressedListener.onBackPressed();
-        } else {
-            super.onBackPressed();
+            return;
         }
-    }
 
-    /**
-     * When hitting the toolbar items
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+        // if active fragment wants to override back button -> perform fragment back button action
+        OnBackPressedListener activeFragment = (OnBackPressedListener) getCurrentlyActiveFragment();
+        if (activeFragment != null && activeFragment.requestBackButtonControll()) {
+            activeFragment.onBackPressed();
+            return;
+        }
 
-        /* Handle action bar item clicks here. The action bar will
-         automatically handle clicks on the Home/Up button, so long
-         as you specify a parent activity in AndroidManifest.xml. */
+        // Else perform default action
+        super.onBackPressed();
 
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -112,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        displaySelectedScreen(item.getItemId());
+        displayFragment(item.getItemId());
         return true;
     }
 
@@ -121,7 +126,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onPrepareOptionsMenu(menu);
     }
 
-    public void displaySelectedScreen(int itemId) {
+    /**
+     * Changes the current screen to a fragment in this activity.
+     *
+     * @param itemId The id of the fragment to display
+     */
+    public void displayFragment(int itemId) {
         Fragment fragment;
 
         switch (itemId) {
@@ -135,15 +145,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content_main_frame, fragment);
-        fragmentTransaction.commit();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_main_frame, fragment)
+                .commit();
 
         drawer.closeDrawer(GravityCompat.START);
 
     }
 
-    public void displaySelectedActivity(int itemId) {
+    /**
+     * Calls another activity specified by the activity id.
+     * Back navigation is automatically handled by the system
+     * as long as hierarchy is specified in the manifest.
+     *
+     * @param itemId The id of the activity's main view.
+     */
+    public void displayActivity(int itemId) {
 
         switch (itemId) {
             case R.id.profile_layout:
@@ -152,20 +170,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
 
-        // Close drawer when selecting any icon
+        /* close drawer when selecting any icon.*/
         drawer.postDelayed(() -> drawer.closeDrawer(GravityCompat.START), 500);
     }
 
     private void checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+
+        if (ActivityCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED)
             ActivityCompat
                     .requestPermissions(
                             this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            new String[]{permission},
                             REQUEST_LOCATION
                     );
-        }
     }
 
     @Override
@@ -173,37 +192,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     return;
-                }
 
                 checkPermissions();
             }
         }
     }
 
-    public void setDcOnBackPressedListener(OnBackPressedListener dcOnBackPressedListener) {
-        this.dcOnBackPressedListener = dcOnBackPressedListener;
-    }
-
     @Override
-    protected void onDestroy() {
-        dcOnBackPressedListener = null;
-        super.onDestroy();
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        drawer.setDrawerLockMode(lockMode);
     }
 
-    public interface OnBackPressedListener {
+    /**
+     * Get a reference to the active fragment
+     *
+     * @return The current visible active fragment
+     */
+    public Fragment getCurrentlyActiveFragment() {
 
-        /**
-         * Controll back press in fragment
-         */
-        void onBackPressed();
+        if (damageCasesFragment.isVisible())
+            return damageCasesFragment;
 
-        /**
-         * Tells if back button should be controlled by fragment
-         *
-         * @return
-         */
-        boolean needsClose();
+        return mapFragment;
     }
 }

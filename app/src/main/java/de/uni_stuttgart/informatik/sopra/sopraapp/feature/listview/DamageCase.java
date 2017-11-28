@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 public class DamageCase {
 
     /*
+     * TODO! Make a data base / persistence object
      * Schadensfälle können mit der Angabe des
      *
      * Versicherungsobjekts

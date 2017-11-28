@@ -14,14 +14,30 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DamageCaseFragmentRecyclerViewAdapter.DamageCaseViewHolder> {
 
+    /**
+     * The data for the recycler view
+     */
     private List<DamageCase> damageCaseList;
 
+    /**
+     * The adapter for a recycler view.
+     *
+     * @param damageCaseList - The data for the recycler view
+     */
     public DamageCaseFragmentRecyclerViewAdapter(List<DamageCase> damageCaseList) {
         this.damageCaseList = damageCaseList;
     }
 
+    /**
+     * Creates the view of a recycler view list item. Inflates the layout of the list item.
+     *
+     * @param parent   - The parent view group
+     * @param viewType - The view type of the new view.
+     * @return
+     */
     @Override
     public DamageCaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.activity_main_fragment_damagecases_list_item,
@@ -31,10 +47,18 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         return new DamageCaseViewHolder(view);
     }
 
+    /**
+     * Binds the view holder to the item at the {@code position}.
+     *
+     * @param holder   The holder at {@code position} of the recycler view.
+     * @param position The position in the recycler view
+     */
     @Override
     public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
+
         DamageCase damageCase = damageCaseList.get(position);
 
+        // set bindings
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
         holder.expertName.setText(damageCase.getNamePolicyholder());
         holder.damageArea.setText(String.valueOf(damageCase.getArea()));
@@ -44,6 +68,12 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     }
 
+    /**
+     * Returns the item count of the data handled by the adapter.
+     * Must always equals the current data size of the adapter.
+     *
+     * @return
+     */
     @Override
     public int getItemCount() {
         return damageCaseList.size();
@@ -54,11 +84,19 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-
+    /**
+     * A view holder holds the view of a list item.
+     * In this class the xml attributes are bound to local variables (by id) once to use them later.
+     *
+     * @see <a href="https://developer.android.com/reference/android/support/v7/widget/RecyclerView.ViewHolder.html">
+     * Android Developer Guide (RecyclerView.ViewHolder)
+     * </a>
+     */
     static class DamageCaseViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        ImageView damageCaseImage;
+        ImageView damageCaseImage; // Not used currently
 
+        // define attribues to change them later
         TextView damageCaseName;
         TextView expertName;
         TextView damageArea;

@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,11 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.OnBackPressedListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements OnBackPressedListener {
 
     View rootView;
     MapView mMapView;
@@ -173,4 +175,21 @@ public class MapFragment extends Fragment {
         Intent intent = new Intent(getContext(), GpsService.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("TAG", "B");
+    }
+
+    /**
+     * Indicates whether the fragment wants to controll the back button
+     *
+     * @return true, if fragmants wants to controll the back button
+     */
+    @Override
+    public boolean requestBackButtonControll() {
+        return false;
+    }
+
+
 }
