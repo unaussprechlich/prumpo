@@ -167,16 +167,15 @@ public class MapFragment extends Fragment implements OnBackPressedListener {
     public void onDestroy() {
         super.onDestroy();
 
-        if (mConnection != null) {
-            Context applicationContext = getActivity().getApplicationContext();
-            boolean isBound = applicationContext.bindService(new Intent(applicationContext, MapFragment.class), mConnection, Context.BIND_AUTO_CREATE);
-
-            if (isBound)
-                getActivity().unbindService(mConnection);
+        if (gpsBound) {
+            getActivity().unbindService(mConnection);
+            gpsBound = false;
         }
     }
 
     private void bindServices() {
+        if (gpsBound) return;
+
         Intent intent = new Intent(getContext(), GpsService.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }

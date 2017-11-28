@@ -63,7 +63,7 @@ public abstract class DatabaseManager extends RoomDatabase {
                 for (String s : UserDB.CREDENTIALS) {
                     String[] split = s.split(":");
                     user.name = split[0];
-                    user.password = split [1];
+                    user.password = split[1];
                     userDao().insert(user);
                 }
 

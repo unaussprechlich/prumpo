@@ -15,7 +15,6 @@ public class UserDB{
 
     // TODO: remove thizzzzzz!
     public static final String[] CREDENTIALS = {
-            "@:",
             "user1@stuttgart.de:pw1",
             "user2@stuttgart.de:pw2"
     };
