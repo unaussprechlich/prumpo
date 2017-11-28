@@ -29,6 +29,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
@@ -94,42 +97,58 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
 
         mMapView.getMapAsync(googleMap -> {
             gMap = googleMap;
-
-            PolygonOptions rectOptions =
-                    new PolygonOptions()
-                            .add(new LatLng(48.806575, 8.856634),
-                                    new LatLng(48.806545, 8.856913),
-                                    new LatLng(48.806429, 8.856890),
-                                    new LatLng(48.806459, 8.856608),
-                                    new LatLng(48.806406, 8.856408))
-                            .geodesic(true)
-                            .clickable(true)
-                            .strokeColor(Color.RED)
-                            .fillColor(Color.MAGENTA);
-
-            Polygon polygon = googleMap.addPolygon(rectOptions);
-
-            // show estimated area of polygon, when clicked
-            gMap.setOnPolygonClickListener(p ->
-                    getActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(),
-                                    String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
-                                    Toast.LENGTH_SHORT)
-                                    .show()));
-
-
-            // zooming to the location of the polygon
-            CameraPosition cameraPosition =
-                    new CameraPosition.Builder()
-                            .target(polygon.getPoints().get(0))
-                            .zoom(20)
-                            .build();
-
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            initMap();
         });
 
         return rootView;
     }
+
+    private void initMap() {
+        gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        populateMap(TEST_POLYGON_COORDINATES);
+        moveMapCamera();
+
+        // show estimated area of polygon, when clicked
+        gMap.setOnPolygonClickListener(p ->
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(),
+                                String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
+                                Toast.LENGTH_SHORT)
+                                .show()));
+
+
+    }
+
+    private void populateMap(ArrayList<LatLng> coordinates) {
+        PolygonOptions rectOptions =
+                new PolygonOptions()
+                        .addAll(coordinates)
+                        .geodesic(true)
+                        .clickable(true)
+                        .strokeColor(Color.RED)
+                        .fillColor(Color.MAGENTA);
+
+        gMap.addPolygon(rectOptions);
+    }
+
+    private void moveMapCamera() {
+        // zooming to the location of the polygon
+        CameraPosition cameraPosition =
+                new CameraPosition.Builder()
+                        .target(TEST_POLYGON_COORDINATES.get(0))
+                        .zoom(18)
+                        .build();
+
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    private final ArrayList<LatLng> TEST_POLYGON_COORDINATES = new ArrayList<>(
+            Arrays.asList(
+                    new LatLng(48.806575, 8.856634), new LatLng(48.806545, 8.856913),
+                    new LatLng(48.806429, 8.856890), new LatLng(48.806459, 8.856608),
+                    new LatLng(48.806406, 8.856408)
+            )
+    );
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
