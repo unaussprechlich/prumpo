@@ -100,7 +100,8 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
                             .add(new LatLng(48.806575, 8.856634),
                                     new LatLng(48.806545, 8.856913),
                                     new LatLng(48.806429, 8.856890),
-                                    new LatLng(48.806459, 8.856608))
+                                    new LatLng(48.806459, 8.856608),
+                                    new LatLng(48.806406, 8.856408))
                             .geodesic(true)
                             .clickable(true)
                             .strokeColor(Color.RED)

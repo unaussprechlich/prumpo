@@ -90,6 +90,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        bindDoubleTapSkip();
     }
 
     private void populateAutoComplete() {
@@ -168,28 +170,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         if (cancel) {
-            // an error occurred don't attempt login and focus the first
+            // An error occurred. don't attempt login. Focus the first
             // form field with an error.
             focusView.requestFocus();
-
-        } else {
-
-            // hide keyboard
-            // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
-            View view = this.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (imm != null)
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-
-            // show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            return;
         }
+
+        // hide keyboard
+        // https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (imm != null)
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        // show a progress spinner, and kick off a background task to
+        // perform the user login attempt.
+        showProgress(true);
+        mAuthTask = new UserLoginTask(email, password);
+        mAuthTask.execute((Void) null);
     }
 
     /**
@@ -350,5 +351,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
         }
     }
-}
 
+    /* Skip login.
+       For testing purposes only! */
+
+    private void bindDoubleTapSkip() {
+        GestureDetector gd = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                myIntent.putExtra("user", "");
+                startActivity(myIntent);
+                finish();
+                return true;
+            }
+        });
+
+        mLoginFormView.setOnTouchListener((v, event) -> {
+            v.performClick();
+            return gd.onTouchEvent(event);
+        });
+    }
+}
