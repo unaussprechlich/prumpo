@@ -14,6 +14,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DamageCaseFragmentRecyclerViewAdapter.DamageCaseViewHolder> {
 
+    // TODO! https://www.codementor.io/tips/1237823034/how-to-filter-a-recyclerview-with-a-searchview
+
     /**
      * The data for the recycler view
      */
