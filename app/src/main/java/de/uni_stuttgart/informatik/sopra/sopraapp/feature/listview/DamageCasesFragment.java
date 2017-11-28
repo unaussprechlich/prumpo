@@ -148,6 +148,7 @@ public class DamageCasesFragment extends Fragment
 
         // swap adapter to adapter with new items
         recyclerView.swapAdapter(new DamageCaseFragmentRecyclerViewAdapter(damageCases), true);
+        recyclerView.getAdapter().notifyDataSetChanged();
 
         return false;
     }

@@ -1,6 +1,5 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
-import android.annotation.SuppressLint;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -62,7 +61,7 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
      * @param position The position in the recycler view
      */
     @Override
-    public void onBindViewHolder(DamageCaseViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
         DamageCase damageCase = damageCaseList.get(position);
 
         // set bindings
@@ -70,8 +69,7 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.expertName.setText(damageCase.getNamePolicyholder());
         holder.damageArea.setText(String.valueOf(damageCase.getArea()));
 
-        holder.initialListPosition = position;
-
+        Log.i("VIEW", "BIND" + position);
     }
 
     /**
@@ -99,7 +97,11 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     private DamageCase getDamageCase(View view) {
         DamageCaseViewHolder holder = (DamageCaseViewHolder) view.getTag();
-        int adapterPosition = holder.initialListPosition;
+        int adapterPosition = holder.getLayoutPosition();
+
+        System.out.println("Pos to call from list:" + adapterPosition);
+        System.out.println("List size:" + damageCaseList.size());
+
         return damageCaseList.get(adapterPosition);
     }
 
@@ -118,8 +120,6 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
         TextView damageCaseName;
         TextView expertName;
         TextView damageArea;
-
-        int initialListPosition = -1;
 
         DamageCaseViewHolder(View itemView) {
             super(itemView);
