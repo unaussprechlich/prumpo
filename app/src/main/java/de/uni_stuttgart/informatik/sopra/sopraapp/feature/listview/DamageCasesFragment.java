@@ -35,7 +35,6 @@ public class DamageCasesFragment extends Fragment
      */
     List<DamageCase> damageCases = new LinkedList<DamageCase>() {
         {
-            add(new DamageCase("Name des zehnten Schadensfalls", "zugehörigen Gutachters", 9.32f));
             add(new DamageCase("Name des neunten Schadensfalls", "Gutachters", 9.32f));
             add(new DamageCase("Name des achten Schadensfalls", "Gutachter", 9.32f));
             add(new DamageCase("Name des siebten Schadensfalls", "Gutachte", 9.32f));
@@ -45,6 +44,7 @@ public class DamageCasesFragment extends Fragment
             add(new DamageCase("Name des dritten Schadensfalls", "Gut", 6.11f));
             add(new DamageCase("Name des zweiten Schadensfalls", "Gu", 11.76f));
             add(new DamageCase("Name des ersten Schadensfalls", "G", 34.25f));
+            add(new DamageCase("Name des zehnten Schadensfalls", "zugehörigen Gutachters", 9.32f));
         }
     };
 
