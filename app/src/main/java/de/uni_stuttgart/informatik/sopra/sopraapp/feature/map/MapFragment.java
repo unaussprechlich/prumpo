@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -23,10 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
@@ -68,7 +68,9 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
     };
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
         // guard clause for 2nd visit
         if (rootView != null) return rootView;
@@ -91,10 +93,6 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         // bind GPS service
         bindServices();
 
-        /* dummy-code ahead! */
-
-        // TODO: extract into features
-
         mMapView.getMapAsync(googleMap -> {
             gMap = googleMap;
             initMap();
@@ -103,82 +101,37 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         return rootView;
     }
 
-    private void initMap() {
-        gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        populateMap(TEST_POLYGON_COORDINATES);
-        moveMapCamera();
-
-        // show estimated area of polygon, when clicked
-        gMap.setOnPolygonClickListener(p ->
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(getContext(),
-                                String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
-                                Toast.LENGTH_SHORT)
-                                .show()));
-
-
-    }
-
-    private void populateMap(ArrayList<LatLng> coordinates) {
-        PolygonOptions rectOptions =
-                new PolygonOptions()
-                        .addAll(coordinates)
-                        .geodesic(true)
-                        .clickable(true)
-                        .strokeColor(Color.RED)
-                        .fillColor(Color.MAGENTA);
-
-        gMap.addPolygon(rectOptions);
-    }
-
-    private void moveMapCamera() {
-        // zooming to the location of the polygon
-        CameraPosition cameraPosition =
-                new CameraPosition.Builder()
-                        .target(TEST_POLYGON_COORDINATES.get(0))
-                        .zoom(18)
-                        .build();
-
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-    private final ArrayList<LatLng> TEST_POLYGON_COORDINATES = new ArrayList<>(
-            Arrays.asList(
-                    new LatLng(48.806575, 8.856634), new LatLng(48.806545, 8.856913),
-                    new LatLng(48.806429, 8.856890), new LatLng(48.806459, 8.856608),
-                    new LatLng(48.806406, 8.856408)
-            )
-    );
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // TODO: extract into features
 
-        FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(v -> {
+        FloatingActionButton fabAdd = view.findViewById(R.id.fabAddMark);
+        fabAdd.setOnClickListener(v -> {
             if (!gpsBound) return;
 
-            Location lastLocation = gpsService.getLastLocation();
+            LatLng lastLocation = gpsService.getLastLocation();
 
             if (lastLocation == null) return;
 
-            double lat = lastLocation.getLatitude();
-            double lng = lastLocation.getLongitude();
+            double lat = lastLocation.latitude;
+            double lng = lastLocation.longitude;
 
-            gMap.addMarker(
-                    new MarkerOptions()
-                            .position(new LatLng(lat, lng))
-                            .title(String.format("Latitude %s Longitude %s", lat, lng)));
+            drawVertexOn(new LatLng(lat, lng));
 
-            Snackbar.make(v,
-                    String.format("Latitude %s\nLongitude %s", lat, lng),
-                    Snackbar.LENGTH_LONG)
+            Snackbar.make(v, String.format("Latitude %s\nLongitude %s", lat, lng), Snackbar.LENGTH_LONG)
                     .setAction("Action", null)
                     .show();
-                }
-        );
+        });
+
+        FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
+        fabLocate.setOnClickListener(v -> {
+            LatLng targetPos = gpsService.getLastLocation();
+            if (targetPos == null) return;
+
+            mapCameraMove(gpsService.getLastLocation());
+        });
 
         // Set title of app bar
         getActivity().setTitle(R.string.map);
@@ -201,6 +154,54 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    private void initMap() {
+        gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+        UiSettings uiSettings = gMap.getUiSettings();
+        uiSettings.setTiltGesturesEnabled(false);
+
+        drawPolygonOf(TEST_POLYGON_COORDINATES);
+        mapCameraJump(TEST_POLYGON_COORDINATES.get(0));
+
+        // show estimated area of polygon, when clicked
+        gMap.setOnPolygonClickListener(p ->
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(),
+                                String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
+                                Toast.LENGTH_SHORT)
+                                .show()
+                )
+        );
+    }
+
+    private void drawPolygonOf(ArrayList<LatLng> coordinates) {
+        PolygonOptions rectOptions =
+                new PolygonOptions()
+                        .addAll(coordinates)
+                        .geodesic(true)
+                        .clickable(true)
+                        .strokeJointType(JointType.ROUND)
+                        .strokeColor(getResources().getColor(R.color.red, null))
+                        .fillColor(getResources().getColor(R.color.damage, null));
+
+        for (LatLng point : coordinates) {
+            drawVertexOn(point);
+        }
+
+        gMap.addPolygon(rectOptions);
+    }
+
+    private final ArrayList<LatLng> TEST_POLYGON_COORDINATES = new ArrayList<>(
+            Arrays.asList(
+                    new LatLng(48.808631, 8.849357), new LatLng(48.808304, 8.853308),
+                    new LatLng(48.807021, 8.853443), new LatLng(48.807157, 8.851568),
+                    new LatLng(48.806494, 8.851383), new LatLng(48.806448, 8.851114),
+                    new LatLng(48.806565, 8.850313), new LatLng(48.806940, 8.849134),
+                    new LatLng(48.807047, 8.849072), new LatLng(48.808631, 8.849357)
+
+            )
+    );
+
     @Override
     public BackButtonProceedPolicy onBackPressed() {
         boolean meetsCondition = false;
@@ -215,5 +216,30 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
 
+    private CameraPosition cameraPosOf(LatLng target, int zoom) {
+        return new CameraPosition.Builder()
+                .target(target).zoom(zoom).build();
+    }
+
+    private void drawVertexOn(LatLng point) {
+        gMap.addCircle(
+                new CircleOptions()
+                        .fillColor(getResources().getColor(R.color.contrastComplement, null))
+                        .center(point)
+                        .strokeWidth(4)
+                        .radius(2)
+                        .zIndex(1)
+        );
+    }
+
+    private void mapCameraJump(LatLng target) {
+        // jumping to the location of the polygon
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+    }
+
+    private void mapCameraMove(LatLng target) {
+        // panning to the location of the polygon
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+    }
 
 }

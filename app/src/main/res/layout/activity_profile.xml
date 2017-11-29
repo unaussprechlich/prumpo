@@ -14,7 +14,7 @@
             android:id="@+id/header_cover_image"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/primaryDark"
             android:scaleType="centerCrop" />
         <!--android:src="@drawable/navigation_header_image" -->
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/header_cover_image"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/primaryDark"
             android:paddingBottom="24dp">
 
             <!--<ImageView-->

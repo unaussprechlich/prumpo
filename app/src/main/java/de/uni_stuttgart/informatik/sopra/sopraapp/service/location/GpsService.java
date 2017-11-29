@@ -14,6 +14,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Serving mostly-accurate GpsService-readings since 2017
  */
@@ -74,7 +76,9 @@ public class GpsService extends Service {
         return mBinder;
     }
 
-    public Location getLastLocation() {
-        return lastLocation;
+    public LatLng getLastLocation() {
+        if (lastLocation == null) return null;
+
+        return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 }
