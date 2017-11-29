@@ -17,10 +17,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,7 +39,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.UserDB;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-// TODO: deal with lags (and maybe introduce separate threads)
+// TODO: deal with lags/glitches (and maybe introduce separate threads)
 /**
  * A login screen that offers login via email/password.
  */

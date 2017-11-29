@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -111,7 +113,12 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         fabAdd.setOnClickListener(v -> {
             if (!gpsBound) return;
 
-            LatLng lastLocation = gpsService.getLastLocation();
+            LatLng lastLocation = gpsService.lastKnownLocation();
+
+            if (gpsService.locationWasDisabled) {
+                promptEnableLocation();
+                return;
+            }
 
             if (lastLocation == null) return;
 
@@ -127,10 +134,18 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
 
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
         fabLocate.setOnClickListener(v -> {
-            LatLng targetPos = gpsService.getLastLocation();
+            if (!gpsBound) return;
+
+            LatLng targetPos = gpsService.lastKnownLocation();
+
+            if (gpsService.locationWasDisabled) {
+                promptEnableLocation();
+                return;
+            }
+
             if (targetPos == null) return;
 
-            mapCameraMove(gpsService.getLastLocation());
+            mapCameraMove(gpsService.lastKnownLocation());
         });
 
         // Set title of app bar
@@ -146,6 +161,24 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
             gpsBound = false;
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (gpsService == null) return;
+        gpsService.pauseGps();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (gpsService == null) return;
+
+        gpsService.resumeGps();
+    }
+
 
     private void bindServices() {
         if (gpsBound) return;
@@ -202,6 +235,19 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
             )
     );
 
+    private void promptEnableLocation() {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+
+        getActivity().runOnUiThread(() -> Toast
+                .makeText(getContext(),
+                        R.string.prompt_enable_localization,
+                        Toast.LENGTH_LONG)
+                .show()
+        );
+    }
+
     @Override
     public BackButtonProceedPolicy onBackPressed() {
         boolean meetsCondition = false;
@@ -227,7 +273,7 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
                         .fillColor(getResources().getColor(R.color.contrastComplement, null))
                         .center(point)
                         .strokeWidth(4)
-                        .radius(2)
+                        .radius(3)
                         .zIndex(1)
         );
     }
