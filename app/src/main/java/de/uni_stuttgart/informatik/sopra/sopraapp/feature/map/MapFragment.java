@@ -74,6 +74,10 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+
+        // bind GPS service
+        bindServices();
+
         // guard clause for 2nd visit
         if (rootView != null) return rootView;
 
@@ -91,9 +95,6 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // bind GPS service
-        bindServices();
 
         mMapView.getMapAsync(googleMap -> {
             gMap = googleMap;
@@ -157,8 +158,8 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         super.onDestroy();
 
         if (gpsBound) {
-            getActivity().unbindService(mConnection);
             gpsBound = false;
+            getActivity().unbindService(mConnection);
         }
     }
 
@@ -167,6 +168,7 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         super.onPause();
 
         if (gpsService == null) return;
+
         gpsService.pauseGps();
     }
 
@@ -248,20 +250,6 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         );
     }
 
-    @Override
-    public BackButtonProceedPolicy onBackPressed() {
-        boolean meetsCondition = false;
-
-        //noinspection ConstantConditions
-        if (meetsCondition) {
-
-            // Proceed with fragment back pressed action
-            return BackButtonProceedPolicy.SKIP_ACTIVITY;
-        }
-
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
-    }
-
     private CameraPosition cameraPosOf(LatLng target, int zoom) {
         return new CameraPosition.Builder()
                 .target(target).zoom(zoom).build();
@@ -288,4 +276,17 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
     }
 
+    @Override
+    public BackButtonProceedPolicy onBackPressed() {
+        boolean meetsCondition = false;
+
+        //noinspection ConstantConditions
+        if (meetsCondition) {
+
+            // Proceed with fragment back pressed action
+            return BackButtonProceedPolicy.SKIP_ACTIVITY;
+        }
+
+        return BackButtonProceedPolicy.WITH_ACTIVITY;
+    }
 }

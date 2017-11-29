@@ -14,7 +14,6 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -25,10 +24,11 @@ public class GpsService extends Service {
 
     // TODO: implement MORE capabilities MORE thoroughly
 
-    private static Location lastLocation;
     private static LocationManager locationManager;
+    private static Location lastLocation;
 
     public boolean locationWasDisabled = true;
+    public boolean hadPermission = false;
 
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
@@ -70,8 +70,12 @@ public class GpsService extends Service {
 
         if ((ActivityCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED)) return;
+                != PackageManager.PERMISSION_GRANTED)) {
+            hadPermission = false;
+            return;
+        }
 
+        hadPermission = true;
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
@@ -104,6 +108,9 @@ public class GpsService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        locationWasDisabled = !isLocationEnabled();
+        if (locationManager != null) return mBinder;
+
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         resumeGps();
 
