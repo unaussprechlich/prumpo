@@ -8,26 +8,43 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import javax.inject.Inject;
 
-public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<DamageCaseFragmentRecyclerViewAdapter.DamageCaseViewHolder> implements View.OnClickListener {
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+
+
+public class DamageCaseListFragmentRecyclerViewAdapter
+        extends RecyclerView.Adapter<DamageCaseListFragmentRecyclerViewAdapter.DamageCaseViewHolder>
+        implements View.OnClickListener{
 
     // TODO! https://www.codementor.io/tips/1237823034/how-to-filter-a-recyclerview-with-a-searchview
 
     /**
      * The data for the recycler view
      */
-    private List<DamageCase> damageCaseList;
+    private List<DamageCase> damageCaseList = new ArrayList<>();
 
     /**
-     * The adapter for a recycler view.
-     *
-     * @param damageCaseList - The data for the recycler view
+     * So you are probably wondering how i got a instance of that repository.
+     * ... Magic .... and some Dependency Injection ....
      */
-    DamageCaseFragmentRecyclerViewAdapter(List<DamageCase> damageCaseList) {
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+
+
+    /**
+     * Constructor
+     * @param damageCaseList list of data to be displayed
+     */
+    public DamageCaseListFragmentRecyclerViewAdapter(List<DamageCase> damageCaseList) {
         this.damageCaseList = damageCaseList;
+        SopraApp.getAppComponent().inject(this);
     }
 
     /**
@@ -36,11 +53,9 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
      *
      * @param parent   The parent view group
      * @param viewType The view type of the new view.
-     * @return
      */
     @Override
     public DamageCaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.activity_main_fragment_damagecases_list_item,
@@ -88,16 +103,21 @@ public class DamageCaseFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onClick(View view) {
-        DamageCase damageCase = getDamageCase(view);
-        Toast.makeText(view.getContext(), damageCase.getNameDamageCase(), Toast.LENGTH_SHORT).show();
-
+        //yeah, this is how you delete something ... simple enough?
+        Toast.makeText(view.getContext(), "Click", Toast.LENGTH_SHORT).show();
+        damageCaseRepository.delete(getDamageCase(view));
     }
 
-    private DamageCase getDamageCase(View view) {
+
+
+    public DamageCase getDamageCase(View view) {
         DamageCaseViewHolder holder = (DamageCaseViewHolder) view.getTag();
         int adapterPosition = holder.getAdapterPosition();
         return damageCaseList.get(adapterPosition);
     }
+
+
+
 
     /**
      * A view holder holds the view of a list item.

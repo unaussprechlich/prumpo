@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

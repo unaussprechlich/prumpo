@@ -1,12 +1,22 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.database.models;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.abstractstuff;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Update;
 
+import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+
 @Dao
 public interface IDao<T> {
+
+    LiveData<List<T>> getAll();
+    LiveData<T> getById(long id);
+    int count();
 
     /**
      * Update the userDB. The userDB is identified by the row ID.
@@ -17,7 +27,7 @@ public interface IDao<T> {
      *                  This should always be {@code 1}.
      */
     @Update
-    int update(UserDB userDB);
+    int update(User userDB);
 
     /**
      * Creates a new table entry.
@@ -38,5 +48,8 @@ public interface IDao<T> {
      */
     @Insert
     long[] insertAll(T[] ts);
+
+    @Delete
+    void delete(T t);
 
 }

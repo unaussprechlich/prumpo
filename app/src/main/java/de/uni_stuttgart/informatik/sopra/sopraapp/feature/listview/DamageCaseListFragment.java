@@ -1,9 +1,12 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
-import android.app.Fragment;
+
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -14,46 +17,51 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import de.uni_stuttgart.informatik.sopra.sopraapp.viewmodel.DamageCaseCollectionViewModel;
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
  */
-public class DamageCasesFragment extends Fragment
-        implements SearchView.OnQueryTextListener, FragmentBackPressed {
+@Singleton
+public class DamageCaseListFragment
+        extends DaggerFragment
+        implements SearchView.OnQueryTextListener, FragmentBackPressed{
 
-    /**
-     * Dummy data
-     * TODO! Replace with Room data!
-     */
-    List<DamageCase> damageCases = new LinkedList<DamageCase>() {
-        {
-            add(new DamageCase("Name des neunten Schadensfalls", "A", 9.32f));
-            add(new DamageCase("Name des achten Schadensfalls", "AA", 9.32f));
-            add(new DamageCase("Name des siebten Schadensfalls", "AAB", 9.32f));
-            add(new DamageCase("Name des sechsten Schadensfalls", "AABB", 9.32f));
-            add(new DamageCase("Name des fünften Schadensfalls", "B", 9.32f));
-            add(new DamageCase("Name des vierten Schadensfalls", "CD", 0.18f));
-            add(new DamageCase("Name des dritten Schadensfalls", "BAS", 6.11f));
-            add(new DamageCase("Name des zweiten Schadensfalls", "Gu", 11.76f));
-            add(new DamageCase("Name des ersten Schadensfalls", "G", 34.25f));
-            add(new DamageCase("Name des zehnten Schadensfalls", "zugehörigen Gutachters", 9.32f));
-        }
-    };
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+    private List<DamageCase> damageCaseList = new ArrayList<>();
+
+    public void setDamageCaseList(List<DamageCase> damageCaseList) {
+        this.damageCaseList = damageCaseList;
+        recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCaseList), true);
+    }
 
     private RecyclerView recyclerView;
     private SearchView searchView;
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         // specify that fragment controls toolbar
         setHasOptionsMenu(true);
 
@@ -61,21 +69,26 @@ public class DamageCasesFragment extends Fragment
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ViewModelProviders.of(this, viewModelFactory)
+                .get(DamageCaseCollectionViewModel.class)
+                .getAll()
+                .observe(this, this::setDamageCaseList);
+    }
+
+
+    @Override
     @SuppressWarnings("ConstantConditions")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // recycler view
-        View fragmentView = getView();
-        recyclerView = fragmentView.findViewById(R.id.dc_recycler_view);
+        recyclerView = view.findViewById(R.id.dc_recycler_view);
 
-        // recycler view layout manager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentView.getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCaseList));
 
-        // recycler view adapter
-        DamageCaseFragmentRecyclerViewAdapter viewAdapter = new DamageCaseFragmentRecyclerViewAdapter(damageCases);
-        recyclerView.setAdapter(viewAdapter);
         recyclerView.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
 
@@ -95,6 +108,17 @@ public class DamageCasesFragment extends Fragment
                         return true;
                     }
                 });
+
+        FloatingActionButton fabAdd = view.findViewById(R.id.dc_fab_ADD);
+        fabAdd.setOnClickListener(v -> {
+            long r = Math.round(Math.random() * 100);
+            try {
+                Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
+                damageCaseRepository.insert(new DamageCase("DamageCase_" + r, "PolicyHolder_" + r, "NameExper_" + r, r));
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         // title of app-bar
         getActivity().setTitle(R.string.damageCases);
@@ -140,14 +164,14 @@ public class DamageCasesFragment extends Fragment
     public boolean onQueryTextChange(String newText) {
 
         // filter damage cases with newText
-        List<DamageCase> damageCases = new LinkedList<>();
+        ArrayList<DamageCase> damageCases = new ArrayList<>();
 
-        for (DamageCase damageCase : this.damageCases)
+        for (DamageCase damageCase : damageCaseList)
             if (damageCase.getNamePolicyholder().toUpperCase().contains(newText.toUpperCase()))
                 damageCases.add(damageCase);
 
         // swap adapter to adapter with new items
-        recyclerView.setAdapter(new DamageCaseFragmentRecyclerViewAdapter(damageCases));
+        recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCases), true);
 
         return false;
     }
@@ -162,6 +186,5 @@ public class DamageCasesFragment extends Fragment
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
-
 
 }

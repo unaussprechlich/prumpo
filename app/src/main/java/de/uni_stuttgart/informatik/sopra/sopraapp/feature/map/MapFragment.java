@@ -1,12 +1,9 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
-import android.Manifest;
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -34,13 +31,14 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper.areaOfPolygon;
 
-public class MapFragment extends Fragment implements FragmentBackPressed {
+public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     View rootView;
     MapView mMapView;
@@ -49,6 +47,7 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
     boolean gpsBound = false;
 
     private GoogleMap gMap;
+
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -68,6 +67,8 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
             gpsBound = false;
         }
     };
+
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,

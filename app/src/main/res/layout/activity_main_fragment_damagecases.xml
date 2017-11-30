@@ -1,14 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main_fragment_damagecases"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/dc_recycler_view"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical" />
+        tools:context="de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/dc_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_anchor="@+id/dc_recycler_view"
+            app:layout_anchorGravity="bottom|right">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/dc_fab_ADD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:elevation="8dp"
+                app:srcCompat="@drawable/ic_add_white_24dp" />
+        </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
 </android.support.constraint.ConstraintLayout>

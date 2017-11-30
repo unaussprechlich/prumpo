@@ -1,22 +1,27 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.database.models;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
-import android.database.Cursor;
 import android.provider.BaseColumns;
+
+import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 
 
 /**
- * Data access object for UserDB.
+ * Data access object for User.
  *
  * Sadly copy&paste has to be your friend here :(
  */
 @Dao
-public interface UserDao extends IDao<UserDB> {
+public interface DamageCaseDao extends IDao<DamageCase> {
 
 // #################################################################################################
 
-    String TABLE_NAME = UserDB.TABLE_NAME;
+    String TABLE_NAME = DamageCase.TABLE_NAME;
 
 // Standard Queries ################################################################################
 
@@ -31,30 +36,23 @@ public interface UserDao extends IDao<UserDB> {
     /**
      * Select all users.
      *
-     * @return  A {@link UserDB} of all the users in the table.
+     * @return  A {@link User} of all the users in the table.
      */
+    @Override
     @Query("SELECT * FROM " + TABLE_NAME)
-    UserDB getAll();
+    LiveData<List<DamageCase>> getAll();
 
     /**
      * Select a user by their ID.
      *
      * @param id    The ID of the row in question.
      *
-     * @return      A {@link UserDB} of the selected users.
+     * @return      A {@link User} of the selected users.
      */
+    @Override
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id")
-    UserDB getById(long id);
+    LiveData<DamageCase> getById(long id);
 
-    /**
-     * Select a user by their NAME.
-     *
-     * @param name  The NAME of the row in question.
-     *
-     * @return      A {@link UserDB} of the selected users.
-     */
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE name = :name")
-    UserDB getByName(String name);
 
     /**
      * Delete a user by the ID.
