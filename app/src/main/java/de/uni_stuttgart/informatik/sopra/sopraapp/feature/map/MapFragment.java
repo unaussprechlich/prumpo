@@ -1,6 +1,5 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +53,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     private GoogleMap gMap;
 
     private boolean waitingForResponse;
+    private boolean isGpsServiceBound;
 
 
     @Override
