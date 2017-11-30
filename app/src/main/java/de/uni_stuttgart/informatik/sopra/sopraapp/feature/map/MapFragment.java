@@ -92,6 +92,11 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
 
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAddMark);
         fabAdd.setOnClickListener(v -> {
+            if (gpsService.wasLocationDisabled()) {
+                promptEnableLocation();
+                return;
+            }
+
             if (waitingForResponse) return;
 
             LocationCallbackListener lcl = new LocationCallbackListener() {
