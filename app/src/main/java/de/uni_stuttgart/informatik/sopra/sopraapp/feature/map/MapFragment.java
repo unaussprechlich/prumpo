@@ -1,12 +1,11 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
-import android.Manifest;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -37,46 +36,29 @@ import java.util.Arrays;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.LocationCallbackListener;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper.areaOfPolygon;
 
 public class MapFragment extends Fragment implements FragmentBackPressed {
 
+    // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
+
     View rootView;
     MapView mMapView;
 
     GpsService gpsService;
-    boolean gpsBound = false;
+    boolean isGpsServiceBound;
 
     private GoogleMap gMap;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private boolean waitingForResponse;
 
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
-
-            gpsService = binder.getService();
-            gpsBound = true;
-
-            Log.i("Inf", "GpsService CONNECTED!");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Log.i("Inf", "GpsService DISCONNECTED!");
-            gpsBound = false;
-        }
-    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-
-        // bind GPS service
-        bindServices();
 
         // guard clause for 2nd visit
         if (rootView != null) return rootView;
@@ -108,38 +90,46 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // TODO: extract into features
-
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAddMark);
         fabAdd.setOnClickListener(v -> {
-            if (!gpsBound) return;
+            if (waitingForResponse) return;
 
-            LatLng lastLocation = gpsService.lastKnownLocation();
+            LocationCallbackListener lcl = new LocationCallbackListener() {
+                @Override
+                public void onLocationFound(Location location) {
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
 
-            if (gpsService.locationWasDisabled) {
-                promptEnableLocation();
-                return;
-            }
+                    Snackbar.make(v,
+                            String.format("Latitude %s\nLongitude %s", lat, lng),
+                            Snackbar.LENGTH_LONG)
+                                .setAction("Action", null)
+                                .show();
 
-            if (lastLocation == null) return;
+                    drawVertexOn(new LatLng(lat, lng));
+                    waitingForResponse = false;
+                }
 
-            double lat = lastLocation.latitude;
-            double lng = lastLocation.longitude;
+                @Override
+                public void onLocationNotFound() {
+                    Snackbar.make(v,
+                            "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
+                            Snackbar.LENGTH_LONG)
+                            .setAction("Action", null)
+                            .show();
+                    waitingForResponse = false;
+                }
+            };
 
-            drawVertexOn(new LatLng(lat, lng));
-
-            Snackbar.make(v, String.format("Latitude %s\nLongitude %s", lat, lng), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .show();
+            waitingForResponse = true;
+            gpsService.singleLocationCallback(lcl, 10000);
         });
 
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
         fabLocate.setOnClickListener(v -> {
-            if (!gpsBound) return;
-
             LatLng targetPos = gpsService.lastKnownLocation();
 
-            if (gpsService.locationWasDisabled) {
+            if (gpsService.wasLocationDisabled()) {
                 promptEnableLocation();
                 return;
             }
@@ -154,43 +144,42 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStart() {
+        super.onStart();
 
-        if (gpsBound) {
-            gpsBound = false;
-            getActivity().unbindService(mConnection);
-        }
+        bindServices();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
 
-        if (gpsService == null) return;
-
-        gpsService.pauseGps();
+        unbindServices();
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (gpsService == null) return;
-
-        gpsService.resumeGps();
-    }
-
 
     private void bindServices() {
-        if (gpsBound) return;
-
-        Intent intent = new Intent(getContext(), GpsService.class);
+        isGpsServiceBound = true;
+        Intent intent = new Intent(getContext().getApplicationContext(), GpsService.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    private void unbindServices() {
+        if (mConnection == null || !isGpsServiceBound) return;
+
+        gpsService.stopGps();
+        isGpsServiceBound = false;
+        getActivity().unbindService(mConnection);
+    }
+
+    private void onGpsBound() {
+        gpsService.startGps();
+    }
+
+    //  <-- TODO: extract into features -->
+
     private void initMap() {
         gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        gMap.setIndoorEnabled(false);
 
         UiSettings uiSettings = gMap.getUiSettings();
         uiSettings.setTiltGesturesEnabled(false);
@@ -275,6 +264,28 @@ public class MapFragment extends Fragment implements FragmentBackPressed {
         // panning to the location of the polygon
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
+
+            gpsService = binder.getService();
+            isGpsServiceBound = true;
+
+            onGpsBound();
+
+            Log.i(String.valueOf(Log.INFO), "GpsService CONNECTED!");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            isGpsServiceBound = false;
+
+            Log.i(String.valueOf(Log.INFO), "GpsService DISCONNECTED!");
+        }
+    };
 
     @Override
     public BackButtonProceedPolicy onBackPressed() {
