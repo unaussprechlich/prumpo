@@ -21,14 +21,14 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
 
 @ApplicationScope
 public class MainActivity extends BaseActivity implements
@@ -36,15 +36,14 @@ public class MainActivity extends BaseActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker{
 
+    public static final int REQUEST_LOCATION_PERMISSION = 202;
     @Inject
     UserManager userManager;
-
-    public static final int REQUEST_LOCATION_PERMISSION = 202;
-
     @Inject DamageCaseListFragment damageCaseListFragment;
     @Inject MapFragment mapFragment;
 
     private DrawerLayout drawer;
+    private ActionBarDrawerToggle drawerToggle;
 
 
     /**
@@ -76,12 +75,13 @@ public class MainActivity extends BaseActivity implements
         drawer = findViewById(R.id.drawer_layout);
 
         // set navigation menu drawer toggle
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        drawerToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
         );
 
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        drawer.addDrawerListener(drawerToggle);
+        drawerToggle.setDrawerSlideAnimationEnabled(true);
+        drawerToggle.syncState();
 
         displayFragment(R.id.nav_map);
         navigationView.setCheckedItem(R.id.nav_map);
@@ -209,11 +209,18 @@ public class MainActivity extends BaseActivity implements
      */
     @Override
     public void setDrawerEnabled(boolean enabled) {
+
+        // lock or unlock drawer
         int lockMode = enabled
                 ? DrawerLayout.LOCK_MODE_UNLOCKED
                 : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-
         drawer.setDrawerLockMode(lockMode);
+
+        // set drawer indicator
+        drawerToggle.setDrawerIndicatorEnabled(enabled);
+
+        // sync state
+        drawerToggle.syncState();
     }
 
     /**

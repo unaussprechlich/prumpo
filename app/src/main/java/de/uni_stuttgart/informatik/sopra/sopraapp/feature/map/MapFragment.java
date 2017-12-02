@@ -290,7 +290,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     private void drawVertexOn(LatLng point) {
         gMap.addCircle(
                 new CircleOptions()
-                        .fillColor(getResources().getColor(R.color.contrastComplement, null))
+                        .fillColor(R.color.contrastComplement)
                         .center(point)
                         .strokeWidth(4)
                         .radius(3)
@@ -392,6 +392,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         // init toolbar close button
         View tbCloseButton = botsheetToolbar.findViewById(R.id.act_botsheet_close);
         tbCloseButton.setOnClickListener(v -> {
+
 
             boolean isImportantChanged = true;
 

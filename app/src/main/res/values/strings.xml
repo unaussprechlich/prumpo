@@ -20,10 +20,10 @@
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_closed">Close navigation drawer</string>
     <string name="map">Karte</string>
-    <string name="damageCases">Schadensfälle</string>
-    <string name="settings">Einstellungen</string>
     <string name="nav_username">Benutzername</string>
     <string name="nav_role">Rolle</string>
+    <string name="settings">Einstellungen</string>
+    <string name="damageCases">Schadensfälle</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>
     <string name="profile_title">Your Name</string>
@@ -40,6 +40,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
+    <!--map fragment : bottom sheet -->
     <string name="map_frag_botsheet_alert_title">Änderungen verwerfen?</string>
     <string name="map_frag_botsheet_alert_text">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
     <string name="map_frag_botsheet_alert_yes">Ja</string>
