@@ -21,18 +21,23 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerAppCompatActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
 
-
-public class MainActivity extends DaggerAppCompatActivity implements
+@ApplicationScope
+public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker{
+
+    @Inject
+    UserManager userManager;
 
     public static final int REQUEST_LOCATION_PERMISSION = 202;
 
@@ -48,7 +53,6 @@ public class MainActivity extends DaggerAppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         // set main layout
         setContentView(R.layout.activity_main);
@@ -72,24 +76,19 @@ public class MainActivity extends DaggerAppCompatActivity implements
         drawer = findViewById(R.id.drawer_layout);
 
         // set navigation menu drawer toggle
-        ActionBarDrawerToggle toggle =
-                new ActionBarDrawerToggle(
-                        this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
-                );
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
+        );
+
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        // set initial fragment
         displayFragment(R.id.nav_map);
-
-        /* set initial fragment as active,
-        following items will be handled by fragment manager */
         navigationView.setCheckedItem(R.id.nav_map);
-
-
 
         checkPermissions();
     }
+
 
     /**
      * When hitting the Android back button
@@ -229,7 +228,4 @@ public class MainActivity extends DaggerAppCompatActivity implements
 
         return mapFragment;
     }
-
-
-
 }

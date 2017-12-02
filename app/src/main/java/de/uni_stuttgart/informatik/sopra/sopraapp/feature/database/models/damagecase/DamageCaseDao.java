@@ -1,0 +1,68 @@
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+
+import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Query;
+import android.provider.BaseColumns;
+
+import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+
+
+/**
+ * Data access object for User.
+ *
+ * Sadly copy&paste has to be your friend here :(
+ */
+@Dao
+public interface DamageCaseDao extends IDao<DamageCase> {
+
+// #################################################################################################
+
+    String TABLE_NAME = DamageCase.TABLE_NAME;
+
+// Standard Queries ################################################################################
+
+    /**
+     * Counts the number of users in the table.
+     *
+     * @return  The number of users.
+     */
+    @Query("SELECT COUNT(*) FROM " + TABLE_NAME )
+    int count();
+
+    /**
+     * Select all users.
+     *
+     * @return  A {@link User} of all the users in the table.
+     */
+    @Override
+    @Query("SELECT * FROM " + TABLE_NAME)
+    LiveData<List<DamageCase>> getAll();
+
+    /**
+     * Select a user by their ID.
+     *
+     * @param id    The ID of the row in question.
+     *
+     * @return      A {@link User} of the selected users.
+     */
+    @Override
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id")
+    LiveData<DamageCase> getById(long id);
+
+
+    /**
+     * Delete a user by the ID.
+     *
+     * @param id    The ID of the row to delete.
+     *
+     * @return      The number of users deleted.
+     *              This should always be {@code 1}.
+     */
+    @Query("DELETE FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID  + " = :id")
+    int deleteById(long id);
+
+}

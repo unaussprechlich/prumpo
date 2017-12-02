@@ -35,4 +35,8 @@
     <string name="dc_fragment_search_hint">Suche …</string>
 
     <string name="prompt_enable_localization">Bitte Lokalisierung über GPS oder Netzwerk aktivieren.</string>
+
+    <string name="title_activity_authentication">AuthenticationActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

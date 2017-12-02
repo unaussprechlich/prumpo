@@ -14,6 +14,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATIONS" />
+
     <uses-feature android:name="android.hardware.location" />
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-feature android:name="android.hardware.location.network" />
@@ -27,27 +28,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name=".feature.login.LoginActivity"
+            android:name=".feature.authentication.LoginActivity"
             android:label="@string/title_activity_login"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTask"
+            android:parentActivityName=".feature.authentication.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.LoginActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:launchMode="singleTask"
-            android:parentActivityName=".feature.login.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.login.LoginActivity" />
         </activity>
         <activity
             android:name=".feature.sidebar.profile.ProfileActivity"
@@ -55,7 +54,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity" />
-
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -67,11 +65,18 @@
         -->
         <service
             android:name=".service.location.GpsService"
-            android:exported="false"/>
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="@string/google_maps_key"
+        />
 
+        <activity
+            android:name=".feature.authentication.AuthenticationActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_authentication"
+        />
     </application>
 
 </manifest>
