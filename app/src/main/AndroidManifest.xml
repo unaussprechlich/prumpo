@@ -31,7 +31,7 @@
         <activity
             android:name=".feature.authentication.LoginActivity"
             android:label="@string/title_activity_login"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

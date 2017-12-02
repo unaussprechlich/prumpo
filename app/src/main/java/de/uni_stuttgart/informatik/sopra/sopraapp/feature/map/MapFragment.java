@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,8 +172,11 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         // open bottom sheet for testing purposes, will be moved to another file? later
         fabAdd.setOnClickListener(v -> {
             int state = mBottomSheetBehavior.getState();
-            if (state == BottomSheetBehavior.STATE_HIDDEN)
+            if (state == BottomSheetBehavior.STATE_HIDDEN) {
+
+                mBottomSheetBehavior.setHideable(false);
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
         });
 
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
@@ -334,15 +339,41 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         // control the state of the bottom sheet
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 MainActivity activity = (MainActivity) getActivity();
 
-                if (newState != BottomSheetBehavior.STATE_HIDDEN) {
-                    activity.setDrawerEnabled(false);
-                } else {
-                    activity.setDrawerEnabled(true);
+                boolean navigationDrawerEnabled = false;
+
+                switch (newState) {
+
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        navigationDrawerEnabled = true;
+                        break;
+
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+
+                        break;
                 }
+
+
+                activity.setDrawerEnabled(navigationDrawerEnabled);
+
+                /* Will add some listeners later
+         - to avoid closing it by collapsing
+         - Remove menu icon if opened to avoid hinting that a nav menu exist when adding damages
+         - etc ...
+         */
 
             }
 
@@ -350,12 +381,44 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 
             }
+
+
         });
 
-        /* Will add some listeners later
-         - to avoid closing it by collapsing
-         - Remove menu icon if opened to avoid hinting that a nav menu exist when adding damages
-         - etc ...
-         */
+        // set bottom sheet toolbar
+        Toolbar botsheetToolbar = rootView.findViewById(R.id.bottom_sheet_toolbar);
+        botsheetToolbar.inflateMenu(R.menu.bottom_sheet);
+
+        // init toolbar close button
+        View tbCloseButton = botsheetToolbar.findViewById(R.id.act_botsheet_close);
+        tbCloseButton.setOnClickListener(v -> {
+
+            boolean isImportantChanged = true;
+
+            if (isImportantChanged) {
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.map_frag_botsheet_alert_title)
+                        .setMessage(R.string.map_frag_botsheet_alert_text)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.map_frag_botsheet_alert_yes, (dialog, id) -> {
+                            mBottomSheetBehavior.setHideable(true);
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                        })
+                        .setNegativeButton(R.string.map_frag_botsheet_alert_no, (dialog, id) -> {
+
+                        })
+                        .create()
+                        .show();
+
+            } else {
+
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+            }
+
+        });
+
     }
 }

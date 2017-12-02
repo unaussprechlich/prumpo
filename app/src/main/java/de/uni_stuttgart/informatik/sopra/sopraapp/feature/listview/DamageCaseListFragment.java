@@ -171,7 +171,7 @@ public class DamageCaseListFragment
         // swap adapter to adapter with new items
         recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCases), true);
 
-        return true; // true -> listener handled query already
+        return true; // true -> listener handled query already, nothing more needs to be done
     }
 
     /**
