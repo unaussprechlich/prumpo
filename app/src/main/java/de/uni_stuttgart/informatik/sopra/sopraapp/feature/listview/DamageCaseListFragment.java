@@ -41,7 +41,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.viewmodel.DamageCaseCollection
 @Singleton
 public class DamageCaseListFragment
         extends DaggerFragment
-        implements SearchView.OnQueryTextListener, FragmentBackPressed{
+        implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
     @Inject
     DamageCaseRepository damageCaseRepository;
@@ -50,15 +50,13 @@ public class DamageCaseListFragment
     ViewModelProvider.Factory viewModelFactory;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private SearchView searchView;
 
     public void setDamageCaseList(List<DamageCase> damageCaseList) {
         this.damageCaseList = damageCaseList;
         recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCaseList), true);
     }
-
-    private RecyclerView recyclerView;
-    private SearchView searchView;
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -147,6 +145,7 @@ public class DamageCaseListFragment
         MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
+        searchView.setQueryHint(getString(R.string.dc_fragment_search_hint));
 
         // attach navigation blocker if search menu item is opened
         NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
@@ -173,18 +172,19 @@ public class DamageCaseListFragment
         // swap adapter to adapter with new items
         recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCases), true);
 
-        return false;
+        return true; // true -> listener handled query already
     }
 
     /**
      * Called when search is submitted.
+     * This is actually never used because data is updated while changing query.
      *
      * @param query the submitted query.
-     * @return <code>false</code> TODO: implement me!
+     * @return <code>false</code>
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        return true; // true -> listener handled query already
     }
 
 }

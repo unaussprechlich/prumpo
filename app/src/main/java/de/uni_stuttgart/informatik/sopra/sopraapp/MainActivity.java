@@ -202,11 +202,17 @@ public class MainActivity extends DaggerAppCompatActivity implements
         }
     }
 
+    /**
+     * Method which allows fragments to lock the navigation drawer.
+     *
+     * @param enabled - If true -> navigation drawer enabled,
+     *                if false -> navigation drawer disabled
+     */
     @Override
     public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled
-                        ? DrawerLayout.LOCK_MODE_UNLOCKED
-                        : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+                ? DrawerLayout.LOCK_MODE_UNLOCKED
+                : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
 
         drawer.setDrawerLockMode(lockMode);
     }

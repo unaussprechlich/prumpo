@@ -21,14 +21,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 
 public class DamageCaseListFragmentRecyclerViewAdapter
         extends RecyclerView.Adapter<DamageCaseListFragmentRecyclerViewAdapter.DamageCaseViewHolder>
-        implements View.OnClickListener{
+        implements ItemClickListener {
 
     // TODO! https://www.codementor.io/tips/1237823034/how-to-filter-a-recyclerview-with-a-searchview
-
-    /**
-     * The data for the recycler view
-     */
-    private List<DamageCase> damageCaseList = new ArrayList<>();
 
     /**
      * So you are probably wondering how i got a instance of that repository.
@@ -37,14 +32,21 @@ public class DamageCaseListFragmentRecyclerViewAdapter
     @Inject
     DamageCaseRepository damageCaseRepository;
 
+    /**
+     * A custom ItemClickListener to obtain the item behind the view.
+     */
+    private ItemClickListener clickListener;
+
 
     /**
      * Constructor
+     *
      * @param damageCaseList list of data to be displayed
      */
     public DamageCaseListFragmentRecyclerViewAdapter(List<DamageCase> damageCaseList) {
-        this.damageCaseList = damageCaseList;
+        DamageCaseHolder.damageCaseList = damageCaseList;
         SopraApp.getAppComponent().inject(this);
+        setClickListener(this);
     }
 
     /**
@@ -62,8 +64,6 @@ public class DamageCaseListFragmentRecyclerViewAdapter
                         parent,
                         false);
 
-        view.setOnClickListener(this);
-
         DamageCaseViewHolder damageCaseViewHolder = new DamageCaseViewHolder(view);
         view.setTag(damageCaseViewHolder);
         return damageCaseViewHolder;
@@ -77,7 +77,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      */
     @Override
     public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
-        DamageCase damageCase = damageCaseList.get(position);
+        DamageCase damageCase = DamageCaseHolder.damageCaseList.get(position);
 
         // set bindings
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
@@ -93,7 +93,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      */
     @Override
     public int getItemCount() {
-        return damageCaseList.size();
+        return DamageCaseHolder.damageCaseList.size();
     }
 
     @Override
@@ -101,23 +101,35 @@ public class DamageCaseListFragmentRecyclerViewAdapter
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    /**
+     * Method called after a click.
+     *
+     * @param view     The view which got clicked
+     * @param position The current position in the visible list.
+     */
     @Override
-    public void onClick(View view) {
-        //yeah, this is how you delete something ... simple enough?
-        Toast.makeText(view.getContext(), "Click", Toast.LENGTH_SHORT).show();
-        damageCaseRepository.delete(getDamageCase(view));
+    public void onClick(View view, int position) {
+        DamageCase damageCase = DamageCaseHolder.damageCaseList.get(position);
+
+        Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
     }
 
-
-
-    public DamageCase getDamageCase(View view) {
-        DamageCaseViewHolder holder = (DamageCaseViewHolder) view.getTag();
-        int adapterPosition = holder.getAdapterPosition();
-        return damageCaseList.get(adapterPosition);
+    /**
+     * Sets the click listener for this item.
+     *
+     * @param itemClickListener The click listener for this item.
+     */
+    private void setClickListener(ItemClickListener itemClickListener) {
+        this.clickListener = itemClickListener;
     }
 
-
-
+    /**
+     * A static Holder for damage cases. After a adapter swap -> this list gets updated.
+     * This holder always holds the up to date underlying data.
+     */
+    private static class DamageCaseHolder {
+        private static List<DamageCase> damageCaseList = new ArrayList<>();
+    }
 
     /**
      * A view holder holds the view of a list item.
@@ -127,7 +139,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      * Android Developer Guide (RecyclerView.ViewHolder)
      * </a>
      */
-    static class DamageCaseViewHolder extends RecyclerView.ViewHolder {
+    class DamageCaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cardView;
 
         /* define attributes to change them later */
@@ -143,6 +155,19 @@ public class DamageCaseListFragmentRecyclerViewAdapter
             damageCaseName = itemView.findViewById(R.id.dc_name);
             expertName = itemView.findViewById(R.id.dc_policyholder);
             damageArea = itemView.findViewById(R.id.dc_area);
+
+            cardView.setOnClickListener(this);
+        }
+
+        /**
+         * Forward click to item listener.
+         *
+         * @param view The view which was clicked.
+         */
+        @Override
+        public void onClick(View view) {
+            if (clickListener != null)
+                clickListener.onClick(view, getLayoutPosition());
         }
     }
 

@@ -31,5 +31,8 @@
     <string name="profileLogoutButton">Log Out</string>
     <string name="title_activity_maps">Map</string>
     <string name="damage_case_pre_policyholder">Versicherungsnehmer:</string>
+
+    <string name="dc_fragment_search_hint">Suche …</string>
+
     <string name="prompt_enable_localization">Bitte Lokalisierung über GPS oder Netzwerk aktivieren.</string>
 </resources>
