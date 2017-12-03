@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,16 +31,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.MapPoint;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.Helper.areaOfPolygon;
@@ -52,6 +57,11 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     View rootView;
     MapView mMapView;
 
+    /**
+     * The adapter for the horizontal recycler view
+     */
+    BottomSheetListAdapter bottomSheetListAdapter;
+
     private GoogleMap gMap;
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
@@ -60,6 +70,15 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
      * The provided bottom sheet behaviour object
      */
     private BottomSheetBehavior mBottomSheetBehavior;
+    /**
+     * The recycler view for the horizontal recycler view
+     */
+    private RecyclerView bottomSheetRecyclerView;
+
+    /**
+     * The toolbar of the bottom sheet
+     */
+    private Toolbar bottomSheetToolbar;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -103,12 +122,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         fabAdd.setOnClickListener(v -> {
 
             /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
-            int state = mBottomSheetBehavior.getState();
-            if (state == BottomSheetBehavior.STATE_HIDDEN) {
-
-                mBottomSheetBehavior.setHideable(false);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
+            loadDamageCaseBottomSheet(null);
 
             /* GPS/Map-related section */
 
@@ -147,7 +161,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             };
 
             waitingForResponse = true;
-            gpsService.singleLocationCallback(lcl, 10000);
+//            gpsService.singleLocationCallback(lcl, 10000);
         });
 
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
@@ -293,8 +307,19 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
      */
     private void initBottomSheet() {
 
-        // find the bottom sheet in root children
-        View bottomSheet = rootView.findViewById(R.id.bottom_sheet);
+        // set bottom sheet
+        NestedScrollView bottomSheet = rootView.findViewById(R.id.bottom_sheet);
+
+        // set bottom sheet toolbar
+        bottomSheetToolbar = rootView.findViewById(R.id.bottom_sheet_toolbar);
+
+        // inflate toolbar
+        bottomSheetToolbar.inflateMenu(R.menu.bottom_sheet);
+
+        // set recycler view
+        bottomSheetRecyclerView = bottomSheet.findViewById(R.id.bottom_sheet_list);
+        bottomSheetRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+//        rootView.findViewById(R.id.bottom_sheet_toolbar)
 
         // create bottom sheet behaviour
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -344,21 +369,18 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
+//                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
 
 
         });
 
-        // set bottom sheet toolbar
-        Toolbar botsheetToolbar = rootView.findViewById(R.id.bottom_sheet_toolbar);
-        botsheetToolbar.inflateMenu(R.menu.bottom_sheet);
+//        mBottomSheetBehavior.
+
 
         // init toolbar close button
-        View tbCloseButton = botsheetToolbar.findViewById(R.id.act_botsheet_close);
+        View tbCloseButton = bottomSheetToolbar.findViewById(R.id.act_botsheet_close);
         tbCloseButton.setOnClickListener(v -> {
-
-
             boolean isImportantChanged = true;
 
             if (isImportantChanged) {
@@ -383,8 +405,44 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             }
-
         });
 
     }
+
+    private void loadDamageCaseBottomSheet(DamageCase damageCase) {
+
+        int state = mBottomSheetBehavior.getState();
+        if (state == BottomSheetBehavior.STATE_HIDDEN) {
+
+            // set state 1st time
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            // lock hide mode
+            mBottomSheetBehavior.setHideable(false);
+
+            // Add first location point
+            bottomSheetListAdapter.add(new MapPoint(""));
+
+            // set new adapter
+            bottomSheetListAdapter = new BottomSheetListAdapter(damageCase);
+            bottomSheetRecyclerView.swapAdapter(bottomSheetListAdapter, false);
+
+            // measure height of toolbar and recycler view
+            bottomSheetToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            bottomSheetRecyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            mBottomSheetBehavior.setPeekHeight(bottomSheetToolbar.getMeasuredHeight() + bottomSheetRecyclerView.getMeasuredHeight());
+
+            // set state 2nd time
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+
+            // add next point
+            bottomSheetListAdapter.add(new MapPoint(""));
+
+            // scroll to last added item
+            bottomSheetRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+        }
+
+    }
+
 }

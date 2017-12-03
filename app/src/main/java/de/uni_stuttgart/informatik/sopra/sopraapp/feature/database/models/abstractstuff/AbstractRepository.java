@@ -15,13 +15,13 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     private final Dao dao;
     private final UserManager userManager;
 
-    protected Dao getDao() {
-        return dao;
-    }
-
     public AbstractRepository(@NonNull Dao dao, @NonNull UserManager userManager){
         this.dao = dao;
         this.userManager = userManager;
+    }
+
+    protected Dao getDao() {
+        return dao;
     }
 
     public LiveData<List<Model>> getAll(){
@@ -35,12 +35,33 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     // COUNT #######################################################################################
 
     public boolean isEmpty() throws ExecutionException, InterruptedException {
-        return count() > 0;
+        return count() > 0; // TODO invert?^^
     }
 
     @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
     public int count() throws ExecutionException, InterruptedException {
         return new CountAsyncTask<>(dao).execute().get();
+    }
+
+    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
+    public Long insert(@NonNull Model model) throws ExecutionException, InterruptedException {
+        return new InsertAsyncTask<>(dao).execute(model).get();
+
+        //I WOULD LIKE TO ... BUT INTELLIJ DOES NOT LIKE THIS .... MEMORY LEAKS ... BLABLABLA
+        //        return new AbstractAsyncTask<Model, Dao, Long>(dao) {
+        //            protected final Long doInBackground(Model[] params) {
+        //                return dao.insert(params[0]);
+        //            }
+        //        }.execute(model).getItem();
+    }
+
+
+    // CREATE ######################################################################################
+
+    @SuppressWarnings("unchecked")
+    //@SafeVarargs is present in the actual async task .... so I don't care!
+    public void delete(@NonNull Model model) {
+        new AbstractRepository.DeleteAsyncTask<>(dao).execute(model);
     }
 
     private static class CountAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Integer> {
@@ -56,21 +77,7 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
 
     }
 
-
-    // CREATE ######################################################################################
-
-
-    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
-    public Long insert(@NonNull Model model) throws ExecutionException, InterruptedException {
-        return new InsertAsyncTask<>(dao).execute(model).get();
-
-        //I WOULD LIKE TO ... BUT INTELLIJ DOES NOT LIKE THIS .... MEMORY LEAKS ... BLABLABLA
-        //        return new AbstractAsyncTask<Model, Dao, Long>(dao) {
-        //            protected final Long doInBackground(Model[] params) {
-        //                return dao.insert(params[0]);
-        //            }
-        //        }.execute(model).get();
-    }
+    // DELETE ######################################################################################
 
     private static class InsertAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Long> {
 
@@ -84,13 +91,6 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
             return dao.insert(params[0]);
         }
 
-    }
-
-    // DELETE ######################################################################################
-
-    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
-    public void delete(@NonNull Model model){
-        new AbstractRepository.DeleteAsyncTask<>(dao).execute(model);
     }
 
     private static class DeleteAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Void>{

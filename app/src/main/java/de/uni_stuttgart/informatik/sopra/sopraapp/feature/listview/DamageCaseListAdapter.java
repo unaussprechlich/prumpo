@@ -35,7 +35,7 @@ public class DamageCaseListAdapter
      * @param damageCaseList list of data to be displayed
      */
     public DamageCaseListAdapter(List<DamageCase> damageCaseList) {
-        DamageCaseHolder.damageCaseList = damageCaseList;
+        Holder.damageCaseList = damageCaseList;
         SopraApp.getAppComponent().inject(this);
     }
 
@@ -65,7 +65,7 @@ public class DamageCaseListAdapter
      */
     @Override
     public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
-        DamageCase damageCase = DamageCaseHolder.damageCaseList.get(position);
+        DamageCase damageCase = Holder.damageCaseList.get(position);
 
         // set bindings
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
@@ -83,7 +83,7 @@ public class DamageCaseListAdapter
      */
     @Override
     public int getItemCount() {
-        return DamageCaseHolder.damageCaseList.size();
+        return Holder.damageCaseList.size();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class DamageCaseListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-        DamageCase damageCase = DamageCaseHolder.damageCaseList.get(position);
+        DamageCase damageCase = Holder.damageCaseList.get(position);
 
         Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
     }
@@ -107,7 +107,7 @@ public class DamageCaseListAdapter
      * A static Holder for damage cases. After a adapter swap -> this list gets updated.
      * This holder always holds the up to date underlying data.
      */
-    private static class DamageCaseHolder {
+    private static class Holder {
         private static List<DamageCase> damageCaseList = new ArrayList<>();
     }
 

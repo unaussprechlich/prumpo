@@ -6,8 +6,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
-import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.ModelDB;
 
@@ -35,7 +35,8 @@ public class DamageCase implements ModelDB {
     public float area;
 
 
-    @Ignore private Collection<Float> coordinates;
+    @Ignore
+    private List<Float> coordinates; // TODO! LatitudeItem
     @Ignore private String region;
     @Ignore private float damageArea;
     @Ignore
@@ -82,11 +83,11 @@ public class DamageCase implements ModelDB {
         this.area = area;
     }
 
-    public Collection<Float> getCoordinates() {
+    public List<Float> getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(Collection<Float> coordinates) {
+    public void setCoordinates(List<Float> coordinates) {
         this.coordinates = coordinates;
     }
 
