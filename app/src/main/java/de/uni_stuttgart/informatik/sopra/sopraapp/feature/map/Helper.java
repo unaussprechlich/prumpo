@@ -7,9 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Helper methods of the location service.
+ * Provides various helper methods for map interactions
  */
-
 public class Helper {
 
     // the radius of the earth is approximated in Kilometres (6371 km)
@@ -22,7 +21,7 @@ public class Helper {
      *
      * @return              approximated area in m²
      */
-    public static double areaOfPolygon(List<LatLng> vertices) {
+    static double areaOfPolygon(List<LatLng> vertices) {
 
         double areaSum = 0;
 
@@ -39,7 +38,7 @@ public class Helper {
         return Math.abs(areaSum/2)*1000000;
     }
 
-    public static LatLng centroidOfPolygon(List<LatLng> vertices) {
+    static LatLng centroidOfPolygon(List<LatLng> vertices) {
         double length = vertices.size();
 
         double sumLat = 0;

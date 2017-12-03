@@ -8,7 +8,6 @@ import java.util.Arrays;
 /**
  * Houses app-wide, static constants
  */
-
 public class Constants {
 
     public static final int REQUEST_LOCATION_PERMISSION = 202;

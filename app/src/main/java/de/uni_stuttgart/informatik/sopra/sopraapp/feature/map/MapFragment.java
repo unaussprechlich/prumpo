@@ -25,12 +25,16 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -45,7 +49,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.MapPoi
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
-import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.Helper.areaOfPolygon;
 
 public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
@@ -65,6 +68,10 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     private GoogleMap gMap;
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
+
+    private Marker activeDragMarker = null;
+    private Circle activeCircle = null;
+    private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     /**
      * The provided bottom sheet behaviour object
@@ -221,14 +228,35 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         mapCameraJump(Helper.centroidOfPolygon(TEST_POLYGON_COORDINATES));
 
         // show estimated area of polygon, when clicked
-        gMap.setOnPolygonClickListener(p ->
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(getContext(),
-                                String.valueOf(Math.round(areaOfPolygon(p.getPoints()))) + "m²",
-                                Toast.LENGTH_SHORT)
-                                .show()
-                )
-        );
+        gMap.setOnPolygonClickListener(p -> {
+            if (polygonHighlightVertex != null) {
+                for (Circle circle : polygonHighlightVertex) {
+                    circle.remove();
+                }
+            }
+
+            for (LatLng latLng : p.getPoints()) {
+                polygonHighlightVertex.add(drawVertexOn(latLng));
+            }
+        });
+
+        gMap.setOnCircleClickListener(this::makeDraggable);
+        gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                dragMarker(marker);
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
+                marker.setPosition(activeCircle.getCenter());
+            }
+        });
     }
 
     private void drawPolygonOf(ArrayList<LatLng> coordinates) {
@@ -240,10 +268,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                         .strokeJointType(JointType.ROUND)
                         .strokeColor(getResources().getColor(R.color.red, null))
                         .fillColor(getResources().getColor(R.color.damage, null));
-
-        for (LatLng point : coordinates) {
-            drawVertexOn(point);
-        }
 
         gMap.addPolygon(rectOptions);
     }
@@ -266,14 +290,36 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                 .target(target).zoom(zoom).build();
     }
 
-    private void drawVertexOn(LatLng point) {
-        gMap.addCircle(
+    private void makeDraggable(Circle circle) {
+        activeCircle = circle;
+
+        if (activeDragMarker == null) {
+            activeDragMarker =
+                    gMap.addMarker(
+                            new MarkerOptions()
+                            .position(circle.getCenter())
+                            .draggable(true)
+                            .zIndex(2)
+                    );
+            return;
+        }
+
+        activeDragMarker.setPosition(circle.getCenter());
+    }
+
+    private void dragMarker(Marker marker) {
+        activeCircle.setCenter(marker.getPosition());
+    }
+
+    private Circle drawVertexOn(LatLng point) {
+        return gMap.addCircle(
                 new CircleOptions()
                         .fillColor(getResources().getColor(R.color.contrastComplement, null))
                         .center(point)
                         .strokeWidth(4)
                         .radius(3)
                         .zIndex(1)
+                        .clickable(true)
         );
     }
 
