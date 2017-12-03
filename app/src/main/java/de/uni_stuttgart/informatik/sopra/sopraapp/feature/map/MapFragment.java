@@ -42,7 +42,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPr
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.LocationCallbackListener;
 
-import static de.uni_stuttgart.informatik.sopra.sopraapp.service.location.Helper.areaOfPolygon;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.Helper.areaOfPolygon;
 
 public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
@@ -61,7 +61,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     View rootView;
     MapView mMapView;
     GpsService gpsService;
-    boolean gpsBound = false;
+
     private GoogleMap gMap;
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
@@ -220,7 +220,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     //  <-- TODO: extract into features -->
 
     private void unbindServices() {
-        if (mConnection == null || !isGpsServiceBound) return;
+        if (mConnection == null || gpsService == null | !isGpsServiceBound) return;
 
         gpsService.stopGps();
         isGpsServiceBound = false;

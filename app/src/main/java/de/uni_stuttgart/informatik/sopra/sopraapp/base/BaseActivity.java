@@ -12,6 +12,4 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
         super.onCreate(savedInstanceState);
 
     }
-
-
 }
