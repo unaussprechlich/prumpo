@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 
@@ -27,7 +28,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
  */
 public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
-    private static final String EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
     private EditText mEmailView;
     private EditText mNameFirstView;
     private EditText mNameLastView;
@@ -73,6 +73,13 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
     private boolean signUp(View v) {
         try{
             showProgress(true);
+
+            mNameFirstView.setError(null);
+            mNameLastView.setError(null);
+            mEmailView.setError(null);
+            mPasswordView.setError(null);
+            mPasswordConfirmView.setError(null);
+
             final String nameFirst = getFieldValueIfNotEmpty(mNameFirstView);
             final String nameLast = getFieldValueIfNotEmpty(mNameLastView);
             final String email = getFieldValueIfNotEmpty(mEmailView);
@@ -82,7 +89,7 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
             if(!password.equals(passwordConfirm))
                 throw new SignUpValueException(mPasswordConfirmView, "Passwords do not match!");
 
-            if(!Pattern.matches(EMAIL_REGEX, email))
+            if(!Pattern.matches(Constants.EMAIL_REGEX, email))
                 throw new SignUpValueException(mEmailView, "Invalid mail address!");
 
             //TODO check if user exists
@@ -113,8 +120,8 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
         return true;
     }
 
-    private class SignUpValueIsEmptyEsception extends SignUpValueException{
-        public SignUpValueIsEmptyEsception(EditText editText) {
+    private class SignUpValueIsEmptyException extends SignUpValueException{
+        public SignUpValueIsEmptyException(EditText editText) {
             super(editText, "Field is empty!");
         }
     }
@@ -134,9 +141,9 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
         }
     }
 
-    private String getFieldValueIfNotEmpty(EditText editText) throws SignUpValueIsEmptyEsception{
+    private String getFieldValueIfNotEmpty(EditText editText) throws SignUpValueIsEmptyException {
         String text = editText.getText().toString();
-        if(text.isEmpty()) throw new SignUpValueIsEmptyEsception(editText);
+        if(text.isEmpty()) throw new SignUpValueIsEmptyException(editText);
         return text;
     }
 

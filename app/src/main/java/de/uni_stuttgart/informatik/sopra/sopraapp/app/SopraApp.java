@@ -10,6 +10,7 @@ public class SopraApp extends DaggerApplication {
 
     private static AppComponent appComponent;
 
+
     public static AppComponent getAppComponent() {
         return appComponent;
     }
