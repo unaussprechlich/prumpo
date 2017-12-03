@@ -37,6 +37,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      */
     private ItemClickListener clickListener;
 
+
     /**
      * Constructor
      *

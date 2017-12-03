@@ -393,6 +393,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         View tbCloseButton = botsheetToolbar.findViewById(R.id.act_botsheet_close);
         tbCloseButton.setOnClickListener(v -> {
 
+
             boolean isImportantChanged = true;
 
             if (isImportantChanged) {

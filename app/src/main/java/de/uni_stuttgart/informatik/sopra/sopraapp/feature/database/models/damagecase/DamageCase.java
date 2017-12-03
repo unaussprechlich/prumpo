@@ -38,7 +38,8 @@ public class DamageCase implements ModelDB {
     @Ignore private Collection<Float> coordinates;
     @Ignore private String region;
     @Ignore private float damageArea;
-    @Ignore private float damagePositon;
+    @Ignore
+    private float damagePosition;
     @Ignore private GregorianCalendar date;
 
 
@@ -105,12 +106,12 @@ public class DamageCase implements ModelDB {
         this.damageArea = damageArea;
     }
 
-    public float getDamagePositon() {
-        return damagePositon;
+    public float getDamagePosition() {
+        return damagePosition;
     }
 
-    public void setDamagePositon(float damagePositon) {
-        this.damagePositon = damagePositon;
+    public void setDamagePosition(float damagePosition) {
+        this.damagePosition = damagePosition;
     }
 
     public GregorianCalendar getDate() {

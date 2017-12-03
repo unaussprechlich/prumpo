@@ -25,6 +25,7 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="350dp"
+        android:background="@color/white"
         android:clipToPadding="true"
         app:behavior_hideable="true"
         app:behavior_peekHeight="?android:attr/actionBarSize"
