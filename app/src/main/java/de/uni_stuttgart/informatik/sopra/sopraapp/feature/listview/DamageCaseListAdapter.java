@@ -14,16 +14,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 
 
-public class DamageCaseListFragmentRecyclerViewAdapter
-        extends RecyclerView.Adapter<DamageCaseListFragmentRecyclerViewAdapter.DamageCaseViewHolder>
-        implements ItemClickListener {
-
-    // TODO! https://www.codementor.io/tips/1237823034/how-to-filter-a-recyclerview-with-a-searchview
+public class DamageCaseListAdapter
+        extends RecyclerView.Adapter<DamageCaseListAdapter.DamageCaseViewHolder> {
 
     /**
      * So you are probably wondering how i got a instance of that repository.
@@ -33,20 +30,13 @@ public class DamageCaseListFragmentRecyclerViewAdapter
     DamageCaseRepository damageCaseRepository;
 
     /**
-     * A custom ItemClickListener to obtain the item behind the view.
-     */
-    private ItemClickListener clickListener;
-
-
-    /**
      * Constructor
      *
      * @param damageCaseList list of data to be displayed
      */
-    public DamageCaseListFragmentRecyclerViewAdapter(List<DamageCase> damageCaseList) {
+    public DamageCaseListAdapter(List<DamageCase> damageCaseList) {
         DamageCaseHolder.damageCaseList = damageCaseList;
         SopraApp.getAppComponent().inject(this);
-        setClickListener(this);
     }
 
     /**
@@ -64,9 +54,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
                         parent,
                         false);
 
-        DamageCaseViewHolder damageCaseViewHolder = new DamageCaseViewHolder(view);
-        view.setTag(damageCaseViewHolder);
-        return damageCaseViewHolder;
+        return new DamageCaseViewHolder(view);
     }
 
     /**
@@ -83,6 +71,8 @@ public class DamageCaseListFragmentRecyclerViewAdapter
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
         holder.expertName.setText(damageCase.getNamePolicyholder());
         holder.damageArea.setText(String.valueOf(damageCase.getArea()));
+
+        holder.cardView.setOnClickListener(v -> onClick(v, position));
     }
 
     /**
@@ -107,20 +97,10 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      * @param view     The view which got clicked
      * @param position The current position in the visible list.
      */
-    @Override
     public void onClick(View view, int position) {
         DamageCase damageCase = DamageCaseHolder.damageCaseList.get(position);
 
         Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Sets the click listener for this item.
-     *
-     * @param itemClickListener The click listener for this item.
-     */
-    private void setClickListener(ItemClickListener itemClickListener) {
-        this.clickListener = itemClickListener;
     }
 
     /**
@@ -139,7 +119,7 @@ public class DamageCaseListFragmentRecyclerViewAdapter
      * Android Developer Guide (RecyclerView.ViewHolder)
      * </a>
      */
-    class DamageCaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class DamageCaseViewHolder extends RecyclerView.ViewHolder{
         CardView cardView;
 
         /* define attributes to change them later */
@@ -155,20 +135,8 @@ public class DamageCaseListFragmentRecyclerViewAdapter
             damageCaseName = itemView.findViewById(R.id.dc_name);
             expertName = itemView.findViewById(R.id.dc_policyholder);
             damageArea = itemView.findViewById(R.id.dc_area);
-
-            cardView.setOnClickListener(this);
         }
 
-        /**
-         * Forward click to item listener.
-         *
-         * @param view The view which was clicked.
-         */
-        @Override
-        public void onClick(View view) {
-            if (clickListener != null)
-                clickListener.onClick(view, getLayoutPosition());
-        }
     }
 
 }

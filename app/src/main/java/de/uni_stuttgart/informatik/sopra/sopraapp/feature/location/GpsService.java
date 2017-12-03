@@ -1,57 +1,48 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.service.location;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.location;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Service;
+import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import javax.inject.Inject;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 
 /**
  * Serving mostly-accurate GpsService-readings since 2017
  */
-public class GpsService extends Service {
+public class GpsService {
 
     // TODO: implement selection of best provider possible!
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    public final class LocalBinder extends Binder {
+    private Context context;
 
-        public GpsService getService() {
-            return GpsService.this;
-        }
-    }
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
-    private static LocationManager locationManager;
-    private static Location lastLocation;
+    private Location lastLocation;
+    private boolean locationWasDisabled = true;
 
-    private static boolean locationWasDisabled = true;
-    private static boolean hadPermission = false;
+    private boolean hadPermission = false;
 
-    // Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
-    private static LocationListener locationListener;
+    public GpsService(Application app) {
+        context = app;
 
-    public LatLng lastKnownLocation() {
-        if (lastLocation == null) return null;
-
-        return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     /**
@@ -65,7 +56,7 @@ public class GpsService extends Service {
         // in case the settings changed since the last stop
         locationWasDisabled = !isLocationEnabled();
 
-        if ((ActivityCompat.checkSelfPermission(getApplicationContext(),
+        if ((ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)) {
             hadPermission = false;
@@ -73,6 +64,9 @@ public class GpsService extends Service {
         }
 
         hadPermission = true;
+
+        // create fresh LocationListener
+        locationListener = new ServiceLocationListener();
 
         // bind new gps callback
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -90,33 +84,11 @@ public class GpsService extends Service {
         // clear for accuracy reasons
         lastLocation = null;
 
-        if (locationManager == null) return;
-
         // unbinding callback reduces battery-usage dramatically
         locationManager.removeUpdates(locationListener);
 
         // orphan object to disable callback ASAP
         locationListener = null;
-    }
-
-    /**
-     * Checks if any localization-services are enabled, at all.
-     *
-     * @return <src>true</src> if at least one provider enabled, <src>false</src> otherwise.
-     */
-    public boolean isLocationEnabled() {
-        int locationMode;
-
-        try {
-            locationMode = Settings.Secure.getInt(getApplicationContext().getContentResolver(),
-                    Settings.Secure.LOCATION_MODE);
-
-        } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
     }
 
     /**
@@ -126,6 +98,12 @@ public class GpsService extends Service {
      */
     public boolean wasLocationDisabled() {
         return locationWasDisabled;
+    }
+
+    public LatLng lastKnownLocation() {
+        if (lastLocation == null) return null;
+
+        return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
     }
 
     /**
@@ -138,7 +116,7 @@ public class GpsService extends Service {
      *                  {@link LocationCallbackListener#onLocationNotFound()} is called.
      */
     public void singleLocationCallback(LocationCallbackListener callback, long failAfter) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             callback.onLocationNotFound();
@@ -184,21 +162,24 @@ public class GpsService extends Service {
                 Looper.getMainLooper());
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        // in case the settings changed since the last check
-        locationWasDisabled = !isLocationEnabled();
+    /**
+     * Checks if any localization-services are enabled, at all.
+     *
+     * @return <src>true</src> if at least one provider enabled, <src>false</src> otherwise.
+     */
+    private boolean isLocationEnabled() {
+        int locationMode;
 
-        locationListener = new ServiceLocationListener();
+        try {
+            locationMode = Settings.Secure.getInt(context.getContentResolver(),
+                    Settings.Secure.LOCATION_MODE);
 
-        if (locationManager == null) {
-            locationManager = (LocationManager)
-                    getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+            return false;
         }
 
-        return mBinder;
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
     }
 
     private final class ServiceLocationListener implements LocationListener {

@@ -1,11 +1,11 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.FragmentScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.FragmentScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
@@ -14,7 +14,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
  * Here goes all the stuff provided for the MainActivity, to be injected.
  */
 @Module
-public abstract class MainActivityModule{
+public abstract class MainActivityModule {
 
     @FragmentScope
     @ContributesAndroidInjector(modules = {DamageCaseListFragmentModule.class})

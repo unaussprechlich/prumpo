@@ -20,7 +20,7 @@
     <uses-feature android:name="android.hardware.location.network" />
 
     <application
-        android:name=".SopraApp"
+        android:name=".app.SopraApp"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
@@ -33,7 +33,7 @@
             android:label="@string/title_activity_login"
             android:launchMode="singleTask" />
         <activity
-            android:name=".MainActivity"
+            android:name=".app.MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
             android:parentActivityName=".feature.authentication.LoginActivity"
@@ -53,7 +53,7 @@
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity" />
+                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity" />
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -63,9 +63,6 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
-        <service
-            android:name=".service.location.GpsService"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -1,9 +1,9 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.AppComponent;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.DaggerAppComponent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.AppComponent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.DaggerAppComponent;
 
 
 public class SopraApp extends DaggerApplication {

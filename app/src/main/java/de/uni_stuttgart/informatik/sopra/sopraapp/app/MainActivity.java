@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp;
+package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
 
 import android.Manifest;
@@ -21,34 +21,35 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
+
 @ApplicationScope
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
-        NavigationDrawLocker{
+        NavigationDrawLocker {
 
-    public static final int REQUEST_LOCATION_PERMISSION = 202;
     @Inject
     UserManager userManager;
-    @Inject DamageCaseListFragment damageCaseListFragment;
-    @Inject MapFragment mapFragment;
+
+    @Inject
+    MapFragment mapFragment;
+
+    @Inject
+    DamageCaseListFragment damageCaseListFragment;
 
     private DrawerLayout drawer;
     private ActionBarDrawerToggle drawerToggle;
 
-
-    /**
-     * When Activity gets created
-     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +89,6 @@ public class MainActivity extends BaseActivity implements
 
         checkPermissions();
     }
-
 
     /**
      * When hitting the Android back button
@@ -175,32 +175,6 @@ public class MainActivity extends BaseActivity implements
         drawer.postDelayed(() -> drawer.closeDrawer(GravityCompat.START), 500);
     }
 
-    private void checkPermissions() {
-        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
-
-        if (ActivityCompat.checkSelfPermission(this, permission)
-                != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat
-                    .requestPermissions(
-                            this,
-                            new String[]{permission},
-                            REQUEST_LOCATION_PERMISSION
-                    );
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    return;
-
-                checkPermissions();
-            }
-        }
-    }
-
     /**
      * Method which allows fragments to lock the navigation drawer.
      *
@@ -234,5 +208,31 @@ public class MainActivity extends BaseActivity implements
             return damageCaseListFragment;
 
         return mapFragment;
+    }
+
+    private void checkPermissions() {
+        String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+
+        if (ActivityCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat
+                    .requestPermissions(
+                            this,
+                            new String[]{permission},
+                            REQUEST_LOCATION_PERMISSION
+                    );
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    return;
+
+                checkPermissions();
+            }
+        }
     }
 }

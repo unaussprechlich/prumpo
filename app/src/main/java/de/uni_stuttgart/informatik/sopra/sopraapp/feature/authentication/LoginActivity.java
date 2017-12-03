@@ -21,11 +21,11 @@ import android.widget.EditText;
 
 import javax.inject.Inject;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 
 // TODO: deal with lags (and maybe introduce separate threads)
 /**

@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection;
+package de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection;
 
 
 import android.app.Application;
@@ -13,13 +13,14 @@ import dagger.Provides;
 import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
-import de.uni_stuttgart.informatik.sopra.sopraapp.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.DatabaseManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragmentRecyclerViewAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 
 @ApplicationScope
 @Component(
@@ -36,15 +37,18 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     abstract class Builder extends AndroidInjector.Builder<SopraApp>{}
 
     @ApplicationScope
-    void inject(DamageCaseListFragmentRecyclerViewAdapter damageCaseListFragmentRecyclerViewAdapter);
+    void inject(DamageCaseListAdapter damageCaseListAdapter);
 
 }
 
 /**
- * This module does provide the Instance of SopraApp vor dependency injection.
+ * This module provides the instance of SopraApp for dependency injection.
  */
 @Module
 abstract class AppModule {
+
+    @Binds
+    abstract Application application(SopraApp sopraApp);
 
     @Provides
     @ApplicationScope
@@ -52,35 +56,37 @@ abstract class AppModule {
         return application;
     }
 
-    @Binds
-    abstract Application application(SopraApp sopraApp);
-
     @Provides
     @ApplicationScope
-    static UserManager userManager(SopraApp sopraApp){
+    static UserManager userManager(SopraApp sopraApp) {
         return new UserManager(sopraApp);
     }
 
     @NonNull
-    @ApplicationScope
     @Provides
+    @ApplicationScope
     static DatabaseManager provideDb(Application app) {
         return Room
-                .databaseBuilder(app, DatabaseManager.class,"SopraApp.db")
+                .databaseBuilder(app, DatabaseManager.class, "SopraApp.db")
                 .fallbackToDestructiveMigration()
                 .build();
     }
 
-    @ApplicationScope
     @Provides
+    @ApplicationScope
     static DamageCaseDao provideDamageCaseDao(DatabaseManager db) {
         return db.damageCaseDao();
     }
 
-
-    @ApplicationScope
     @Provides
+    @ApplicationScope
     static UserDao provideUserDao(DatabaseManager db) {
         return db.userDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static GpsService provideGpsService(SopraApp sopraApp) {
+        return new GpsService(sopraApp);
     }
 }

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 
 
 @ApplicationScope

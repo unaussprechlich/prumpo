@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.viewmodel;
+package de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;

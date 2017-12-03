@@ -1,13 +1,9 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +11,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,61 +30,36 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import dagger.android.support.DaggerFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.service.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.Helper.areaOfPolygon;
 
 public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
 
-    private final ArrayList<LatLng> TEST_POLYGON_COORDINATES = new ArrayList<>(
-            Arrays.asList(
-                    new LatLng(48.808631, 8.849357), new LatLng(48.808304, 8.853308),
-                    new LatLng(48.807021, 8.853443), new LatLng(48.807157, 8.851568),
-                    new LatLng(48.806494, 8.851383), new LatLng(48.806448, 8.851114),
-                    new LatLng(48.806565, 8.850313), new LatLng(48.806940, 8.849134),
-                    new LatLng(48.807047, 8.849072), new LatLng(48.808631, 8.849357)
+    @Inject
+    GpsService gpsService;
 
-            )
-    );
     View rootView;
     MapView mMapView;
-    GpsService gpsService;
 
     private GoogleMap gMap;
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
+
     /**
      * The provided bottom sheet behaviour object
      */
     private BottomSheetBehavior mBottomSheetBehavior;
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            GpsService.LocalBinder binder = (GpsService.LocalBinder) service;
-
-            gpsService = binder.getService();
-            isGpsServiceBound = true;
-
-            onGpsBound();
-
-            Log.i(String.valueOf(Log.INFO), "GpsService CONNECTED!");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            isGpsServiceBound = false;
-
-            Log.i(String.valueOf(Log.INFO), "GpsService DISCONNECTED!");
-        }
-    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -131,6 +101,17 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAddMark);
         fabAdd.setOnClickListener(v -> {
+
+            /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
+            int state = mBottomSheetBehavior.getState();
+            if (state == BottomSheetBehavior.STATE_HIDDEN) {
+
+                mBottomSheetBehavior.setHideable(false);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+
+            /* GPS/Map-related section */
+
             if (gpsService.wasLocationDisabled()) {
                 promptEnableLocation();
                 return;
@@ -169,16 +150,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             gpsService.singleLocationCallback(lcl, 10000);
         });
 
-        // open bottom sheet for testing purposes, will be moved to another file? later
-        fabAdd.setOnClickListener(v -> {
-            int state = mBottomSheetBehavior.getState();
-            if (state == BottomSheetBehavior.STATE_HIDDEN) {
-
-                mBottomSheetBehavior.setHideable(false);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
-
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);
         fabLocate.setOnClickListener(v -> {
             LatLng targetPos = gpsService.lastKnownLocation();
@@ -213,22 +184,16 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     private void bindServices() {
         isGpsServiceBound = true;
-        Intent intent = new Intent(getContext().getApplicationContext(), GpsService.class);
-        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        gpsService.startGps();
     }
 
     //  <-- TODO: extract into features -->
 
     private void unbindServices() {
-        if (mConnection == null || gpsService == null | !isGpsServiceBound) return;
+        if (!isGpsServiceBound) return;
 
         gpsService.stopGps();
         isGpsServiceBound = false;
-        getActivity().unbindService(mConnection);
-    }
-
-    private void onGpsBound() {
-        gpsService.startGps();
     }
 
     private void initMap() {

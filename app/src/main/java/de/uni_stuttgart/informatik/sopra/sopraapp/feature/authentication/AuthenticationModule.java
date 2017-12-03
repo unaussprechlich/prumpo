@@ -7,7 +7,7 @@ import android.arch.lifecycle.LiveData;
 import dagger.Module;
 import dagger.Provides;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.UserScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.UserScope;
 
 @Module
 public abstract class AuthenticationModule {

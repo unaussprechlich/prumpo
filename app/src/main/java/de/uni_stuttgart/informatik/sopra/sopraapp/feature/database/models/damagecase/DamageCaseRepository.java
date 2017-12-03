@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.AbstractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
 @ApplicationScope

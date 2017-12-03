@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.base;
+package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
 import android.os.Bundle;
 

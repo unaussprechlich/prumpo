@@ -29,7 +29,7 @@ import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.dependencyinjection.scopes.ActivityScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
@@ -54,7 +54,7 @@ public class DamageCaseListFragment
 
     public void setDamageCaseList(List<DamageCase> damageCaseList) {
         this.damageCaseList = damageCaseList;
-        recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCaseList), true);
+        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseList), true);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class DamageCaseListFragment
         recyclerView = view.findViewById(R.id.dc_recycler_view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCaseList));
+        recyclerView.setAdapter(new DamageCaseListAdapter(damageCaseList));
 
         recyclerView.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
@@ -169,7 +169,7 @@ public class DamageCaseListFragment
                 damageCases.add(damageCase);
 
         // swap adapter to adapter with new items
-        recyclerView.swapAdapter(new DamageCaseListFragmentRecyclerViewAdapter(damageCases), true);
+        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCases), true);
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }

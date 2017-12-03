@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.base.BaseActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
