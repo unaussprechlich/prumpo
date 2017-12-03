@@ -45,4 +45,20 @@
     <string name="map_frag_botsheet_alert_text">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
     <string name="map_frag_botsheet_alert_yes">Ja</string>
     <string name="map_frag_botsheet_alert_no">Nein</string>
+    <string name="title_activity_sign_up">Sign Up</string>
+
+    <string name="su_email_hint">Email</string>
+    <string name="su_password_hint">Password</string>
+    <string name="su_password_confirm_hint">Confirm Password</string>
+    <string name="su_signup_button">SIGN UP</string>
+    <string name="su_name_hint">Name</string>
+    <string name="su_name_last_hint">Last Name</string>
+    <string name="su_name_first_hint">First name</string>
+
+    <string-array name="user_groups">
+        <item>ADMIN</item>
+        <item>NULL</item>
+        <item>GUTACHTER</item>
+        <item>BAUER</item>
+    </string-array>
 </resources>

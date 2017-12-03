@@ -8,11 +8,24 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.area.Point;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
-class Converters {
+public class Converters {
+
 
     @TypeConverter
-    public static ArrayList<Point> toArrayListPoints(String value){
+    public static User.EnumUserRoles convertEnumRoles(String string){
+        return User.EnumUserRoles.valueOf(string);
+    }
+
+    @TypeConverter
+    public static String convertEnumRoles(User.EnumUserRoles role){
+        return role.toString();
+    }
+
+
+    @TypeConverter
+    public static ArrayList<Point> convertArrayList(String value){
         ArrayList<String> pointsAsString = new Gson().fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<Point> points = new ArrayList<>();
         for(String str : pointsAsString){
@@ -22,7 +35,7 @@ class Converters {
     }
 
     @TypeConverter
-    public static String fromArrayListPoints(ArrayList<Point> value){
+    public static String convertArrayList(ArrayList<Point> value){
         ArrayList<String> pointsAsString = new ArrayList<>();
         for(Point point : value){
             pointsAsString.add(point.toString());

@@ -7,9 +7,9 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.AbstractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.IDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
 
 public abstract class GenericViewModel<Model extends ModelDB, Dao extends IDao<Model>, Repo extends AbstractRepository<Model, Dao>> extends ViewModel {

@@ -66,14 +66,15 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"
-        />
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".feature.authentication.AuthenticationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_authentication"
-        />
+            android:label="@string/title_activity_authentication" />
+        <activity
+            android:name=".feature.authentication.SignUpActivity"
+            android:label="@string/title_activity_sign_up"></activity>
     </application>
 
 </manifest>

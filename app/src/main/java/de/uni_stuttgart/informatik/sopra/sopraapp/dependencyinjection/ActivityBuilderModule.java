@@ -8,7 +8,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivityModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.LoginActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.viewmodel.ViewModelModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.SignUpActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivityModule;
 
 @Module
 abstract class ActivityBuilderModule {
@@ -19,6 +21,10 @@ abstract class ActivityBuilderModule {
 
     @ActivityScope
     @ContributesAndroidInjector
+    abstract SignUpActivity contributeSignUpActivity();
+
+    @ActivityScope
+    @ContributesAndroidInjector
     abstract AuthenticationActivity contributeAuthenticationActivity();
 
     @ActivityScope
@@ -26,7 +32,7 @@ abstract class ActivityBuilderModule {
     abstract MainActivity contributeMainActivity();
 
     @ActivityScope
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = {ProfileActivityModule.class})
     abstract ProfileActivity contributeProfileActivity();
 
 }

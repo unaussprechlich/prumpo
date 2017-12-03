@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.IDao;
 
 
 /**

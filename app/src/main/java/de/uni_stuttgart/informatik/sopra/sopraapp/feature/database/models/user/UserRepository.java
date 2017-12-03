@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.AbstractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
@@ -19,7 +19,13 @@ public class UserRepository  extends AbstractRepository<User, UserDao>{
     public UserRepository(@NonNull UserDao dao, @NonNull UserManager userManager) {
         super(dao, userManager);
         try {
-            this.insert(new User("Test", "test", "test@test.test"));
+            this.insert(
+                    new User.Builder()
+                            .setName("Test test")
+                            .setPassword("test")
+                            .setEmail("test@test.test")
+                            .setRole(User.EnumUserRoles.ADMIN)
+                            .build());
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
