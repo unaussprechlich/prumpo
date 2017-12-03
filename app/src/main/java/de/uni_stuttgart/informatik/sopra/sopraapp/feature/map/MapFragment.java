@@ -290,7 +290,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     private void drawVertexOn(LatLng point) {
         gMap.addCircle(
                 new CircleOptions()
-                        .fillColor(R.color.contrastComplement)
+                        .fillColor(getResources().getColor(R.color.contrastComplement, null))
                         .center(point)
                         .strokeWidth(4)
                         .radius(3)
