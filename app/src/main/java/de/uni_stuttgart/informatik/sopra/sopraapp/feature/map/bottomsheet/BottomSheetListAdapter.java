@@ -21,6 +21,7 @@ public class BottomSheetListAdapter
     // TODO! Remove "MapPoint" Implement DamageCase
 
     private DamageCase damageCase;
+    private RecyclerView recyclerView;
 
     /**
      * Constructor
@@ -51,6 +52,12 @@ public class BottomSheetListAdapter
                         false);
 
         return new BottomSheetItemViewHolder(view);
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     /**
@@ -122,7 +129,8 @@ public class BottomSheetListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-//        MapPoint mapPoint = Holder.mapPoints.getItem(position);
+
+//        recyclerView.findViewHolderForLayoutPosition(position).itemView.setSelected(true);
 
         Toast.makeText(view.getContext(), "Pressed position " + position, Toast.LENGTH_SHORT).show();
     }
@@ -145,6 +153,12 @@ public class BottomSheetListAdapter
         Toast.makeText(view.getContext(), " " + position + " Long pressed!", Toast.LENGTH_SHORT).show();
 
         return true;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        recyclerView.getRecycledViewPool().clear();
     }
 
     /**

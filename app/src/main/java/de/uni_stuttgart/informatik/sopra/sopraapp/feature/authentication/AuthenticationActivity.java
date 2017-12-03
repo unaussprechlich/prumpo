@@ -34,5 +34,7 @@ public class AuthenticationActivity extends BaseActivity {
      * Lock the User in place ¯\_(ツ)_/¯
      */
     @Override
-    public void onBackPressed(){}
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

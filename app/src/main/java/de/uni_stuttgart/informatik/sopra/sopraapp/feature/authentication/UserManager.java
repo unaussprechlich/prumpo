@@ -25,53 +25,54 @@ public class UserManager {
      * a useful library like http://greenrobot.org/eventbus/ is accepted.
      */
     private MutableLiveData<User> logoutEvent = new MutableLiveData<>();
-    private MutableLiveData<User> loginEvent  = new MutableLiveData<>();
+    private MutableLiveData<User> loginEvent = new MutableLiveData<>();
 
     @Inject
     public UserManager(Application app) {
         startAuthenticationActivity(app);
     }
 
-    private void startAuthenticationActivity(Context context){
+    private void startAuthenticationActivity(Context context) {
         Intent intent = new Intent(context, AuthenticationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
-    public void subscribeToLogin(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback){
+    public void subscribeToLogin(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback) {
         loginEvent.observe(owner, callback);
     }
 
-    public void subscribeToLogout(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback){
+    public void subscribeToLogout(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback) {
         logoutEvent.observe(owner, callback);
     }
 
-    public void login(@NonNull LiveData<User> currentUser){
+    public void login(@NonNull LiveData<User> currentUser) {
         this.currentUser = currentUser;
         loginEvent.postValue(currentUser.getValue());
     }
 
-    public void logout(Context context){
-        logoutEvent.postValue(currentUser.getValue());
-        this.currentUser = null;
+    public void logout(Context context) {
+        if (currentUser != null) {
+            logoutEvent.postValue(currentUser.getValue());
+            this.currentUser = null;
+        }
         startAuthenticationActivity(context);
     }
 
     public LiveData<User> getCurrentUserAsLiveData(@NonNull Context context) throws NoUserException {
-        if(currentUser != null) return currentUser;
+        if (currentUser != null) return currentUser;
         startAuthenticationActivity(context);
         throw new NoUserException();
     }
 
     public User getCurrentUserAs(@NonNull Context context) throws NoUserException {
-        if(currentUser != null) return currentUser.getValue();
+        if (currentUser != null) return currentUser.getValue();
         startAuthenticationActivity(context);
         throw new NoUserException();
     }
 
 
-
-    public class NoUserException extends Exception{
+    public class NoUserException extends Exception {
         public NoUserException() {
             super("There is currently no User logged in!");
         }

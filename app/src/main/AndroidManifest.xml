@@ -74,7 +74,7 @@
             android:label="@string/title_activity_authentication" />
         <activity
             android:name=".feature.authentication.SignUpActivity"
-            android:label="@string/title_activity_sign_up"></activity>
+            android:label="@string/title_activity_sign_up" />
     </application>
 
 </manifest>
