@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SoPraApp</string>
     <string name="action_search">Search</string>
-    <string name="title_activity_login">SoPraApp</string>
+    <string name="title_activity_login">Login</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -15,7 +15,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">SoPraApp</string>
 
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_closed">Close navigation drawer</string>
@@ -36,7 +36,7 @@
 
     <string name="prompt_enable_localization">Bitte Lokalisierung über GPS oder Netzwerk aktivieren.</string>
 
-    <string name="title_activity_authentication">AuthenticationActivity</string>
+    <string name="title_activity_authentication">Willkommen</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 

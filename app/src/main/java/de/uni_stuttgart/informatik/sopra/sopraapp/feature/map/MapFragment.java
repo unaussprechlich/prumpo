@@ -204,7 +204,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         uiSettings.setTiltGesturesEnabled(false);
 
         drawPolygonOf(TEST_POLYGON_COORDINATES);
-        mapCameraJump(TEST_POLYGON_COORDINATES.get(0));
+        mapCameraJump(Helper.centroidOfPolygon(TEST_POLYGON_COORDINATES));
 
         // show estimated area of polygon, when clicked
         gMap.setOnPolygonClickListener(p ->
@@ -265,12 +265,12 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     private void mapCameraJump(LatLng target) {
         // jumping to the location of the polygon
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
     }
 
     private void mapCameraMove(LatLng target) {
         // panning to the location of the polygon
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
     }
 
     @Override

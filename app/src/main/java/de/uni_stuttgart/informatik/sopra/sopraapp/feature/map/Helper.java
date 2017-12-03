@@ -39,6 +39,20 @@ public class Helper {
         return Math.abs(areaSum/2)*1000000;
     }
 
+    public static LatLng centroidOfPolygon(List<LatLng> vertices) {
+        double length = vertices.size();
+
+        double sumLat = 0;
+        double sumLng = 0;
+
+        for (LatLng vertex : vertices) {
+            sumLat += vertex.latitude;
+            sumLng += vertex.longitude;
+        }
+
+        return new LatLng(sumLat/length, sumLng/length);
+    }
+
     /**
      * Projecting and normalizing lat/lng List-objects onto the cartesian plane.
      * <\p>Uses sinusoidal (equal-area) map projection.
