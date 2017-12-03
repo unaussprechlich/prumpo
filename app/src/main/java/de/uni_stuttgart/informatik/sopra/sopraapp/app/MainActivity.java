@@ -18,12 +18,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -65,6 +66,11 @@ public class MainActivity extends BaseActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        userManager.subscribeToLogin(this, user ->{
+            ((TextView)findViewById(R.id.user_role_text)).setText(user.role.toString());
+            ((TextView)findViewById(R.id.user_name_text)).setText(user.name);
+        });
+
         // set navigation menu header
         View headerView = navigationView.getHeaderView(0);
         LinearLayout header = headerView.findViewById(R.id.nav_header);
@@ -89,6 +95,7 @@ public class MainActivity extends BaseActivity implements
 
         checkPermissions();
     }
+
 
     /**
      * When hitting the Android back button

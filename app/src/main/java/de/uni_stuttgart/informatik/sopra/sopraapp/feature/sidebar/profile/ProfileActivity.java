@@ -23,13 +23,8 @@ public class ProfileActivity extends BaseActivity {
 
         setTitle(R.string.profile_title_app_bar);
 
-        if(userManager.getCurrentUser(this) != null)
-            //noinspection ConstantConditions
-            userManager.getCurrentUser(this).observe(this, this::updateText);
-
-        userManager.subscribeToLogin(this, this::updateText);
-
-        findViewById(R.id.logout_button).setOnClickListener(v -> userManager.logout());
+        userManager.subscribeToLogin(this,this::updateText);
+        findViewById(R.id.logout_button).setOnClickListener(v -> userManager.logout(this));
     }
 
     private void updateText(User user){

@@ -8,7 +8,6 @@ import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
@@ -52,15 +51,29 @@ public class UserManager {
         loginEvent.postValue(currentUser.getValue());
     }
 
-    public void logout(){
+    public void logout(Context context){
         logoutEvent.postValue(currentUser.getValue());
         this.currentUser = null;
+        startAuthenticationActivity(context);
     }
 
-    @Nullable
-    public LiveData<User> getCurrentUser(@NonNull Context context) {
+    public LiveData<User> getCurrentUserAsLiveData(@NonNull Context context) throws NoUserException {
         if(currentUser != null) return currentUser;
         startAuthenticationActivity(context);
-        return null;
+        throw new NoUserException();
+    }
+
+    public User getCurrentUserAs(@NonNull Context context) throws NoUserException {
+        if(currentUser != null) return currentUser.getValue();
+        startAuthenticationActivity(context);
+        throw new NoUserException();
+    }
+
+
+
+    public class NoUserException extends Exception{
+        public NoUserException() {
+            super("There is currently no User logged in!");
+        }
     }
 }
