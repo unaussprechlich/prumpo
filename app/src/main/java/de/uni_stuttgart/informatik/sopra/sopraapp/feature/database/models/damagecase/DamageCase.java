@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
 
 /**
@@ -37,6 +37,7 @@ public class DamageCase implements ModelDB {
 
     @Ignore
     private List<Float> coordinates; // TODO! LatitudeItem
+
     @Ignore private String region;
     @Ignore private float damageArea;
     @Ignore

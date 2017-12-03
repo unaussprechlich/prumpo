@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
 
 /**
@@ -28,10 +28,50 @@ public class User implements ModelDB {
     public String email;
     public String password;
 
-    public User(String name, String password, String email) {
+    @ColumnInfo(index = true)
+    public EnumUserRoles role;
+
+    public enum EnumUserRoles{
+        ADMIN, BAUER, GUTACHTER, NULL;
+    }
+
+    public static class Builder {
+
+        private String name;
+        private String password;
+        private String email;
+        private User.EnumUserRoles role;
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder setEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder setRole(User.EnumUserRoles role) {
+            this.role = role;
+            return this;
+        }
+
+        public User build() {
+            return new User(name, password, email, role);
+        }
+    }
+
+    public User(String name, String password, String email, EnumUserRoles role) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.role = role;
     }
 
     @Override

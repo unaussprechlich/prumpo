@@ -420,12 +420,12 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             // lock hide mode
             mBottomSheetBehavior.setHideable(false);
 
-            // Add first location point
-            bottomSheetListAdapter.add(new MapPoint(""));
-
             // set new adapter
             bottomSheetListAdapter = new BottomSheetListAdapter(damageCase);
             bottomSheetRecyclerView.swapAdapter(bottomSheetListAdapter, false);
+
+            // Add first location point
+            bottomSheetListAdapter.add(new MapPoint(""));
 
             // measure height of toolbar and recycler view
             bottomSheetToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);

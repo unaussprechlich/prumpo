@@ -1,13 +1,19 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 
 import android.app.Application;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import javax.inject.Inject;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
 
 @ApplicationScope
@@ -15,6 +21,14 @@ public class UserManager {
 
     private LiveData<User> currentUser = null;
 
+    /**
+     * Yes, I abuse LiveData to be an Eventbus .... I don't have time to wait a week until
+     * a useful library like http://greenrobot.org/eventbus/ is accepted.
+     */
+    private MutableLiveData<User> logoutEvent = new MutableLiveData<>();
+    private MutableLiveData<User> loginEvent  = new MutableLiveData<>();
+
+    @Inject
     public UserManager(Application app) {
         startAuthenticationActivity(app);
     }
@@ -25,12 +39,26 @@ public class UserManager {
         context.startActivity(intent);
     }
 
-    public void setCurrentUser(LiveData<User> currentUser) {
+    public void subscribeToLogin(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback){
+        loginEvent.observe(owner, callback);
+    }
+
+    public void subscribeToLogout(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback){
+        logoutEvent.observe(owner, callback);
+    }
+
+    public void login(@NonNull LiveData<User> currentUser){
         this.currentUser = currentUser;
+        loginEvent.postValue(currentUser.getValue());
+    }
+
+    public void logout(){
+        logoutEvent.postValue(currentUser.getValue());
+        this.currentUser = null;
     }
 
     @Nullable
-    public LiveData<User> getCurrentUser(Context context) {
+    public LiveData<User> getCurrentUser(@NonNull Context context) {
         if(currentUser != null) return currentUser;
         startAuthenticationActivity(context);
         return null;

@@ -66,7 +66,7 @@ public class LoginActivity extends BaseActivity {
             return false;
         });
 
-        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = findViewById(R.id.sign_up_button);
         mEmailSignInButton.setOnClickListener(view -> attemptLogin());
 
         mLoginFormView = findViewById(R.id.login_form);
@@ -123,11 +123,11 @@ public class LoginActivity extends BaseActivity {
         liveUser.observe(this, user -> {
             try{
                 if(user == null){
-                    mEmailView.setError("Email not found.");
+                    mEmailView.setError("Empty Field!");
                     mEmailView.requestFocus();
                     showProgress(false);
                 } else if(user.password.equals(password)){
-                    userManager.setCurrentUser(liveUser);
+                    userManager.login(liveUser);
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(myIntent);
                 } else if(!user.password.equals(password)){

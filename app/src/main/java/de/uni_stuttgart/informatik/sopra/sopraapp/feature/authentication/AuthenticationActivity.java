@@ -19,10 +19,13 @@ public class AuthenticationActivity extends BaseActivity {
         setContentView(R.layout.activity_authentication);
 
         findViewById(R.id.login_button).setOnClickListener(v -> {
-
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+        });
 
+        findViewById(R.id.signup_button).setOnClickListener(v -> {
+            Intent intent = new Intent(this, SignUpActivity.class);
+            startActivity(intent);
         });
     }
 
