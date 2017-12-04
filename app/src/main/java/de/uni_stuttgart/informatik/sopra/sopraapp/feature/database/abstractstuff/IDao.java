@@ -12,10 +12,8 @@ import java.util.List;
 @Dao
 public interface IDao<T extends ModelDB> {
 
-    LiveData<List<T>> getAll();
-    LiveData<T> getById(long id);
-
-    int count();
+    LiveData<List<T>> getAll(long owner);
+    LiveData<T> getById(long id, long owner);
 
     /**
      * Update the userDB. The userDB is identified by the row ID.
@@ -37,16 +35,6 @@ public interface IDao<T extends ModelDB> {
      */
     @Insert
     long insert(T t);
-
-    /**
-     * Creates multiple entries in succession.
-     *
-     * @param ts    An array of new entries.
-     *
-     * @return      The row IDs of the created entries.
-     */
-    @Insert
-    long[] insertAll(T[] ts);
 
     @Delete
     void delete(T t);

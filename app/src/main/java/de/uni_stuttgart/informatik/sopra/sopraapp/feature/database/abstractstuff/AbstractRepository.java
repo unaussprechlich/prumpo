@@ -7,17 +7,20 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
 
 public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao<Model>> {
 
     private final Dao dao;
-    private final UserManager userManager;
 
-    public AbstractRepository(@NonNull Dao dao, @NonNull UserManager userManager){
+    @Inject
+    protected UserManager userManager;
+
+    public AbstractRepository(@NonNull Dao dao){
         this.dao = dao;
-        this.userManager = userManager;
     }
 
     protected Dao getDao() {
@@ -25,65 +28,45 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     }
 
     public LiveData<List<Model>> getAll(){
-        return dao.getAll();
+        return dao.getAll(getUserId());
     }
 
     public LiveData<Model> getById(long id){
-        return dao.getById(id);
+        return dao.getById(id, getUserId());
     }
 
-    // COUNT #######################################################################################
-
-    public boolean isEmpty() throws ExecutionException, InterruptedException {
-        return count() > 0; // TODO invert?^^
-    }
-
-    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
-    public int count() throws ExecutionException, InterruptedException {
-        return new CountAsyncTask<>(dao).execute().get();
-    }
-
-    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
-    public Long insert(@NonNull Model model) throws ExecutionException, InterruptedException {
-        return new InsertAsyncTask<>(dao).execute(model).get();
-
-        //I WOULD LIKE TO ... BUT INTELLIJ DOES NOT LIKE THIS .... MEMORY LEAKS ... BLABLABLA
-        //        return new AbstractAsyncTask<Model, Dao, Long>(dao) {
-        //            protected final Long doInBackground(Model[] params) {
-        //                return dao.insert(params[0]);
-        //            }
-        //        }.execute(model).getItem();
-    }
-
+    abstract protected long getUserId();
 
     // CREATE ######################################################################################
 
     @SuppressWarnings("unchecked")
     //@SafeVarargs is present in the actual async task .... so I don't care!
     public void delete(@NonNull Model model) {
-        new AbstractRepository.DeleteAsyncTask<>(dao).execute(model);
+        new AbstractRepository.DeleteAsyncTask<>(dao, getUserId()).execute(model);
     }
 
-    private static class CountAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Integer> {
+    private static class DeleteAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Void>{
 
-        public CountAsyncTask(@NonNull Dao dao) {
-            super(dao);
+
+        public DeleteAsyncTask(Dao dao, Long userID) {
+            super(dao, userID);
         }
 
         @SafeVarargs
-        protected final Integer doInBackground(final Model... params) {
-            return dao.count();
+        protected final Void doInBackground(final Model... params) {
+            dao.delete(params[0]);
+            return null;
         }
-
     }
+
 
     // DELETE ######################################################################################
 
     private static class InsertAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Long> {
 
-        //WHYYYYYYYY?!?!?!??!?!?!?! f*cking java ... use your brain
-        public InsertAsyncTask(@NonNull Dao dao) {
-            super(dao);
+
+        public InsertAsyncTask(Dao dao, Long userID) {
+            super(dao, userID);
         }
 
         @SafeVarargs
@@ -93,18 +76,9 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
 
     }
 
-    private static class DeleteAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTask<Model, Dao, Void>{
-
-        public DeleteAsyncTask(@NonNull Dao dao) {
-            super(dao);
-        }
-
-        @SafeVarargs
-        protected final Void doInBackground(final Model... params) {
-            dao.delete(params[0]);
-            return null;
-        }
-
+    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
+    public Long insert(@NonNull Model model) throws ExecutionException, InterruptedException {
+        return new InsertAsyncTask<>(dao, getUserId()).execute(model).get();
     }
 
     // ABSTRACT TASK ###############################################################################
@@ -117,9 +91,11 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
             extends AsyncTask<Model, Void, Return> {
 
         protected Dao dao;
+        protected Long userID;
 
-        public AbstractAsyncTask(Dao dao) {
+        public AbstractAsyncTask(Dao dao, Long userID) {
             this.dao = dao;
+            this.userID = userID;
         }
     }
 }

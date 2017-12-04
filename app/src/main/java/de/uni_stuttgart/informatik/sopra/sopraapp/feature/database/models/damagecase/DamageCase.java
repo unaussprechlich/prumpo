@@ -45,11 +45,12 @@ public class DamageCase implements ModelDB {
     @Ignore private GregorianCalendar date;
 
 
-    public DamageCase(String nameDamageCase, String namePolicyholder, String nameExpert, float area) {
+    public DamageCase(String nameDamageCase, String namePolicyholder, String nameExpert, float area, long ownerID) {
         this.nameDamageCase = nameDamageCase;
         this.namePolicyholder = namePolicyholder;
         this.nameExpert = nameExpert;
         this.area = area;
+        this.ownerID = ownerID;
     }
 
     public String getNameDamageCase() {

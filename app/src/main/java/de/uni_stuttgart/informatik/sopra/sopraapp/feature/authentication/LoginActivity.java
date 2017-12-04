@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -50,6 +49,18 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //TODO remove dummy
+        try {
+            userRepository.insert(new User.Builder()
+                    .setEmail("dummy@dummy.net")
+                    .setPassword("dummy")
+                    .setName("Mister Dummy")
+                    .setRole(User.EnumUserRoles.ADMIN)
+                    .build());
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
         mEmailView = findViewById(R.id.email);
         mPasswordView = findViewById(R.id.password);
 
@@ -61,13 +72,22 @@ public class LoginActivity extends BaseActivity {
             return false;
         });
 
+        findViewById(R.id.SKIP_LOGIN).setOnClickListener(v ->{
+            LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
+            user.observe(this, user1 ->
+                    userManager.login(user)
+            );
+            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(myIntent);
+        });
+
         Button mEmailSignInButton = findViewById(R.id.sign_up_button);
         mEmailSignInButton.setOnClickListener(view -> attemptLogin());
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        bindDoubleTapSkip();
     }
 
     /**
@@ -103,6 +123,7 @@ public class LoginActivity extends BaseActivity {
                     else if(user.password.equals(password)){
                         userManager.login(liveUser);
                         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         startActivity(myIntent);
                     } else if(!user.password.equals(password))
                         throw new LogInValueException(mPasswordView, "Password Incorrect!");
@@ -185,26 +206,5 @@ public class LoginActivity extends BaseActivity {
                         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
                     }
                 });
-    }
-
-    /* Skip login.
-       For testing purposes only! */
-    //TODO remove!
-    private void bindDoubleTapSkip() {
-        GestureDetector gd = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                myIntent.putExtra("user", "");
-                startActivity(myIntent);
-                finish();
-                return true;
-            }
-        });
-
-        mLoginFormView.setOnTouchListener((v, event) -> {
-            v.performClick();
-            return gd.onTouchEvent(event);
-        });
     }
 }

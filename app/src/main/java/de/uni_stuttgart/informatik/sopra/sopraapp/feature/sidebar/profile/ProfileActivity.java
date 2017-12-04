@@ -24,7 +24,7 @@ public class ProfileActivity extends BaseActivity {
         setTitle(R.string.profile_title_app_bar);
 
         userManager.subscribeToLogin(this,this::updateText);
-        findViewById(R.id.logout_button).setOnClickListener(v -> userManager.logout(this));
+        findViewById(R.id.logout_button).setOnClickListener(v -> userManager.logout());
     }
 
     private void updateText(User user){

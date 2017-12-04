@@ -33,6 +33,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 )
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
+
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp>{}
 

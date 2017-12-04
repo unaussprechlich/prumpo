@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
@@ -47,6 +48,9 @@ public class DamageCaseListFragment
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    UserManager userManager;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -73,6 +77,8 @@ public class DamageCaseListFragment
                 .get(DamageCaseCollectionViewModel.class)
                 .getAll()
                 .observe(this, this::setDamageCaseList);
+
+
     }
 
 
@@ -111,7 +117,11 @@ public class DamageCaseListFragment
             long r = Math.round(Math.random() * 100);
             try {
                 Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
-                damageCaseRepository.insert(new DamageCase("DamageCase_" + r, "PolicyHolder_" + r, "NameExper_" + r, r));
+                try {
+                    damageCaseRepository.insert(new DamageCase("DamageCase_" + r, "PolicyHolder_" + r, "NameExper_" + r, r, userManager.getCurrentUser().getID() ));
+                } catch (UserManager.NoUserException e) {
+                    e.printStackTrace();
+                }
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }

@@ -14,6 +14,7 @@ import dagger.Binds;
 import dagger.MapKey;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseCollectionViewModel;
 
 @Module
@@ -21,14 +22,15 @@ public abstract class ViewModelModule {
 
     // NEW VIEW_MODELS GO HERE #####################################################################
 
+    @ActivityScope
     @Binds
     @IntoMap
     @ViewModelKey(DamageCaseCollectionViewModel.class)
     abstract ViewModel bindDamageCaseCollectionViewModel(DamageCaseCollectionViewModel viewModel);
 
-
     //##############################################################################################
 
+    @ActivityScope
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(CustomViewModelFactory factory);
 

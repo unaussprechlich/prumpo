@@ -23,22 +23,12 @@ public interface UserDao extends IDao<User> {
     String TABLE_NAME = User.TABLE_NAME;
 
 // Standard Queries ################################################################################
-
-
-
-    /**
-     * Counts the number of users in the table.
-     * @return  The number of users.
-     */
-    @Query("SELECT COUNT(*) FROM " + TABLE_NAME )
-    int count();
-
     /**
      * Select all users.
      * @return  A {@link User} of all the users in the table.
      */
-    @Query("SELECT * FROM " + TABLE_NAME + "")
-    LiveData<List<User>> getAll();
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :userID")
+    LiveData<List<User>> getAll(long userID);
 
     /**
      * Select a user by their ID.
@@ -46,16 +36,9 @@ public interface UserDao extends IDao<User> {
      * @return      A {@link User} of the selected users.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id")
-    LiveData<User> getById(long id);
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :userID")
+    LiveData<User> getById(long id, long userID);
 
-    /**
-     * Select a user by their NAME.
-     * @param name  The NAME of the row in question.
-     * @return      A {@link User} of the selected users.
-     */
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE name = :name")
-    LiveData<User> getByName(String name);
 
     /**
      * Select a user by their EMAIL.
