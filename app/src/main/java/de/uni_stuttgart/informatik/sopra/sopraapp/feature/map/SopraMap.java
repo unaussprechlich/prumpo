@@ -36,23 +36,22 @@ public class SopraMap {
     private Resources resources;
     private GoogleMap gMap;
 
-    private Polygon visiblePolygon;
     private Polyline previewPolyline;
-    private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     private Marker dragMarker;
     private boolean isHighlighted;
     private int indexActiveVertex = -1;
 
-    private SopraPolygon polygonData = new SopraPolygon();
+    // TODO: rework to hold and view List of polygons
+    private PolygonContainer polygon;
 
     @Inject
     Vibrator vibrator;
 
     SopraMap(GoogleMap googleMap, Resources resources) {
         SopraApp.getAppComponent().inject(this);
-        this.resources = resources;
 
+        this.resources = resources;
         this.gMap = googleMap;
 
         initMap();
@@ -74,13 +73,13 @@ public class SopraMap {
                 isHighlighted = false;
                 indexActiveVertex = -1;
 
-                removeHighlight();
+                polygon.removeHighlight();
 
                 return;
             }
 
             isHighlighted = true;
-            highlight(polygonData.getPoints());
+            polygon.highlight();
         });
 
         gMap.setOnCircleClickListener(circle -> {
@@ -92,26 +91,70 @@ public class SopraMap {
         gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
+                // initial haptic feedback
                 vibrator.vibrate(200);
             }
 
             @Override
             public void onMarkerDrag(Marker marker) {
-                onMarkerMove(marker);
+                SopraMap.this.onMarkerDrag(marker);
             }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                onMarkerDown(marker);
+                SopraMap.this.onMarkerDragEnd(marker);
+
+                // final haptic feedback
                 vibrator.vibrate(100);
 
                 // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
-                marker.setPosition(polygonData.getPoint(indexActiveVertex));
+                marker.setPosition(polygon.data.getPoint(indexActiveVertex));
             }
         });
 
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
+    }
+
+    void drawPolygonOf(List<LatLng> coordinates, PolygonType type) {
+
+        PolygonOptions rectOptions =
+                new PolygonOptions()
+                        .addAll(coordinates)
+                        .geodesic(true)
+                        .clickable(true)
+                        .strokeJointType(JointType.ROUND)
+                        .strokeColor(resources.getColor(R.color.red, null))
+                        .fillColor(resources.getColor(R.color.damage_alpha, null));
+
+        Polygon polygonMapObject = gMap.addPolygon(rectOptions);
+
+        polygon = new PolygonContainer(
+                polygonMapObject,
+                SopraPolygon.loadPolygon(coordinates),
+                PolygonType.DAMAGE_CASE
+        );
+
+    }
+
+    void mapCameraJump(LatLng target) {
+        // jumping to the location of the data
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
+    }
+
+    void mapCameraJump(List<LatLng> polygon) {
+        // jumping to the location of the polygons centroid
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
+    }
+
+    void mapCameraMove(LatLng target) {
+        // panning to the location of the data
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
+    }
+
+    void mapCameraMove(List<LatLng> polygon) {
+        // panning to the location of the polygons centroid
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
     }
 
     private CameraPosition cameraPosOf(LatLng target, int zoom) {
@@ -148,10 +191,10 @@ public class SopraMap {
         dragMarker.setPosition(circle.getCenter());
     }
 
-    private void onMarkerMove(Marker marker) {
+    private void onMarkerDrag(Marker marker) {
 
         List<LatLng> adjacentPoints = new ArrayList<>();
-        int vertexCount = polygonData.getVertexCount();
+        int vertexCount = polygon.data.getVertexCount();
 
         int indexLeft = indexActiveVertex - 1;
         int indexRight = indexActiveVertex + 1;
@@ -168,98 +211,82 @@ public class SopraMap {
 
         /* actual preview */
 
-        adjacentPoints.add(polygonData.getPoint(indexLeft));
+        adjacentPoints.add(polygon.data.getPoint(indexLeft));
         adjacentPoints.add(marker.getPosition());
-        adjacentPoints.add(polygonData.getPoint(indexRight));
+        adjacentPoints.add(polygon.data.getPoint(indexRight));
 
         previewPolyline.setPoints(adjacentPoints);
     }
 
-    private void onMarkerDown(Marker marker) {
+    private void onMarkerDragEnd(Marker marker) {
 
         if (indexActiveVertex < 0) return;
 
         LatLng markerPosition = marker.getPosition();
 
-        polygonData.movePoint(indexActiveVertex, markerPosition);
-        List<LatLng> points = polygonData.getPoints();
+        polygon.data.movePoint(indexActiveVertex, markerPosition);
+        List<LatLng> points = polygon.data.getPoints();
 
-        visiblePolygon.setPoints(points);
+        polygon.mapObject.setPoints(points);
 
         previewPolyline.remove();
         previewPolyline = null;
 
-        removeHighlight();
-        highlight(points);
+        polygon.removeHighlight();
+        polygon.highlight();
     }
 
-    private void highlight(List<LatLng> points) {
+    private class PolygonContainer {
 
-        for (int i = 0; i < points.size(); ++i) {
+        PolygonType type;
 
-            Circle circle = gMap.addCircle(
+        Polygon mapObject;
+        SopraPolygon data;
+
+        List<Circle> polygonHighlightVertex = new ArrayList<>();
+
+        PolygonContainer(Polygon polygonMapObject, SopraPolygon polygonData, PolygonType type) {
+            this.mapObject = polygonMapObject;
+            this.data = polygonData;
+
+            this.type = type;
+        }
+
+        PolygonContainer(Polygon polygonVisible, PolygonType type) {
+            this(polygonVisible, new SopraPolygon(), type);
+        }
+
+        private void removeHighlight() {
+            for (Circle vertex : polygonHighlightVertex) {
+                vertex.remove();
+            }
+
+            polygonHighlightVertex.clear();
+
+            if (dragMarker != null) {
+                dragMarker.remove();
+                dragMarker = null;
+            }
+        }
+
+        private void highlight() {
+
+            List<LatLng> points = data.getPoints();
+            CircleOptions options =
                     new CircleOptions()
                             .fillColor(resources.getColor(R.color.contrastComplement, null))
-                            .center(points.get(i))
                             .strokeWidth(4)
                             .radius(3)
                             .zIndex(1)
-                            .clickable(true));
+                            .clickable(true);
 
-            polygonHighlightVertex.add(circle);
+            for (int i = 0; i < points.size(); ++i) {
+                Circle circle = gMap.addCircle(options.center(points.get(i)));
 
-            circle.setTag(i);
+                polygonHighlightVertex.add(circle);
+                circle.setTag(i);
+            }
+
         }
     }
-
-    private void removeHighlight() {
-        for (Circle vertex : polygonHighlightVertex) {
-            vertex.remove();
-        }
-
-        polygonHighlightVertex.clear();
-
-        if (dragMarker != null) {
-            dragMarker.remove();
-            dragMarker = null;
-        }
-    }
-
-
-
-    void drawPolygonOf(List<LatLng> coordinates) {
-        polygonData = SopraPolygon.loadPolygon(coordinates);
-
-        PolygonOptions rectOptions =
-                new PolygonOptions()
-                        .addAll(coordinates)
-                        .geodesic(true)
-                        .clickable(true)
-                        .strokeJointType(JointType.ROUND)
-                        .strokeColor(resources.getColor(R.color.red, null))
-                        .fillColor(resources.getColor(R.color.damage_alpha, null));
-
-        visiblePolygon = gMap.addPolygon(rectOptions);
-    }
-
-    void mapCameraJump(LatLng target) {
-        // jumping to the location of the polygonData
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
-    }
-
-    void mapCameraJump(List<LatLng> polygon) {
-        // jumping to the location of the polygons centroid
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
-    }
-
-    void mapCameraMove(LatLng target) {
-        // panning to the location of the polygonData
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
-    }
-
-    void mapCameraMove(List<LatLng> polygon) {
-        // panning to the location of the polygons centroid
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
-    }
-
 }

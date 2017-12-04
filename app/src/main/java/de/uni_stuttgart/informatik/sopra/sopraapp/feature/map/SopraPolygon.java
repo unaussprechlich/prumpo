@@ -10,7 +10,7 @@ import java.util.List;
  */
 class SopraPolygon {
 
-    List<LatLng> vertices = new ArrayList<>();
+    private List<LatLng> vertices = new ArrayList<>();
 
     boolean addPoint(LatLng point) {
         vertices.add(point);
@@ -88,4 +88,5 @@ class SopraPolygon {
     private boolean notIntersecting() {
         return true;
     }
+
 }

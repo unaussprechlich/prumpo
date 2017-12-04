@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -115,7 +114,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     private void onMapReady(GoogleMap googleMap) {
         sopraMap = new SopraMap(googleMap, getResources());
 
-        sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES);
+        sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.DAMAGE_CASE);
         sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
     }
 
