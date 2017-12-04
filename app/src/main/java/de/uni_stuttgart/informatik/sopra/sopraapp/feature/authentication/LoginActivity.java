@@ -161,7 +161,7 @@ public class LoginActivity extends BaseActivity {
         public void showError(){
             editText.setError(getMessage());
             editText.requestFocus();
-            vibrator.vibrate(1000);
+            vibrator.vibrate(500);
         }
 
         final EditText editText;

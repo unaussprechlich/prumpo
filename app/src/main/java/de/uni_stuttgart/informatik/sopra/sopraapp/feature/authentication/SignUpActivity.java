@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,8 +39,8 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
     private View mProgressView;
     private View mSignupFormView;
 
-    @Inject
-    UserRepository userRepository;
+    @Inject UserRepository userRepository;
+    @Inject Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +132,7 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
         public void showError(){
             editText.setError(getMessage());
             editText.requestFocus();
+            vibrator.vibrate(500);
         }
 
         final EditText editText;
