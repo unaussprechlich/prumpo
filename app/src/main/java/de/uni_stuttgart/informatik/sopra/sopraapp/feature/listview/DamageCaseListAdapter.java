@@ -69,9 +69,9 @@ public class DamageCaseListAdapter
         DamageCase damageCase = Holder.damageCaseList.get(position);
 
         // set bindings
-        holder.damageCaseName.setText(damageCase.getNameDamageCase());
-        holder.expertName.setText(damageCase.getNamePolicyholder());
-        holder.damageArea.setText(String.valueOf(damageCase.getArea()));
+        holder.damageCaseName.setText(damageCase.nameDamageCase);
+        holder.expertName.setText(damageCase.namePolicyholder);
+        holder.damageArea.setText(String.valueOf(damageCase.areaSize));
 
         holder.cardView.setOnClickListener(v -> onClick(v, position));
     }
@@ -101,7 +101,7 @@ public class DamageCaseListAdapter
     public void onClick(View view, int position) {
         DamageCase damageCase = Holder.damageCaseList.get(position);
 
-        Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(view.getContext(), damageCase.namePolicyholder, Toast.LENGTH_SHORT).show();
     }
 
     /**

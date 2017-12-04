@@ -12,7 +12,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
 
 
 @ApplicationScope
-@Database(entities = {User.class, DamageCase.class}, version = 6)
+@Database(entities = {User.class, DamageCase.class}, version = 7)
 @TypeConverters({Converters.class})
 public abstract class DatabaseManager extends RoomDatabase {
 

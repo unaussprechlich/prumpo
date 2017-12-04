@@ -2,15 +2,17 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database;
 
 import android.arch.persistence.room.TypeConverter;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.area.Point;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
 public class Converters {
@@ -33,24 +35,34 @@ public class Converters {
         return role.toString();
     }
 
+    @TypeConverter
+    public String converteLocalDateTime(Date date){
+        return date.toString();
+    }
 
     @TypeConverter
-    public ArrayList<Point> convertArrayList(String value){
+    public Date converteLocalDateTime(String date){
+        return new Date(date);
+    }
+
+    @TypeConverter
+    public List<LatLng> convertArrayList(String value){
         ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
-        ArrayList<Point> points = new ArrayList<>();
+        ArrayList<LatLng> points = new ArrayList<>();
         for(String str : pointsAsString){
-            points.add(Point.fromString(str));
+            String[] spl = str.split("-");
+            points.add(new LatLng(Double.valueOf(spl[0]), Double.valueOf(spl[1])));
         }
         return points;
     }
 
     @TypeConverter
-    public String convertArrayList(ArrayList<Point> value){
-        ArrayList<String> pointsAsString = new ArrayList<>();
-        for(Point point : value){
-            pointsAsString.add(point.toString());
+    public String convertArrayList(List<LatLng> value){
+        ArrayList<String> asString = new ArrayList<>();
+        for(LatLng latLng : value){
+            asString.add(latLng.latitude + "-" + latLng.latitude);
         }
-        return gson.toJson(pointsAsString);
+        return gson.toJson(asString);
     }
 
 }
