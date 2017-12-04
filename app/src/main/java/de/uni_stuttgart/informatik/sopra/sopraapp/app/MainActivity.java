@@ -14,18 +14,20 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.HapticFeedbackConstants;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -35,13 +37,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.Profil
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 
 @ApplicationScope
-public class MainActivity extends BaseActivity implements
+public class MainActivity extends BaseEventBusActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker {
-
-    @Inject
-    UserManager userManager;
 
     @Inject
     MapFragment mapFragment;
@@ -67,11 +66,6 @@ public class MainActivity extends BaseActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        userManager.subscribeToLogin(this, user ->{
-            ((TextView)findViewById(R.id.user_role_text)).setText(user.role.toString());
-            ((TextView)findViewById(R.id.user_name_text)).setText(user.name);
-        });
-
         // set navigation menu header
         View headerView = navigationView.getHeaderView(0);
         LinearLayout header = headerView.findViewById(R.id.nav_header);
@@ -95,6 +89,17 @@ public class MainActivity extends BaseActivity implements
         navigationView.setCheckedItem(R.id.nav_map);
 
         checkPermissions();
+    }
+
+
+    @Subscribe(sticky = true)
+    public void handelLogin(AuthenticationEvents.Login event){
+        updateText(event.user);
+    }
+
+    private void updateText(User user){
+        ((TextView)findViewById(R.id.user_role_text)).setText(user.role.toString());
+        ((TextView)findViewById(R.id.user_name_text)).setText(user.name);
     }
 
 

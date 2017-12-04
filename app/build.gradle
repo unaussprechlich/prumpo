@@ -47,6 +47,9 @@ dependencies {
     compile 'com.android.support:cardview-v7:26.1.0'
     compile 'com.android.support:recyclerview-v7:26.1.0'
 
+    //EVENTBUS
+    compile 'org.greenrobot:eventbus:3.1.1'
+
     compile 'com.google.android.gms:play-services-maps:11.6.2'
     compile 'com.google.code.gson:gson:2.8.2'
 

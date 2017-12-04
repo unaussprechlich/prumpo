@@ -1,11 +1,10 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -24,8 +23,7 @@ public class UserManager {
      * Yes, I abuse LiveData to be an Eventbus .... I don't have time to wait a week until
      * a useful library like http://greenrobot.org/eventbus/ is accepted.
      */
-    private MutableLiveData<LiveData<User>> logoutEvent = new MutableLiveData<>();
-    private MutableLiveData<User> loginEvent  = new MutableLiveData<>();
+
 
     @Inject
     public UserManager(SopraApp app) {
@@ -39,21 +37,17 @@ public class UserManager {
         context.startActivity(intent);
     }
 
-    public void subscribeToLogin(@NonNull LifecycleOwner owner, @NonNull Observer<User> callback){
-        loginEvent.observe(owner, callback);
-    }
 
-    public void subscribeToLogout(@NonNull LifecycleOwner owner, @NonNull Observer<LiveData<User>> callback){
-        logoutEvent.observe(owner, callback);
-    }
 
     public void login(@NonNull LiveData<User> currentUser){
         this.currentUser = currentUser;
-        loginEvent.postValue(currentUser.getValue());
+        EventBus.getDefault().removeAllStickyEvents();
+        EventBus.getDefault().postSticky(new AuthenticationEvents.Login(currentUser.getValue()));
     }
 
     public void logout(){
-        logoutEvent.postValue(currentUser);
+        EventBus.getDefault().removeAllStickyEvents();
+        EventBus.getDefault().postSticky(new AuthenticationEvents.Logout(currentUser.getValue()));
         this.currentUser = null;
         //TODO testing only
         //This is how you clean all activities and all the other junk ... trust me i found this on stackoverflow .. this can't be wrong!!111!111!!
