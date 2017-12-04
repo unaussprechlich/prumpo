@@ -95,6 +95,7 @@ public class SopraMap {
 
             @Override
             public void onMarkerDrag(Marker marker) {
+                onMarkerMove(marker);
             }
 
             @Override
@@ -149,9 +150,13 @@ public class SopraMap {
 
         if (indexLeft == -1) {
             indexLeft = vertexCount-1;
-        }
+            indexRight += 1;
 
-        if (indexRight == vertexCount) {
+        } else if (indexRight == vertexCount) {
+            indexRight = 0;
+            indexLeft -= 1;
+
+        } else if(indexActiveVertex == vertexCount-1) {
             indexRight = 0;
         }
 
@@ -163,6 +168,7 @@ public class SopraMap {
     }
 
     private void onMarkerDown(Marker marker) {
+        System.out.println(indexActiveVertex);
         if (indexActiveVertex < 0) return;
 
         LatLng markerPosition = marker.getPosition();
