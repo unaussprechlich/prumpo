@@ -151,10 +151,17 @@ public class SopraMap {
         int indexLeft = indexActiveVertex - 1;
         int indexRight = indexActiveVertex + 1;
 
-        if (indexActiveVertex <= 0 || indexActiveVertex >= vertexCount-1) {
-            indexRight = 1;
-            indexLeft = vertexCount - 2;
+        /* wrap around */
+
+        if (indexLeft == -1) {
+            indexLeft = vertexCount-1;
         }
+
+        if (indexRight == vertexCount) {
+            indexRight = 0;
+        }
+
+        /* actual preview */
 
         adjacentPoints.add(polygonData.getPoint(indexLeft));
         adjacentPoints.add(marker.getPosition());
