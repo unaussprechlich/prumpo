@@ -13,7 +13,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary"
-            android:elevation="4dp"
+            android:elevation="0dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:title="Hallo"
@@ -30,12 +30,66 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bottom_sheet_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@id/bottom_sheet_toolbar"
+            android:orientation="horizontal"
             android:scrollbars="horizontal"
             tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+            tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottom_sheet_list">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
+                android:paddingTop="24dp">
+                <!--android:layout_below="@id/bottom_sheet_list"-->
+
+
+                <!--Schadensfälle können mit der Angabe des Versicherungsobjekts
+                (Name des Versicherungsnehmers,
+                Fläche und Koordinaten des Objekts,
+                Region (mind. Landkreis)),
+                Schadensinformationen
+                (Schadensfläche, Schadensposition,
+                Schadens-Koordinaten/-Polygon, Datum)
+                und Name des Gutachters erfasst werden.-->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="@string/bs_control_title_label"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/bs_control_title_input"
+                        android:layout_width="206dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
 
     </RelativeLayout>
+
 
 </android.support.v4.widget.NestedScrollView>

@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +34,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.MapPoint;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
@@ -75,7 +77,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState){
+                             @Nullable Bundle savedInstanceState) {
 
         // guard clause for 2nd visit
         if (rootView != null) return rootView;
@@ -129,7 +131,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             if (waitingForResponse) return;
 
-            LocationCallbackListener lcl = new LocationCallbackListener(){
+            LocationCallbackListener lcl = new LocationCallbackListener() {
                 @Override
                 public void onLocationFound(Location location) {
                     double lat = location.getLatitude();
@@ -304,7 +306,12 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         });
 
-//        mBottomSheetBehavior.
+
+        EditText dc_title = bottomSheet.findViewById(R.id.bs_control_title_input);
+        dc_title.setOnClickListener(InputRetriever.of(dc_title)
+                .withTitle(R.string.map_frag_botsheet_dialog_dc_name)
+                .withHint(R.string.map_frag_botsheet_dialog_dc_name_hint)
+        );
 
 
         // init toolbar close button
@@ -335,7 +342,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             }
         });
-
     }
 
     private void loadDamageCaseBottomSheet(DamageCase damageCase) {

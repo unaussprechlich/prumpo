@@ -45,6 +45,14 @@
     <string name="map_frag_botsheet_alert_text">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
     <string name="map_frag_botsheet_alert_yes">Ja</string>
     <string name="map_frag_botsheet_alert_no">Nein</string>
+
+
+    <string name="map_frag_botsheet_dialog_default_header">"Bitte eingeben …"</string>
+    <string name="map_frag_botsheet_dialog_positive">OK</string>
+    <string name="map_frag_botsheet_dialog_negative">Abbrechen</string>
+    <string name="map_frag_botsheet_dialog_dc_name">Bezeichnung</string>
+    <string name="map_frag_botsheet_dialog_dc_name_hint">Bezeichnung für den Schadensfall</string>
+
     <string name="title_activity_sign_up">Sign Up</string>
 
     <string name="su_email_hint">Email</string>
@@ -54,6 +62,7 @@
     <string name="su_name_hint">Name</string>
     <string name="su_name_last_hint">Last Name</string>
     <string name="su_name_first_hint">First name</string>
+    <string name="bs_control_title_label">Bezeichnung</string>
 
     <string-array name="user_groups">
         <item>ADMIN</item>
