@@ -19,22 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,18 +53,15 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
      */
     BottomSheetListAdapter bottomSheetListAdapter;
 
-    private GoogleMap gMap;
+    private SopraMap sopraMap;
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
-
-    private Marker activeDragMarker = null;
-    private Circle activeCircle = null;
-    private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     /**
      * The provided bottom sheet behaviour object
      */
     private BottomSheetBehavior mBottomSheetBehavior;
+
     /**
      * The recycler view for the horizontal recycler view
      */
@@ -110,15 +95,19 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             e.printStackTrace();
         }
 
-        mMapView.getMapAsync(googleMap -> {
-            gMap = googleMap;
-            initMap();
-        });
+        mMapView.getMapAsync(this::onMapReady);
 
         // init bottom sheet
         initBottomSheet();
 
         return rootView;
+    }
+
+    private void onMapReady(GoogleMap googleMap) {
+        sopraMap = new SopraMap(googleMap, getResources());
+
+        sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES);
+        sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
     }
 
     @Override
@@ -152,7 +141,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                             .setAction("Action", null)
                             .show();
 
-                    drawVertexOn(new LatLng(lat, lng));
+                    sopraMap.drawCircle(new LatLng(lat, lng), null);
                     waitingForResponse = false;
                 }
 
@@ -182,7 +171,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             if (targetPos == null) return;
 
-            mapCameraMove(gpsService.lastKnownLocation());
+            sopraMap.mapCameraMove(gpsService.lastKnownLocation());
         });
 
         // Set title of app bar
@@ -208,68 +197,11 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         gpsService.startGps();
     }
 
-    //  <-- TODO: extract into features -->
-
     private void unbindServices() {
         if (!isGpsServiceBound) return;
 
         gpsService.stopGps();
         isGpsServiceBound = false;
-    }
-
-    private void initMap() {
-        gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        gMap.setIndoorEnabled(false);
-
-        UiSettings uiSettings = gMap.getUiSettings();
-        uiSettings.setTiltGesturesEnabled(false);
-
-        drawPolygonOf(TEST_POLYGON_COORDINATES);
-        mapCameraJump(Helper.centroidOfPolygon(TEST_POLYGON_COORDINATES));
-
-        // show estimated area of polygon, when clicked
-        gMap.setOnPolygonClickListener(p -> {
-            if (polygonHighlightVertex != null) {
-                for (Circle circle : polygonHighlightVertex) {
-                    circle.remove();
-                }
-            }
-
-            for (LatLng latLng : p.getPoints()) {
-                polygonHighlightVertex.add(drawVertexOn(latLng));
-            }
-        });
-
-        gMap.setOnCircleClickListener(this::makeDraggable);
-        gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-            @Override
-            public void onMarkerDragStart(Marker marker) {
-            }
-
-            @Override
-            public void onMarkerDrag(Marker marker) {
-                dragMarker(marker);
-            }
-
-            @Override
-            public void onMarkerDragEnd(Marker marker) {
-                // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
-                marker.setPosition(activeCircle.getCenter());
-            }
-        });
-    }
-
-    private void drawPolygonOf(ArrayList<LatLng> coordinates) {
-        PolygonOptions rectOptions =
-                new PolygonOptions()
-                        .addAll(coordinates)
-                        .geodesic(true)
-                        .clickable(true)
-                        .strokeJointType(JointType.ROUND)
-                        .strokeColor(getResources().getColor(R.color.red, null))
-                        .fillColor(getResources().getColor(R.color.damage, null));
-
-        gMap.addPolygon(rectOptions);
     }
 
     private void promptEnableLocation() {
@@ -285,54 +217,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         );
     }
 
-    private CameraPosition cameraPosOf(LatLng target, int zoom) {
-        return new CameraPosition.Builder()
-                .target(target).zoom(zoom).build();
-    }
-
-    private void makeDraggable(Circle circle) {
-        activeCircle = circle;
-
-        if (activeDragMarker == null) {
-            activeDragMarker =
-                    gMap.addMarker(
-                            new MarkerOptions()
-                            .position(circle.getCenter())
-                            .draggable(true)
-                            .zIndex(2)
-                    );
-            return;
-        }
-
-        activeDragMarker.setPosition(circle.getCenter());
-    }
-
-    private void dragMarker(Marker marker) {
-        activeCircle.setCenter(marker.getPosition());
-    }
-
-    private Circle drawVertexOn(LatLng point) {
-        return gMap.addCircle(
-                new CircleOptions()
-                        .fillColor(getResources().getColor(R.color.contrastComplement, null))
-                        .center(point)
-                        .strokeWidth(4)
-                        .radius(3)
-                        .zIndex(1)
-                        .clickable(true)
-        );
-    }
-
-    private void mapCameraJump(LatLng target) {
-        // jumping to the location of the polygon
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
-    }
-
-    private void mapCameraMove(LatLng target) {
-        // panning to the location of the polygon
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
-    }
-
     @Override
     public BackButtonProceedPolicy onBackPressed() {
         boolean meetsCondition = false;
@@ -346,7 +230,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
-
 
     /**
      * Sets up bottom sheet
@@ -407,10 +290,10 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                 activity.setDrawerEnabled(navigationDrawerEnabled);
 
                 /* Will add some listeners later
-         - to avoid closing it by collapsing
-         - Remove menu icon if opened to avoid hinting that a nav menu exist when adding damages
-         - etc ...
-         */
+                 - to avoid closing it by collapsing
+                 - Remove menu icon if opened to avoid hinting that a nav menu exist when adding damages
+                 - etc ...
+                 */
 
             }
 
@@ -418,7 +301,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 //                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
-
 
         });
 
@@ -489,7 +371,5 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             // scroll to last added item
             bottomSheetRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
         }
-
     }
-
 }
