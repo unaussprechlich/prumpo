@@ -57,7 +57,7 @@ public class UserManager {
         this.currentUser = null;
         //TODO testing only
         //This is how you clean all activities and all the other junk ... trust me i found this on stackoverflow .. this can't be wrong!!111!111!!
-        System.exit(1);
+        System.exit(0);
         startAuthenticationActivity();
     }
 

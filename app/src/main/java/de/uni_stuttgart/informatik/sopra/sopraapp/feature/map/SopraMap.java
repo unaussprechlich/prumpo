@@ -1,6 +1,7 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.content.res.Resources;
+import android.os.Vibrator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,7 +19,10 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 
 /**
  * Binds application specific map logic to GoogleMap instance.
@@ -38,7 +42,11 @@ public class SopraMap {
 
     private SopraPolygon polygonData = new SopraPolygon();
 
+    @Inject
+    Vibrator vibrator;
+
     SopraMap(GoogleMap googleMap, Resources resources) {
+        SopraApp.getAppComponent().inject(this);
         this.resources = resources;
 
         this.gMap = googleMap;
@@ -80,6 +88,7 @@ public class SopraMap {
         gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
+                vibrator.vibrate(200);
             }
 
             @Override
@@ -89,7 +98,7 @@ public class SopraMap {
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 dragMarker(marker);
-
+                vibrator.vibrate(100);
                 // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
                 marker.setPosition(polygonData.getPoint(indexActiveVertex));
             }

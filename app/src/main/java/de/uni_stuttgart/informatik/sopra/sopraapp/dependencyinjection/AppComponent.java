@@ -4,6 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 
 import dagger.Binds;
@@ -21,6 +22,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
 @ApplicationScope
 @Component(
@@ -40,6 +42,9 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     @ApplicationScope
     void inject(DamageCaseListAdapter damageCaseListAdapter);
 
+    @ApplicationScope
+    void inject(SopraMap sopraMap);
+
 }
 
 /**
@@ -55,6 +60,12 @@ abstract class AppModule {
     @ApplicationScope
     static Context provideContext(Application application) {
         return application;
+    }
+
+    @ApplicationScope
+    @Provides
+    static Vibrator provideVibrator(Application application){
+        return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Provides

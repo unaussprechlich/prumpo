@@ -30,11 +30,12 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bottom_sheet_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@id/bottom_sheet_toolbar"
             android:scrollbars="horizontal"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="0dp" />
+
     </RelativeLayout>
 
 </android.support.v4.widget.NestedScrollView>
