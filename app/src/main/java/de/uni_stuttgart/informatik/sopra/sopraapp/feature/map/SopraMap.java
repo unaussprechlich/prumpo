@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.ROOM_WHITE_BITMAP_DESCRIPTOR;
+
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
@@ -133,7 +135,8 @@ public class SopraMap {
                     new MarkerOptions()
                             .position(circle.getCenter())
                             .draggable(true)
-                            .zIndex(2);
+                            .zIndex(2)
+                            .icon(ROOM_WHITE_BITMAP_DESCRIPTOR);
 
             dragMarker = gMap.addMarker(options);
         }
@@ -145,19 +148,12 @@ public class SopraMap {
         List<LatLng> adjacentPoints = new ArrayList<>();
         int vertexCount = polygonData.getVertexCount();
 
-        int indexLeft = (indexActiveVertex - 1);
+        int indexLeft = indexActiveVertex - 1;
         int indexRight = indexActiveVertex + 1;
 
-        if (indexLeft == -1) {
-            indexLeft = vertexCount-1;
-            indexRight += 1;
-
-        } else if (indexRight == vertexCount) {
-            indexRight = 0;
-            indexLeft -= 1;
-
-        } else if(indexActiveVertex == vertexCount-1) {
-            indexRight = 0;
+        if (indexActiveVertex <= 0 || indexActiveVertex >= vertexCount-1) {
+            indexRight = 1;
+            indexLeft = vertexCount - 2;
         }
 
         adjacentPoints.add(polygonData.getPoint(indexLeft));
@@ -168,7 +164,7 @@ public class SopraMap {
     }
 
     private void onMarkerDown(Marker marker) {
-        System.out.println(indexActiveVertex);
+
         if (indexActiveVertex < 0) return;
 
         LatLng markerPosition = marker.getPosition();
