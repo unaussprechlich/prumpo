@@ -20,4 +20,5 @@ public class SopraApp extends DaggerApplication {
         SopraApp.appComponent = (AppComponent) DaggerAppComponent.builder().create(this);
         return SopraApp.appComponent;
     }
+
 }

@@ -27,6 +27,7 @@ public class User implements ModelDB {
     @ColumnInfo(index = true)
     public String email;
     public String password;
+    public long ownerID = 0;
 
     @ColumnInfo(index = true)
     public EnumUserRoles role;
@@ -80,7 +81,7 @@ public class User implements ModelDB {
     }
 
     @Override
-    public long getOwnerID() {return getID();}
+    public long getOwnerID() {return ownerID;}
 
 
 

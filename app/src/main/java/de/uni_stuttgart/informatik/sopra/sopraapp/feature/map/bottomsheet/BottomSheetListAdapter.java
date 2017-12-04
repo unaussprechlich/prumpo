@@ -128,9 +128,10 @@ public class BottomSheetListAdapter
      * @param view     The view which got clicked
      * @param position The current position in the visible list.
      */
-    public void onClick(View view, int position) {
 
-//        recyclerView.findViewHolderForLayoutPosition(position).itemView.setSelected(true);
+    public void onClick(View view, int position) {
+        recyclerView.dispatchSetSelected(false);
+        recyclerView.findViewHolderForLayoutPosition(position).itemView.setSelected(true);
 
         Toast.makeText(view.getContext(), "Pressed position " + position, Toast.LENGTH_SHORT).show();
     }
@@ -177,8 +178,7 @@ public class BottomSheetListAdapter
      * Android Developer Guide (RecyclerView.ViewHolder)
      * </a>
      */
-    class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
-        TextView label;
+    class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {TextView label;
 
         BottomSheetItemViewHolder(View itemView) {
             super(itemView);
