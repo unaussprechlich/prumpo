@@ -14,6 +14,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +25,13 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
-
 public class SopraMap {
 
     private Resources resources;
     private GoogleMap gMap;
 
     private Polygon visiblePolygon;
+    private Polyline previewPolyline;
     private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     private Marker dragMarker;
@@ -84,11 +86,12 @@ public class SopraMap {
 
             @Override
             public void onMarkerDrag(Marker marker) {
+                onMarkerMove(marker);
             }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                dragMarker(marker);
+                onMarkerDown(marker);
 
                 // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
                 marker.setPosition(polygonData.getPoint(indexActiveVertex));
@@ -107,6 +110,14 @@ public class SopraMap {
     private void makeDraggable(Circle circle) {
         indexActiveVertex = ((int) circle.getTag());
 
+        if (previewPolyline == null) {
+            PolylineOptions lineOptions =
+                    new PolylineOptions()
+                            .width(3)
+                            .color(resources.getColor(R.color.contrastComplement, null));
+            previewPolyline = gMap.addPolyline(lineOptions);
+        }
+
         if (dragMarker == null) {
             MarkerOptions options =
                     new MarkerOptions()
@@ -120,7 +131,29 @@ public class SopraMap {
         dragMarker.setPosition(circle.getCenter());
     }
 
-    private void dragMarker(Marker marker) {
+    private void onMarkerMove(Marker marker) {
+        List<LatLng> adjacentPoints = new ArrayList<>();
+        int vertexCount = polygonData.getVertexCount();
+
+        int indexLeft = (indexActiveVertex - 1);
+        int indexRight = indexActiveVertex + 1;
+
+        if (indexLeft == -1) {
+            indexLeft = vertexCount-1;
+        }
+
+        if (indexRight == vertexCount) {
+            indexRight = 0;
+        }
+
+        adjacentPoints.add(polygonData.getPoint(indexLeft));
+        adjacentPoints.add(marker.getPosition());
+        adjacentPoints.add(polygonData.getPoint(indexRight));
+
+        previewPolyline.setPoints(adjacentPoints);
+    }
+
+    private void onMarkerDown(Marker marker) {
         if (indexActiveVertex < 0) return;
 
         LatLng markerPosition = marker.getPosition();
@@ -129,6 +162,9 @@ public class SopraMap {
         List<LatLng> points = polygonData.getPoints();
 
         visiblePolygon.setPoints(points);
+
+        previewPolyline.remove();
+        previewPolyline = null;
 
         removeHighlight();
         highlight(points);

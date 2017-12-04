@@ -26,6 +26,7 @@ class SopraPolygon {
     }
 
     LatLng getPoint(int index) {
+
         return vertices.get(index);
     }
 
@@ -56,6 +57,10 @@ class SopraPolygon {
         }
 
         return false;
+    }
+
+    int getVertexCount() {
+        return vertices.size();
     }
 
     double getArea() {
