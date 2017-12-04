@@ -38,20 +38,28 @@
             tools:layout_editor_absoluteY="0dp"
             tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item" />
 
+        <View
+            android:id="@+id/bottom_sheet_divider"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_below="@id/bottom_sheet_list"
+            android:background="@color/primary"
+            android:paddingEnd="4dp"
+            android:paddingStart="4dp" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bottom_sheet_list">
+            android:layout_below="@id/bottom_sheet_divider"
+            android:paddingBottom="8dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:paddingTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:orientation="vertical"
-                android:paddingBottom="8dp"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
-                android:paddingTop="24dp">
+                android:orientation="vertical">
                 <!--android:layout_below="@id/bottom_sheet_list"-->
 
 
@@ -69,10 +77,10 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:layout_width="130dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
-                        android:text="@string/bs_control_title_label"
+                        android:text="@string/map_frag_botsheet_dialog_dc_name"
                         android:textSize="16sp" />
 
                     <EditText
@@ -84,6 +92,98 @@
                         android:textSize="16sp" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="@string/map_frag_botsheet_dialog_dc_location"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/bs_control_location_input"
+                        android:layout_width="206dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="@string/map_frag_botsheet_dialog_dc_policyholder"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/bs_control_policyholder_input"
+                        android:layout_width="206dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="@string/map_frag_botsheet_dialog_dc_expert"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/bs_control_expert_input"
+                        android:layout_width="206dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="@string/map_frag_botsheet_dialog_dc_date"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/bs_control_date_input"
+                        android:layout_width="206dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:focusable="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:text="Speichern" />
+
 
             </LinearLayout>
 
