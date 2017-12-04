@@ -59,6 +59,7 @@ public class DamageCaseListAdapter
 
     /**
      * Binds the view holder to the item at the {@code position}.
+     * Method gets called when called {@code notifyDataSetChanged} or when scrolled.
      *
      * @param holder   The holder at {@code position} of the recycler view.
      * @param position The position in the recycler view

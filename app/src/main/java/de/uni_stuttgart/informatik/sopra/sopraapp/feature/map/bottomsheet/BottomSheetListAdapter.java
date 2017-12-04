@@ -20,8 +20,20 @@ public class BottomSheetListAdapter
 
     // TODO! Remove "MapPoint" Implement DamageCase
 
+    /**
+     * The damage case whose coordinates will be collected.
+     */
     private DamageCase damageCase;
+
+    /**
+     * The recycler view which holds this adapter.
+     */
     private RecyclerView recyclerView;
+
+    /**
+     * Save the selected view position.
+     */
+    private int selectedViewIndex = -1;
 
     /**
      * Constructor
@@ -54,6 +66,11 @@ public class BottomSheetListAdapter
         return new BottomSheetItemViewHolder(view);
     }
 
+    /**
+     * Method for getting a reference to the recycler view.
+     *
+     * @param recyclerView The recycler view which holds this adapter.
+     */
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -62,13 +79,13 @@ public class BottomSheetListAdapter
 
     /**
      * Binds the view holder to the item at the {@code position}.
+     * Method gets called when called {@code notifyDataSetChanged} or when scrolled.
      *
      * @param holder   The holder at {@code position} of the recycler view.
      * @param position The position in the recycler view
      */
     @Override
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
-//        MapPoint mapPoint = Holder.mapPoints.getItem(position);
 
         // set bindings
         holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
@@ -77,6 +94,8 @@ public class BottomSheetListAdapter
         holder.label.setOnClickListener(v -> onClick(v, position));
         holder.label.setOnLongClickListener(v -> onLongClick(v, position));
 
+        // if selected item set selected
+        holder.itemView.setSelected(selectedViewIndex == position);
     }
 
     /**
@@ -89,6 +108,8 @@ public class BottomSheetListAdapter
     @Override
     public void onViewRecycled(BottomSheetItemViewHolder holder) {
         super.onViewRecycled(holder);
+
+        // Keep label in sync with position
         holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
     }
 
@@ -102,7 +123,6 @@ public class BottomSheetListAdapter
     public int getItemCount() {
         return Holder.mapPoints.size();
     }
-
 
     @Override
     public void add(MapPoint mapPoint) {
@@ -118,7 +138,6 @@ public class BottomSheetListAdapter
 
     @Override
     public MapPoint getItem() {
-//        return damageCase;
         return null;
     }
 
@@ -130,7 +149,8 @@ public class BottomSheetListAdapter
      */
     public void onClick(View view, int position) {
 
-//        recyclerView.findViewHolderForLayoutPosition(position).itemView.setSelected(true);
+        // set new selected item
+        updateSelectedViewIndex(position);
 
         Toast.makeText(view.getContext(), "Pressed position " + position, Toast.LENGTH_SHORT).show();
     }
@@ -147,6 +167,15 @@ public class BottomSheetListAdapter
         if (Holder.mapPoints.size() > 1) {
             MapPoint mapPoint = Holder.mapPoints.get(position);
 
+            /*
+             * if left of selected item is removed subtract index by one.
+             * if selected item is removed set index to -1
+             */
+            if (selectedViewIndex > position)
+                selectedViewIndex--;
+            else if (selectedViewIndex == position)
+                selectedViewIndex = -1;
+
             remove(mapPoint);
         }
 
@@ -155,10 +184,26 @@ public class BottomSheetListAdapter
         return true;
     }
 
+    /**
+     * Clears the recycler pool when swapped or removed from recycler view.
+     *
+     * @param recyclerView The recycler view which
+     */
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         recyclerView.getRecycledViewPool().clear();
+    }
+
+    /**
+     * Updates the selected view index.
+     * Calls to refresh recycler view.
+     *
+     * @param position The new position of the selected item.
+     */
+    private void updateSelectedViewIndex(int position) {
+        selectedViewIndex = position;
+        notifyDataSetChanged();
     }
 
     /**

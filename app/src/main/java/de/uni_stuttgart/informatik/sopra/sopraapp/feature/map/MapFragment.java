@@ -386,6 +386,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
                     case BottomSheetBehavior.STATE_HIDDEN:
                         navigationDrawerEnabled = true;
+                        bottomSheetRecyclerView.setAdapter(null);
                         break;
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
