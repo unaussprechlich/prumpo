@@ -7,16 +7,13 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.area.Point;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
 public class Converters {
 
-    @Inject
-    static Gson gson;
+
 
     public Converters() {
         SopraApp.getAppComponent().inject(this);
@@ -35,7 +32,7 @@ public class Converters {
 
     @TypeConverter
     public static ArrayList<Point> convertArrayList(String value){
-        ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
+        ArrayList<String> pointsAsString = new Gson().fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<Point> points = new ArrayList<>();
         for(String str : pointsAsString){
             points.add(Point.fromString(str));
@@ -49,7 +46,7 @@ public class Converters {
         for(Point point : value){
             pointsAsString.add(point.toString());
         }
-        return gson.toJson(pointsAsString);
+        return new Gson().toJson(pointsAsString);
     }
 
 }
