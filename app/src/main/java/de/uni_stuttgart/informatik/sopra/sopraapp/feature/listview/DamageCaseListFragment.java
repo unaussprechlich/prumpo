@@ -19,7 +19,10 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -118,7 +121,17 @@ public class DamageCaseListFragment
             try {
                 Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
                 try {
-                    damageCaseRepository.insert(new DamageCase("DamageCase_" + r, "PolicyHolder_" + r, "NameExper_" + r, r, userManager.getCurrentUser().getID() ));
+                    damageCaseRepository.insert(
+                            new DamageCase(
+                                    "DamageCase_" + r,
+                                    "PolicyHolder_" + r,
+                                    "NameExper_" + r,
+                                    "70374", r,
+                                    userManager.getCurrentUser().getID(),
+                                    new ArrayList<LatLng>(),
+                                    new Date()
+                            )
+                    );
                 } catch (UserManager.NoUserException e) {
                     e.printStackTrace();
                 }
@@ -175,7 +188,7 @@ public class DamageCaseListFragment
         ArrayList<DamageCase> damageCases = new ArrayList<>();
 
         for (DamageCase damageCase : damageCaseList)
-            if (damageCase.getNamePolicyholder().toUpperCase().contains(newText.toUpperCase()))
+            if (damageCase.namePolicyholder.toUpperCase().contains(newText.toUpperCase()))
                 damageCases.add(damageCase);
 
         // swap adapter to adapter with new items
