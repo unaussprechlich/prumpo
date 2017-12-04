@@ -32,6 +32,7 @@ import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -122,15 +123,7 @@ public class DamageCaseListFragment
                 Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
                 try {
                     damageCaseRepository.insert(
-                            new DamageCase(
-                                    "DamageCase_" + r,
-                                    "PolicyHolder_" + r,
-                                    "NameExper_" + r,
-                                    "70374", r,
-                                    userManager.getCurrentUser().getID(),
-                                    new ArrayList<LatLng>(),
-                                    new Date()
-                            )
+                            new DamageCaseBuilder().setNameDamageCase("DamageCase_" + r).setNamePolicyholder("PolicyHolder_" + r).setNameExpert("NameExper_" + r).setAreaCode("70374").setAreaSize(r).setOwnerID(userManager.getCurrentUser().getID()).setCoordinates(new ArrayList<LatLng>()).setDate(new Date()).createDamageCase()
                     );
                 } catch (UserManager.NoUserException e) {
                     e.printStackTrace();
