@@ -39,22 +39,11 @@ class SopraPolygon {
 
         vertices.set(index, target);
 
-        // to cover both, start and end-points of the polygon
-//        if (isFirstOrLast) {
-//            vertices.set(0, target);
-//            vertices.set(lastIndex, target);
-//        }
-
         if (isValidPolygon()) return true;
 
         /* polygon was invalid; reverting changes! */
 
         vertices.set(index, oldPoint);
-
-//        if (isFirstOrLast) {
-//            vertices.set(0, oldPoint);
-//            vertices.set(lastIndex, oldPoint);
-//        }
 
         return false;
     }

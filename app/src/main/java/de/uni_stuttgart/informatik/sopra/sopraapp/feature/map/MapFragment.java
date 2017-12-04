@@ -137,29 +137,26 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
-                    Snackbar.make(v,
+                    Toast.makeText(getContext(),
                             String.format("Latitude %s\nLongitude %s", lat, lng),
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
+                            Toast.LENGTH_LONG)
                             .show();
 
-                    sopraMap.drawCircle(new LatLng(lat, lng), null);
                     waitingForResponse = false;
                 }
 
                 @Override
                 public void onLocationNotFound() {
-                    Snackbar.make(v,
+                    Toast.makeText(getContext(),
                             "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
+                            Toast.LENGTH_LONG)
                             .show();
                     waitingForResponse = false;
                 }
             };
 
             waitingForResponse = true;
-//            gpsService.singleLocationCallback(lcl, 10000);
+            gpsService.singleLocationCallback(lcl, 10000);
         });
 
         FloatingActionButton fabLocate = view.findViewById(R.id.fabLocate);

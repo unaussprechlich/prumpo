@@ -122,20 +122,24 @@ public class SopraMap {
     private void makeDraggable(Circle circle) {
         indexActiveVertex = ((int) circle.getTag());
 
+        LatLng circlePosition = circle.getCenter();
+
         if (previewPolyline == null) {
             PolylineOptions lineOptions =
                     new PolylineOptions()
                             .width(3)
                             .color(resources.getColor(R.color.contrastComplement, null));
+
             previewPolyline = gMap.addPolyline(lineOptions);
         }
 
         if (dragMarker == null) {
             MarkerOptions options =
                     new MarkerOptions()
-                            .position(circle.getCenter())
+                            .position(circlePosition)
                             .draggable(true)
                             .zIndex(2)
+                            .anchor(0.5f, 0.98f)
                             .icon(ROOM_WHITE_BITMAP_DESCRIPTOR);
 
             dragMarker = gMap.addMarker(options);
@@ -145,6 +149,7 @@ public class SopraMap {
     }
 
     private void onMarkerMove(Marker marker) {
+
         List<LatLng> adjacentPoints = new ArrayList<>();
         int vertexCount = polygonData.getVertexCount();
 
@@ -189,15 +194,30 @@ public class SopraMap {
     }
 
     private void highlight(List<LatLng> points) {
+
         for (int i = 0; i < points.size(); ++i) {
-            drawCircle(points.get(i), i);
+
+            Circle circle = gMap.addCircle(
+                    new CircleOptions()
+                            .fillColor(resources.getColor(R.color.contrastComplement, null))
+                            .center(points.get(i))
+                            .strokeWidth(4)
+                            .radius(3)
+                            .zIndex(1)
+                            .clickable(true));
+
+            polygonHighlightVertex.add(circle);
+
+            circle.setTag(i);
         }
     }
 
     private void removeHighlight() {
-        for (Circle highlightVertex : polygonHighlightVertex) {
-            highlightVertex.remove();
+        for (Circle vertex : polygonHighlightVertex) {
+            vertex.remove();
         }
+
+        polygonHighlightVertex.clear();
 
         if (dragMarker != null) {
             dragMarker.remove();
@@ -205,20 +225,7 @@ public class SopraMap {
         }
     }
 
-    void drawCircle(LatLng point, Object tag) {
-        Circle circle = gMap.addCircle(
-                new CircleOptions()
-                        .fillColor(resources.getColor(R.color.contrastComplement, null))
-                        .center(point)
-                        .strokeWidth(4)
-                        .radius(3)
-                        .zIndex(1)
-                        .clickable(true));
 
-        polygonHighlightVertex.add(circle);
-
-        circle.setTag(tag);
-    }
 
     void drawPolygonOf(List<LatLng> coordinates) {
         polygonData = SopraPolygon.loadPolygon(coordinates);
