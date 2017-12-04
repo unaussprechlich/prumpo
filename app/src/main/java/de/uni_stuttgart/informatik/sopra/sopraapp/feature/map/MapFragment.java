@@ -75,7 +75,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState){
 
         // guard clause for 2nd visit
         if (rootView != null) return rootView;
@@ -129,7 +129,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             if (waitingForResponse) return;
 
-            LocationCallbackListener lcl = new LocationCallbackListener() {
+            LocationCallbackListener lcl = new LocationCallbackListener(){
                 @Override
                 public void onLocationFound(Location location) {
                     double lat = location.getLatitude();

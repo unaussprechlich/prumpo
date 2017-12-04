@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -44,6 +45,9 @@ public class LoginActivity extends BaseActivity {
     @Inject
     UserManager userManager;
 
+    @Inject
+    Vibrator vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +77,7 @@ public class LoginActivity extends BaseActivity {
         });
 
         findViewById(R.id.SKIP_LOGIN).setOnClickListener(v ->{
+
             LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
             user.observe(this, user1 ->
                     userManager.login(user)
@@ -156,6 +161,7 @@ public class LoginActivity extends BaseActivity {
         public void showError(){
             editText.setError(getMessage());
             editText.requestFocus();
+            vibrator.vibrate(500);
         }
 
         final EditText editText;
