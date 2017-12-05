@@ -7,9 +7,12 @@ import android.text.Editable;
 import android.text.Selection;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 
 /**
  * Used for creating an input dialog which
@@ -18,6 +21,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
  */
 @SuppressWarnings("unused")
 public class InputRetriever implements View.OnClickListener {
+
 
     /**
      * Holder for the positive action: When user selects "OK".
@@ -51,6 +55,7 @@ public class InputRetriever implements View.OnClickListener {
      * @param editText The EditText object whose input should be bound.
      */
     private InputRetriever(EditText editText) {
+        SopraApp.getAppComponent().inject(this);
         editText.setClickable(true);
         this.pressedTextField = editText;
     }
@@ -166,6 +171,7 @@ public class InputRetriever implements View.OnClickListener {
 
         // find the input field of the dialog
         EditText editText = dialogLayout.findViewById(R.id.userInputDialog);
+        editText.requestFocus();
 
         // sets hint to input field
         editText.setHint(hint != null ? hint : "");
@@ -179,19 +185,29 @@ public class InputRetriever implements View.OnClickListener {
         Selection.setSelection(editable, lastChar);
 
         // create the alert an show
-        new AlertDialog.Builder(context)
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
                 .setView(dialogLayout)
                 .setCancelable(false)
                 .setTitle(title == null
                         ? getString(R.string.map_frag_botsheet_dialog_default_header)
                         : title)
-                .setPositiveButton(getString(R.string.map_frag_botsheet_alert_yes),
-                        positiveAction != null ? positiveAction : (a, b) ->
-                                pressedTextField.setText(editText.getText()))
-                .setNegativeButton(getString(R.string.map_frag_botsheet_alert_no),
-                        negativeAction != null ? negativeAction : (a, b) -> {
-                        })
-                .create()
-                .show();
+                .setPositiveButton(getString(R.string.map_frag_botsheet_alert_yes), (dialogInterface, i) -> {
+                            if (positiveAction != null)
+                                positiveAction.onClick(dialogInterface, i);
+                            pressedTextField.setText(editText.getText());
+                        }
+                )
+                .setNegativeButton(getString(R.string.map_frag_botsheet_alert_no), (dialogInterface, i) -> {
+                    if (negativeAction != null)
+                        negativeAction.onClick(dialogInterface, i);
+                })
+                .create();
+
+        Window window = alertDialog.getWindow();
+        if (window != null)
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        alertDialog.show();
+
     }
 }

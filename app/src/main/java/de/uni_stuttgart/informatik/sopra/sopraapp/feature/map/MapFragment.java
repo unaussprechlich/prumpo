@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,12 +37,12 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.MapPoint;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
@@ -108,6 +110,8 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         // init bottom sheet
         initBottomSheet();
+
+        onResume();
 
         return rootView;
     }
@@ -241,6 +245,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         // set bottom sheet
         NestedScrollView bottomSheet = rootView.findViewById(R.id.bottom_sheet);
+        bottomSheet.setNestedScrollingEnabled(false);
 
         // set bottom sheet toolbar
         bottomSheetToolbar = rootView.findViewById(R.id.bottom_sheet_toolbar);
@@ -311,6 +316,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         });
 
+        Activity activity = getActivity();
 
         dc_title = bottomSheet.findViewById(R.id.bs_control_title_input);
         dc_title.setOnClickListener(InputRetriever.of(dc_title)
@@ -380,6 +386,41 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             }
         });
+
+        View tbSaveButton = bottomSheetToolbar.findViewById(R.id.act_botsheet_save);
+        tbSaveButton.setOnClickListener(v -> {
+
+            dc_title.setError(null);
+            dc_location.setError(null);
+            dc_policyholder.setError(null);
+            dc_expert.setError(null);
+            dc_date.setError(null);
+
+            try {
+                String titleString = getFieldValueIfNotEmpty(dc_title);
+                String locationString = getFieldValueIfNotEmpty(dc_location);
+                String policyholderString = getFieldValueIfNotEmpty(dc_policyholder);
+                String exportString = getFieldValueIfNotEmpty(dc_expert);
+                String dateString = getFieldValueIfNotEmpty(dc_date);
+
+
+            } catch (LogInValueIsEmptyException e) {
+                e.showError();
+            }
+        });
+    }
+
+    /**
+     * Capyright Alexander Keck
+     *
+     * @param editText
+     * @return
+     * @throws LogInValueIsEmptyException
+     */
+    private String getFieldValueIfNotEmpty(EditText editText) throws LogInValueIsEmptyException {
+        String text = editText.getText().toString();
+        if (text.isEmpty()) throw new LogInValueIsEmptyException(editText);
+        return text;
     }
 
     private void loadDamageCaseBottomSheet(DamageCase damageCase) {
@@ -394,11 +435,11 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             mBottomSheetBehavior.setHideable(false);
 
             // set new adapter
-            bottomSheetListAdapter = new BottomSheetListAdapter(damageCase);
+            bottomSheetListAdapter = new BottomSheetListAdapter(0);
             bottomSheetRecyclerView.swapAdapter(bottomSheetListAdapter, false);
 
             // Add first location point
-            bottomSheetListAdapter.add(new MapPoint(""));
+            bottomSheetListAdapter.add();
 
             // measure height of toolbar and recycler view
             bottomSheetToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -412,7 +453,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             // add next point
-            bottomSheetListAdapter.add(new MapPoint(""));
+            bottomSheetListAdapter.add();
 
             // scroll to last added item
             bottomSheetRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
@@ -433,5 +474,11 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 }

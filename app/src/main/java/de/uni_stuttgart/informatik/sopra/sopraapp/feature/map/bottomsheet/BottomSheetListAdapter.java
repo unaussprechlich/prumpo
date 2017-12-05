@@ -10,15 +10,19 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
-        implements RecyclerViewOperation<MapPoint> {
+        implements RecyclerViewOperation {
 
     // TODO! Remove "MapPoint" Implement DamageCase
+
+    Holder bubbleHolder = new Holder();
+    AtomicInteger counter;
 
     /**
      * The damage case whose coordinates will be collected.
@@ -35,17 +39,13 @@ public class BottomSheetListAdapter
      */
     private int selectedViewIndex = -1;
 
-    /**
-     * Constructor
-     *
-     * @param damageCase The damage case to add/edit
-     */
-    public BottomSheetListAdapter(DamageCase damageCase) {
-        super();
-        this.damageCase = damageCase;
 
-//        Holder.mapPoints = damageCase.getCoordinates();
-        Holder.mapPoints = new ArrayList<>();
+    public BottomSheetListAdapter(Integer amountBubbles) {
+        super();
+        for (int i = 1; i < amountBubbles; i++)
+            add();
+        counter = new AtomicInteger(bubbleHolder.bubbleList.size());
+
     }
 
     /**
@@ -88,7 +88,7 @@ public class BottomSheetListAdapter
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
 
         // set bindings
-        holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
+        holder.label.setText(String.valueOf(bubbleHolder.bubbleList.get(position).position + 1));
 
         // set click listener
         holder.label.setOnClickListener(v -> onClick(v, position));
@@ -110,7 +110,7 @@ public class BottomSheetListAdapter
         super.onViewRecycled(holder);
 
         // Keep label in sync with position
-        holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
+        // holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
     }
 
     /**
@@ -121,24 +121,13 @@ public class BottomSheetListAdapter
      */
     @Override
     public int getItemCount() {
-        return Holder.mapPoints.size();
+        return bubbleHolder.bubbleList.size();
     }
 
     @Override
-    public void add(MapPoint mapPoint) {
-        Holder.mapPoints.add(mapPoint);
+    public void add() {
+        bubbleHolder.bubbleList.add(new Bubble(counter.getAndIncrement()));
         notifyDataSetChanged();
-    }
-
-    @Override
-    public void remove(MapPoint mapPoint) {
-        Holder.mapPoints.remove(mapPoint);
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public MapPoint getItem() {
-        return null;
     }
 
     /**
@@ -157,6 +146,7 @@ public class BottomSheetListAdapter
 
     /**
      * Method called after a long click.
+     * position
      *
      * @param view     The view which got clicked
      * @param position The current position in the visible list.
@@ -164,19 +154,17 @@ public class BottomSheetListAdapter
      */
     public boolean onLongClick(View view, int position) {
 
-        if (Holder.mapPoints.size() > 1) {
-            MapPoint mapPoint = Holder.mapPoints.get(position);
+        if (bubbleHolder.bubbleList.size() > 1) {
 
-            /*
-             * if left of selected item is removed subtract index by one.
-             * if selected item is removed set index to -1
-             */
+            bubbleHolder.bubbleList.remove(position);
+
             if (selectedViewIndex > position)
                 selectedViewIndex--;
             else if (selectedViewIndex == position)
                 selectedViewIndex = -1;
 
-            remove(mapPoint);
+            notifyDataSetChanged();
+
         }
 
         Toast.makeText(view.getContext(), " " + position + " Long pressed!", Toast.LENGTH_SHORT).show();
@@ -210,8 +198,8 @@ public class BottomSheetListAdapter
      * A static Holder for damage cases. After a adapter swap -> this list gets updated.
      * This holder always holds the up to date underlying data.
      */
-    private static class Holder {
-        private static List<MapPoint> mapPoints = new ArrayList<>();
+    private class Holder {
+        private List<Bubble> bubbleList = new ArrayList<>();
     }
 
     /**
@@ -228,6 +216,14 @@ public class BottomSheetListAdapter
         BottomSheetItemViewHolder(View itemView) {
             super(itemView);
             label = itemView.findViewById(R.id.bottom_sheet_list_item);
+        }
+    }
+
+    class Bubble {
+        int position = -1;
+
+        Bubble(int position) {
+            this.position = position;
         }
     }
 }

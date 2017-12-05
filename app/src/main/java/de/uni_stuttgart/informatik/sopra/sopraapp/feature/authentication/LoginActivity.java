@@ -24,29 +24,29 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 
 // TODO: deal with lags (and maybe introduce separate threads)
+
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends BaseActivity {
 
+    @Inject
+    UserRepository userRepository;
+    @Inject
+    UserManager userManager;
+    @Inject
+    Vibrator vibrator;
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
-    @Inject
-    UserRepository userRepository;
-
-    @Inject
-    UserManager userManager;
-
-    @Inject
-    Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class LoginActivity extends BaseActivity {
             return false;
         });
 
-        findViewById(R.id.SKIP_LOGIN).setOnClickListener(v ->{
+        findViewById(R.id.SKIP_LOGIN).setOnClickListener(v -> {
 
             LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
             user.observe(this, user1 ->
@@ -101,7 +101,7 @@ public class LoginActivity extends BaseActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        try{
+        try {
             showProgress(true);
             View view = this.getCurrentFocus();
             if (view != null) {
@@ -116,65 +116,43 @@ public class LoginActivity extends BaseActivity {
             final String email = getFieldValueIfNotEmpty(mEmailView);
             final String password = getFieldValueIfNotEmpty(mPasswordView);
 
-            if(!Pattern.matches(Constants.EMAIL_REGEX, email))
+            if (!Pattern.matches(Constants.EMAIL_REGEX, email))
                 throw new LogInValueException(mEmailView, "Invalid mail address!");
 
 
             LiveData<User> liveUser = userRepository.getByEmail(email);
             liveUser.observe(this, user -> {
-                try{
-                    if(user == null)
+                try {
+                    if (user == null)
                         throw new LogInValueException(mEmailView, "User not found!");
-                    else if(user.password.equals(password)){
+                    else if (user.password.equals(password)) {
                         userManager.login(liveUser);
                         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                         myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         startActivity(myIntent);
-                    } else if(!user.password.equals(password))
+                    } else if (!user.password.equals(password))
                         throw new LogInValueException(mPasswordView, "Password Incorrect!");
-                     else
+                    else
                         throw new Exception("Something went wrong!");
 
-                } catch (LogInValueException e){
+                } catch (LogInValueException e) {
                     e.showError();
                     showProgress(false);
-                } catch (Exception e){
+                } catch (Exception e) {
                     Log.d("LoginActivity", e.getMessage());
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     showProgress(false);
                 }
             });
-        }catch(LogInValueException e){
+        } catch (LogInValueException e) {
             e.showError();
             showProgress(false);
         }
     }
 
-    private class LogInValueIsEmptyException extends LogInValueException {
-        public LogInValueIsEmptyException(EditText editText) {
-            super(editText, "Field is empty!");
-        }
-    }
-
-    private class LogInValueException extends Exception{
-
-        public void showError(){
-            editText.setError(getMessage());
-            editText.requestFocus();
-            vibrator.vibrate(500);
-        }
-
-        final EditText editText;
-
-        public LogInValueException(EditText editText, String message) {
-            super(message);
-            this.editText = editText;
-        }
-    }
-
     private String getFieldValueIfNotEmpty(EditText editText) throws LogInValueIsEmptyException {
         String text = editText.getText().toString();
-        if(text.isEmpty()) throw new LogInValueIsEmptyException(editText);
+        if (text.isEmpty()) throw new LogInValueIsEmptyException(editText);
         return text;
     }
 

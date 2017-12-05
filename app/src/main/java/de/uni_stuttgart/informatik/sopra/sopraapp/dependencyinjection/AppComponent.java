@@ -15,16 +15,18 @@ import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 
 @ApplicationScope
 @Component(
@@ -39,9 +41,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
 
-    @Component.Builder
-    abstract class Builder extends AndroidInjector.Builder<SopraApp>{}
-
     @ApplicationScope
     void inject(DamageCaseListAdapter damageCaseListAdapter);
 
@@ -51,6 +50,15 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     @ApplicationScope
     void inject(Converters converters);
 
+    @ApplicationScope
+    void inject(InputRetriever inputRetriever);
+
+    @ApplicationScope
+    void inject(LogInValueException e);
+
+    @Component.Builder
+    abstract class Builder extends AndroidInjector.Builder<SopraApp> {
+    }
 }
 
 /**
@@ -58,9 +66,6 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
  */
 @Module
 abstract class AppModule {
-
-    @Binds
-    abstract Application application(SopraApp sopraApp);
 
     @Provides
     @ApplicationScope
@@ -107,4 +112,7 @@ abstract class AppModule {
     static GpsService provideGpsService(SopraApp sopraApp) {
         return new GpsService(sopraApp);
     }
+
+    @Binds
+    abstract Application application(SopraApp sopraApp);
 }
