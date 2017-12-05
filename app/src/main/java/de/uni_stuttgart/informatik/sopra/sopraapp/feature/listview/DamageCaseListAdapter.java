@@ -70,8 +70,8 @@ public class DamageCaseListAdapter
 
         // set bindings
         holder.damageCaseName.setText(damageCase.nameDamageCase);
-        holder.expertName.setText(damageCase.namePolicyholder);
-        holder.damageArea.setText(String.valueOf(damageCase.areaSize));
+        holder.policyHolder.setText(damageCase.namePolicyholder);
+        holder.areaCode.setText(String.valueOf(damageCase.areaCode));
 
         holder.cardView.setOnClickListener(v -> onClick(v, position));
     }
@@ -125,8 +125,8 @@ public class DamageCaseListAdapter
 
         /* define attributes to change them later */
         TextView damageCaseName;
-        TextView expertName;
-        TextView damageArea;
+        TextView policyHolder;
+        TextView areaCode;
 
         DamageCaseViewHolder(View itemView) {
             super(itemView);
@@ -134,8 +134,8 @@ public class DamageCaseListAdapter
             cardView = itemView.findViewById(R.id.dc_card);
 
             damageCaseName = itemView.findViewById(R.id.dc_name);
-            expertName = itemView.findViewById(R.id.dc_policyholder);
-            damageArea = itemView.findViewById(R.id.dc_area);
+            policyHolder = itemView.findViewById(R.id.dc_policyholder);
+            areaCode = itemView.findViewById(R.id.dc_areacode);
         }
 
     }

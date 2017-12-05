@@ -32,9 +32,9 @@ public class DamageCase implements ModelDB {
     @ColumnInfo(index = true)
     public String nameDamageCase;
     public String namePolicyholder;
-    public String nameExpert; // Name Gutachter
+    public String nameExpert;
 
-    public List<LatLng> coordinates; // TODO! LatitudeItem
+    public List<LatLng> coordinates;
     public String areaCode;
     @ColumnInfo(index = true)
     public Date date;
