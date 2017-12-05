@@ -48,6 +48,9 @@ public class MainActivity extends BaseEventBusActivity implements
     @Inject
     DamageCaseListFragment damageCaseListFragment;
 
+    NavigationView navigationView;
+    Toolbar toolbar;
+
     private DrawerLayout drawer;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -59,11 +62,11 @@ public class MainActivity extends BaseEventBusActivity implements
         setContentView(R.layout.activity_main);
 
         // set toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // set navigation menu view
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // set navigation menu header
@@ -197,10 +200,16 @@ public class MainActivity extends BaseEventBusActivity implements
     @Override
     public void setDrawerEnabled(boolean enabled) {
 
+        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
+            getSupportActionBar().hide();
+        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
+            getSupportActionBar().show();
+
         // lock or unlock drawer
         int lockMode = enabled
-                ? DrawerLayout.LOCK_MODE_UNLOCKED
-                : DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+                ? DrawerLayout.VISIBLE
+                : DrawerLayout.INVISIBLE;
+
         drawer.setDrawerLockMode(lockMode);
 
         // set drawer indicator
