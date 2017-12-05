@@ -1,11 +1,17 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Vibrator;
+import android.support.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -19,6 +25,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,15 +36,19 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
 
-import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.ROOM_WHITE_BITMAP_DESCRIPTOR;
+import static android.support.v7.content.res.AppCompatResources.getDrawable;
 
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
 public class SopraMap {
 
+    private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
+
     private Resources resources;
     private GoogleMap gMap;
+
+    private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     private Polyline previewPolyline;
 
@@ -46,16 +57,26 @@ public class SopraMap {
     private int indexActiveVertex = -1;
 
     // TODO: rework to hold and view List of polygons
-    private PolygonContainer polygon;
+    private PolygonContainer activePolygon;
+    private HashMap<String, PolygonContainer> polygonStorage = new HashMap<>();
 
     @Inject
     Vibrator vibrator;
 
-    SopraMap(GoogleMap googleMap, Resources resources) {
+    SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
 
-        this.resources = resources;
+        this.resources = context.getResources();
         this.gMap = googleMap;
+
+        VectorDrawableCompat vectorDrawable = (VectorDrawableCompat) getDrawable(context, R.drawable.ic_room_accent);
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+
+        ROOM_ACCENT_BITMAP_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(bitmap);
 
         initMap();
     }
@@ -72,14 +93,20 @@ public class SopraMap {
         /* bindings */
 
         gMap.setOnPolygonClickListener(p -> {
+            PolygonContainer polygon  = polygonStorage.get(p.getTag());
+
             if (isHighlighted) {
-                isHighlighted = false;
                 indexActiveVertex = -1;
 
                 polygon.removeHighlight();
 
-                return;
+                if (polygon == activePolygon) {
+                    activePolygon = null;
+                    return;
+                }
             }
+
+            activePolygon = polygon;
 
             isHighlighted = true;
             polygon.highlight();
@@ -111,7 +138,7 @@ public class SopraMap {
                 vibrator.vibrate(100);
 
                 // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
-                marker.setPosition(polygon.data.getPoint(indexActiveVertex));
+                marker.setPosition(activePolygon.data.getPoint(indexActiveVertex));
             }
         });
 
@@ -119,7 +146,21 @@ public class SopraMap {
         gMap.setOnMarkerClickListener(marker -> true);
     }
 
-    void drawPolygonOf(List<LatLng> coordinates, PolygonType type) {
+    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, String uniqueId) {
+
+        int strokeColor;
+        int fillColor;
+        float strokeWidth = 10;
+
+        if (type == PolygonType.DAMAGE_CASE) {
+            strokeColor = resources.getColor(R.color.orange, null);
+            fillColor = resources.getColor(R.color.orange_50percent, null);
+
+        } else {
+            strokeColor = resources.getColor(R.color.white, null);
+            fillColor = resources.getColor(R.color.white_38percent, null);
+            strokeWidth = 18;
+        }
 
         PolygonOptions rectOptions =
                 new PolygonOptions()
@@ -127,15 +168,20 @@ public class SopraMap {
                         .geodesic(true)
                         .clickable(true)
                         .strokeJointType(JointType.ROUND)
-                        .strokeColor(resources.getColor(R.color.red, null))
-                        .fillColor(resources.getColor(R.color.damage_alpha, null));
+                        .strokeColor(strokeColor)
+                        .strokeWidth(strokeWidth)
+                        .fillColor(fillColor);
 
         Polygon polygonMapObject = gMap.addPolygon(rectOptions);
+        polygonMapObject.setTag(uniqueId);
 
-        polygon = new PolygonContainer(
-                polygonMapObject,
-                SopraPolygon.loadPolygon(coordinates),
-                PolygonType.DAMAGE_CASE
+        polygonStorage.put(
+                uniqueId,
+                new PolygonContainer(
+                        polygonMapObject,
+                        SopraPolygon.loadPolygon(coordinates),
+                        PolygonType.DAMAGE_CASE
+                )
         );
 
     }
@@ -186,7 +232,7 @@ public class SopraMap {
                             .draggable(true)
                             .zIndex(2)
                             .anchor(0.5f, 0.98f)
-                            .icon(ROOM_WHITE_BITMAP_DESCRIPTOR);
+                            .icon(ROOM_ACCENT_BITMAP_DESCRIPTOR);
 
             dragMarker = gMap.addMarker(options);
         }
@@ -197,7 +243,7 @@ public class SopraMap {
     private void onMarkerDrag(Marker marker) {
 
         List<LatLng> adjacentPoints = new ArrayList<>();
-        int vertexCount = polygon.data.getVertexCount();
+        int vertexCount = activePolygon.data.getVertexCount();
 
         int indexLeft = indexActiveVertex - 1;
         int indexRight = indexActiveVertex + 1;
@@ -214,9 +260,9 @@ public class SopraMap {
 
         /* actual preview */
 
-        adjacentPoints.add(polygon.data.getPoint(indexLeft));
+        adjacentPoints.add(activePolygon.data.getPoint(indexLeft));
         adjacentPoints.add(marker.getPosition());
-        adjacentPoints.add(polygon.data.getPoint(indexRight));
+        adjacentPoints.add(activePolygon.data.getPoint(indexRight));
 
         previewPolyline.setPoints(adjacentPoints);
     }
@@ -227,16 +273,16 @@ public class SopraMap {
 
         LatLng markerPosition = marker.getPosition();
 
-        polygon.data.movePoint(indexActiveVertex, markerPosition);
-        List<LatLng> points = polygon.data.getPoints();
+        activePolygon.data.movePoint(indexActiveVertex, markerPosition);
+        List<LatLng> points = activePolygon.data.getPoints();
 
-        polygon.mapObject.setPoints(points);
+        activePolygon.mapObject.setPoints(points);
 
         previewPolyline.remove();
         previewPolyline = null;
 
-        polygon.removeHighlight();
-        polygon.highlight();
+        activePolygon.removeHighlight();
+        activePolygon.highlight();
     }
 
     private class PolygonContainer {
@@ -245,8 +291,6 @@ public class SopraMap {
 
         Polygon mapObject;
         SopraPolygon data;
-
-        List<Circle> polygonHighlightVertex = new ArrayList<>();
 
         PolygonContainer(Polygon polygonMapObject, SopraPolygon polygonData, PolygonType type) {
             this.mapObject = polygonMapObject;

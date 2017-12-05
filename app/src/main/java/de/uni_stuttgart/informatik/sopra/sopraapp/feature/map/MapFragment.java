@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonTyp
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_DAMAGE;
 
 public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
@@ -60,14 +62,18 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
      * The adapter for the horizontal recycler view
      */
     BottomSheetListAdapter bottomSheetListAdapter;
+
     EditText dc_title;
     EditText dc_location;
     EditText dc_policyholder;
     EditText dc_expert;
     EditText dc_date;
+
     private SopraMap sopraMap;
+
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
+
     /**
      * The provided bottom sheet behaviour object
      */
@@ -113,9 +119,10 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     }
 
     private void onMapReady(GoogleMap googleMap) {
-        sopraMap = new SopraMap(googleMap, getResources());
+        sopraMap = new SopraMap(googleMap, getContext());
 
-        sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.DAMAGE_CASE);
+        sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
+        sopraMap.drawPolygonOf(TEST_POLYGON_DAMAGE, PolygonType.DAMAGE_CASE, "2");
         sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
     }
 
@@ -138,13 +145,15 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             if (waitingForResponse) return;
 
+            Context context = getContext();
+
             LocationCallbackListener lcl = new LocationCallbackListener() {
                 @Override
                 public void onLocationFound(Location location) {
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
-                    Toast.makeText(getContext(),
+                    Toast.makeText(context,
                             String.format("Latitude %s\nLongitude %s", lat, lng),
                             Toast.LENGTH_LONG)
                             .show();
@@ -154,7 +163,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
                 @Override
                 public void onLocationNotFound() {
-                    Toast.makeText(getContext(),
+                    Toast.makeText(context,
                             "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
                             Toast.LENGTH_LONG)
                             .show();
@@ -196,6 +205,8 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         super.onStop();
 
         unbindServices();
+
+        gpsService.stopCallback();
     }
 
     private void bindServices() {

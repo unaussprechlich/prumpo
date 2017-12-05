@@ -39,6 +39,9 @@ public class GpsService {
 
     private boolean hadPermission = false;
 
+    // to manage single location callbacks
+    private boolean callbackOver = false;
+
     public GpsService(Application app) {
         context = app;
 
@@ -92,6 +95,14 @@ public class GpsService {
     }
 
     /**
+     * After running this method {@link GpsService#singleLocationCallback}
+     * won't run any supplied callbacks
+     */
+    public void stopCallback() {
+        callbackOver = true;
+    }
+
+    /**
      * Indicates that location services of the device need to be enabled.
      *
      * @return  <src>true</src> if the last refresh of GpsService found missing location services.
@@ -126,8 +137,6 @@ public class GpsService {
         locationManager.requestSingleUpdate(
                 LocationManager.GPS_PROVIDER,
                 new LocationListener() {
-
-                    private boolean callbackOver = false;
 
                     {
                         Handler handler = new Handler();
