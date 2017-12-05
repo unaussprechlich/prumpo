@@ -127,6 +127,8 @@ public class GpsService {
      *                  {@link LocationCallbackListener#onLocationNotFound()} is called.
      */
     public void singleLocationCallback(LocationCallbackListener callback, long failAfter) {
+        callbackOver = false;
+
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 

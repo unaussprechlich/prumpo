@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.Vibrator;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,15 +73,7 @@ public class SopraMap {
         this.resources = context.getResources();
         this.gMap = googleMap;
 
-        VectorDrawableCompat vectorDrawable = (VectorDrawableCompat) getDrawable(context, R.drawable.ic_room_accent);
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        vectorDrawable.draw(canvas);
-
-        ROOM_ACCENT_BITMAP_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(bitmap);
-
+        initResources(context);
         initMap();
     }
 
@@ -209,6 +205,22 @@ public class SopraMap {
     private CameraPosition cameraPosOf(LatLng target, int zoom) {
         return new CameraPosition.Builder()
                 .target(target).zoom(zoom).build();
+    }
+
+    private void initResources(Context context) {
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_room_accent);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888
+                );
+        Canvas canvas = new Canvas(bitmap);
+
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        ROOM_ACCENT_BITMAP_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     private void makeDraggable(Circle circle) {
