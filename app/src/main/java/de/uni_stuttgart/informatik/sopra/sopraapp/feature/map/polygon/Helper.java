@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -19,7 +19,7 @@ public class Helper {
      *
      * @param vertices      LatLng coordinates of the vertices as <src>List</src>(, in any order!)
      *
-     * @return              approximated area in m²
+     * @return              approximated area in hectares
      */
     static double areaOfPolygon(List<LatLng> vertices) {
 
@@ -35,10 +35,10 @@ public class Helper {
             areaSum += lastX * (y - beforeLastY);
         }
 
-        return Math.abs(areaSum/2)*1000000;
+        return Math.abs(areaSum/2) * 100;
     }
 
-    static LatLng centroidOfPolygon(List<LatLng> vertices) {
+    public static LatLng centroidOfPolygon(List<LatLng> vertices) {
         double length = vertices.size();
 
         double sumLat = 0;

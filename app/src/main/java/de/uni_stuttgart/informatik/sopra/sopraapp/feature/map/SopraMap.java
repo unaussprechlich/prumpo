@@ -25,6 +25,9 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.ROOM_WHITE_BITMAP_DESCRIPTOR;
 

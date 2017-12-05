@@ -41,6 +41,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.MapPoint;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;

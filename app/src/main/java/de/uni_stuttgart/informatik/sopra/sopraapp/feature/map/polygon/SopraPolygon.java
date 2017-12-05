@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * Polygon model-class containing application specific logic.
  */
-class SopraPolygon {
+public class SopraPolygon {
 
     private List<LatLng> vertices = new ArrayList<>();
 
-    boolean addPoint(LatLng point) {
+    public boolean addPoint(LatLng point) {
         vertices.add(point);
 
         if (notIntersecting()) return true;
@@ -21,16 +21,16 @@ class SopraPolygon {
         return false;
     }
 
-    List<LatLng> getPoints() {
+    public List<LatLng> getPoints() {
         return vertices;
     }
 
-    LatLng getPoint(int index) {
+    public LatLng getPoint(int index) {
 
         return vertices.get(index);
     }
 
-    boolean movePoint(int index, LatLng target) {
+    public boolean movePoint(int index, LatLng target) {
 
         int lastIndex = vertices.size()-1;
         boolean isFirstOrLast = (index == 0) || (index == lastIndex);
@@ -48,23 +48,23 @@ class SopraPolygon {
         return false;
     }
 
-    int getVertexCount() {
+    public int getVertexCount() {
         return vertices.size();
     }
 
-    double getArea() {
+    public double getArea() {
         return Helper.areaOfPolygon(vertices);
     }
 
-    LatLng getCentroid() {
+    public LatLng getCentroid() {
         return Helper.centroidOfPolygon(vertices);
     }
 
-    boolean isValidPolygon() {
+    public boolean isValidPolygon() {
         return vertices.size() > 2 && notIntersecting();
     }
 
-    static SopraPolygon loadPolygon(List<LatLng> vertices) {
+    public static SopraPolygon loadPolygon(List<LatLng> vertices) {
 
         SopraPolygon polygon = new SopraPolygon();
 
