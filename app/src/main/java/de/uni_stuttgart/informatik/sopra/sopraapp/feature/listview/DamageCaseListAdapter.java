@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +39,7 @@ public class DamageCaseListAdapter
      * @param damageCaseList list of data to be displayed
      */
     public DamageCaseListAdapter(List<DamageCase> damageCaseList) {
+        setHasStableIds(true);
         dataHolder.damageCaseList = damageCaseList;
         SopraApp.getAppComponent().inject(this);
     }
@@ -82,8 +81,6 @@ public class DamageCaseListAdapter
 
         holder.cardView.setOnClickListener(v -> onCardViewPressed(v, position));
 
-        Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), android.R.anim.fade_in);
-        holder.itemView.startAnimation(animation);
     }
 
     /**
@@ -112,6 +109,11 @@ public class DamageCaseListAdapter
         DamageCase damageCase = dataHolder.damageCaseList.get(position);
 
         Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return dataHolder.damageCaseList.get(position).getID();
     }
 
     /**
@@ -150,5 +152,4 @@ public class DamageCaseListAdapter
         }
 
     }
-
 }

@@ -171,6 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:inputType="textVisiblePassword"
                     android:maxLines="1"
                     android:textColorLink="@android:color/transparent"
                     android:textSize="16sp" />
@@ -199,6 +200,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:inputType="textVisiblePassword"
                     android:maxLines="1"
                     android:textColorLink="@android:color/transparent"
                     android:textSize="16sp" />
@@ -226,6 +228,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:inputType="textVisiblePassword"
                     android:maxLines="1"
                     android:textSize="16sp" />
 
@@ -252,6 +255,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:inputType="textVisiblePassword"
                     android:maxLines="1"
                     android:textSize="16sp" />
 

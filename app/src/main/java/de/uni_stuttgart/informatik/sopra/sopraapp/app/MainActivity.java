@@ -14,7 +14,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -24,10 +23,11 @@ import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -48,10 +48,15 @@ public class MainActivity extends BaseEventBusActivity implements
     @Inject
     DamageCaseListFragment damageCaseListFragment;
 
+    @BindView(R.id.nav_view)
     NavigationView navigationView;
+
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private DrawerLayout drawer;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+
     private ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -61,12 +66,11 @@ public class MainActivity extends BaseEventBusActivity implements
         // set main layout
         setContentView(R.layout.activity_main);
 
-        // set toolbar
-        toolbar = findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
 
         // set navigation menu view
-        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // set navigation menu header
@@ -76,8 +80,6 @@ public class MainActivity extends BaseEventBusActivity implements
         // set navigation header listener to display profile view
         header.setOnClickListener(view -> displayActivity(R.id.profile_layout));
 
-        // set navigation menu drawer
-        drawer = findViewById(R.id.drawer_layout);
 
         // set navigation menu drawer toggle
         drawerToggle = new ActionBarDrawerToggle(
@@ -96,15 +98,10 @@ public class MainActivity extends BaseEventBusActivity implements
 
 
     @Subscribe(sticky = true)
-    public void handelLogin(AuthenticationEvents.Login event){
-        updateText(event.user);
+    public void handelLogin(AuthenticationEvents.Login event) {
+        ((TextView) findViewById(R.id.user_role_text)).setText(event.user.role.toString());
+        ((TextView) findViewById(R.id.user_name_text)).setText(event.user.name);
     }
-
-    private void updateText(User user){
-        ((TextView)findViewById(R.id.user_role_text)).setText(user.role.toString());
-        ((TextView)findViewById(R.id.user_name_text)).setText(user.name);
-    }
-
 
     /**
      * When hitting the Android back button
@@ -136,11 +133,6 @@ public class MainActivity extends BaseEventBusActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         displayFragment(item.getItemId());
         return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -200,10 +192,10 @@ public class MainActivity extends BaseEventBusActivity implements
     @Override
     public void setDrawerEnabled(boolean enabled) {
 
-        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().hide();
-        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().show();
+//        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
+//            getSupportActionBar().hide();
+//        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
+//            getSupportActionBar().show();
 
         // lock or unlock drawer
         int lockMode = enabled
