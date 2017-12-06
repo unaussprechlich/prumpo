@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -288,7 +288,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
-                // TODO Auto-generated method stub
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -339,7 +338,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
                 String exportString = getFieldValueIfNotEmpty(mBSEditTextInputExpert);
                 String dateString = getFieldValueIfNotEmpty(mBSEditTextInputDate);
 
-            } catch (LogInValueIsEmptyException e) {
+            } catch (EditFieldValueIsEmptyException e) {
                 e.showError();
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
@@ -474,9 +473,9 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     /**
      * Copyright Alexander Keck
      */
-    private String getFieldValueIfNotEmpty(EditText editText) throws LogInValueIsEmptyException {
+    private String getFieldValueIfNotEmpty(EditText editText) throws EditFieldValueIsEmptyException {
         String text = editText.getText().toString();
-        if (text.isEmpty()) throw new LogInValueIsEmptyException(editText);
+        if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
         return text;
     }
 

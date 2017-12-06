@@ -7,14 +7,15 @@ import android.provider.BaseColumns;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.Date;
+import org.joda.time.DateTime;
+
 import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
 
 /**
- * Represents one record of the User table.
+ * Represents one record of the DamageCase table.
  */
 @Entity(tableName = DamageCase.TABLE_NAME)
 public class DamageCase implements ModelDB {
@@ -37,7 +38,7 @@ public class DamageCase implements ModelDB {
     public List<LatLng> coordinates;
     public String areaCode;
     @ColumnInfo(index = true)
-    public Date date;
+    public DateTime date;
     public double areaSize;
 
     public DamageCase(
@@ -48,7 +49,7 @@ public class DamageCase implements ModelDB {
             double areaSize,
             long ownerID,
             List<LatLng> coordinates,
-            Date date) {
+            DateTime date) {
 
         this.nameDamageCase = nameDamageCase;
         this.namePolicyholder = namePolicyholder;

@@ -22,8 +22,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -42,20 +43,16 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDraw
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
+ * TODO: REWRITE plzzzz
  */
 @ActivityScope
 public class DamageCaseListFragment
         extends DaggerFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
-    @Inject
-    DamageCaseRepository damageCaseRepository;
-
-    @Inject
-    ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
-    UserManager userManager;
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject ViewModelProvider.Factory viewModelFactory;
+    @Inject UserManager userManager;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -82,8 +79,6 @@ public class DamageCaseListFragment
                 .get(DamageCaseCollectionViewModel.class)
                 .getAll()
                 .observe(this, this::setDamageCaseList);
-
-
     }
 
 
@@ -124,7 +119,7 @@ public class DamageCaseListFragment
                 Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
                 try {
                     damageCaseRepository.insert(
-                            new DamageCaseBuilder().setNameDamageCase("DamageCase_" + r).setNamePolicyholder("PolicyHolder_" + r).setNameExpert("NameExper_" + r).setAreaCode("70374").setAreaSize(r).setOwnerID(userManager.getCurrentUser().getID()).setCoordinates(new ArrayList<LatLng>()).setDate(new Date()).createDamageCase()
+                            new DamageCaseBuilder().setNameDamageCase("DamageCase_" + r).setNamePolicyholder("PolicyHolder_" + r).setNameExpert("NameExper_" + r).setAreaCode("70374").setAreaSize(r).setOwnerID(userManager.getCurrentUser().getID()).setCoordinates(new ArrayList<LatLng>()).setDate(DateTime.now()).createDamageCase()
                     );
                 } catch (UserManager.NoUserException e) {
                     e.printStackTrace();
@@ -168,14 +163,12 @@ public class DamageCaseListFragment
         // attach navigation blocker if search menu item is opened
         NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
         searchMenuItem.setOnActionExpandListener(navMenuBlocker);
-
     }
 
     /**
      * Called when the search query changes.
      *
      * @param newText the updated query.
-     * @return <code>false</code> TODO: implement me!
      */
     @Override
     public boolean onQueryTextChange(String newText) {

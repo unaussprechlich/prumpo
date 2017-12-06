@@ -7,51 +7,47 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
-
-// TODO: deal with lags (and maybe introduce separate threads)
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends BaseActivity {
 
-    @Inject
-    UserRepository userRepository;
-    @Inject
-    UserManager userManager;
-    @Inject
-    Vibrator vibrator;
-    // UI references.
-    private EditText mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+    @Inject UserRepository userRepository;
+    @Inject UserManager userManager;
+    @Inject Vibrator vibrator;
+
+    @BindView(R.id.email)       EditText mEmailView;
+    @BindView(R.id.password)    EditText mPasswordView;
+    @BindView(R.id.login_progress) View mProgressView;
+    @BindView(R.id.login_form)  View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
 
         //TODO remove dummy
         try {
@@ -65,9 +61,6 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-        mEmailView = findViewById(R.id.email);
-        mPasswordView = findViewById(R.id.password);
-
         mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin();
@@ -75,24 +68,18 @@ public class LoginActivity extends BaseActivity {
             }
             return false;
         });
+    }
 
-        findViewById(R.id.SKIP_LOGIN).setOnClickListener(v -> {
+    @OnClick(R.id.SKIP_LOGIN)
+    public void onClickSkipLogin(){
+        LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
+        user.observe(this, user1 -> userManager.login(user));
+        gotoMainActivity();
+    }
 
-            LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
-            user.observe(this, user1 ->
-                    userManager.login(user)
-            );
-            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-            myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            startActivity(myIntent);
-        });
-
-        Button mEmailSignInButton = findViewById(R.id.sign_up_button);
-        mEmailSignInButton.setOnClickListener(view -> attemptLogin());
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
+    @OnClick(R.id.sign_up_button)
+    public void onClickSignUpButton(){
+        attemptLogin();
     }
 
     /**
@@ -104,6 +91,7 @@ public class LoginActivity extends BaseActivity {
         try {
             showProgress(true);
             View view = this.getCurrentFocus();
+
             if (view != null) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -117,42 +105,40 @@ public class LoginActivity extends BaseActivity {
             final String password = getFieldValueIfNotEmpty(mPasswordView);
 
             if (!Pattern.matches(Constants.EMAIL_REGEX, email))
-                throw new LogInValueException(mEmailView, "Invalid mail address!");
-
+                throw new EditFieldValueException(mEmailView, "Invalid mail address!");
 
             LiveData<User> liveUser = userRepository.getByEmail(email);
             liveUser.observe(this, user -> {
                 try {
-                    if (user == null)
-                        throw new LogInValueException(mEmailView, "User not found!");
-                    else if (user.password.equals(password)) {
-                        userManager.login(liveUser);
-                        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        startActivity(myIntent);
-                    } else if (!user.password.equals(password))
-                        throw new LogInValueException(mPasswordView, "Password Incorrect!");
-                    else
-                        throw new Exception("Something went wrong!");
 
-                } catch (LogInValueException e) {
+                    if (user == null) throw new EditFieldValueException(mEmailView, "User not found!");
+                    else {
+                        if (user.password.equals(password)) {
+                            userManager.login(liveUser);
+                            gotoMainActivity();
+                        } else throw new EditFieldValueException(mPasswordView, "Password Incorrect!");
+                    }
+
+                } catch (EditFieldValueException e) {
                     e.showError();
-                    showProgress(false);
-                } catch (Exception e) {
-                    Log.d("LoginActivity", e.getMessage());
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     showProgress(false);
                 }
             });
-        } catch (LogInValueException e) {
+        } catch (EditFieldValueException e) {
             e.showError();
             showProgress(false);
         }
     }
 
-    private String getFieldValueIfNotEmpty(EditText editText) throws LogInValueIsEmptyException {
+    private void gotoMainActivity(){
+        Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(myIntent);
+    }
+
+    private String getFieldValueIfNotEmpty(EditText editText) throws EditFieldValueIsEmptyException {
         String text = editText.getText().toString();
-        if (text.isEmpty()) throw new LogInValueIsEmptyException(editText);
+        if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
         return text;
     }
 
@@ -161,9 +147,6 @@ public class LoginActivity extends BaseActivity {
      */
     private void showProgress(final boolean show) {
 
-        // on Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);

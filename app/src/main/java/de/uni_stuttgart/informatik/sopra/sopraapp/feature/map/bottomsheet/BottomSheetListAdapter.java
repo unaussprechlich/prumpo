@@ -39,13 +39,11 @@ public class BottomSheetListAdapter
      */
     private int selectedViewIndex = -1;
 
-
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
         for (int i = 1; i < amountBubbles; i++)
             add();
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
-
     }
 
     /**
@@ -62,7 +60,6 @@ public class BottomSheetListAdapter
                 .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
                         parent,
                         false);
-
         return new BottomSheetItemViewHolder(view);
     }
 

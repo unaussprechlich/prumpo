@@ -6,8 +6,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,16 +16,19 @@ import javax.inject.Inject;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
+/**
+ * Typeconverters for Room.
+ */
 public class Converters {
 
     @Inject
     Gson gson;
 
-
     public Converters() {
         SopraApp.getAppComponent().inject(this);
     }
 
+    //EnumRoles ####################################################################################
     @TypeConverter
     public User.EnumUserRoles convertEnumRoles(String string){
         return User.EnumUserRoles.valueOf(string);
@@ -35,15 +39,19 @@ public class Converters {
         return role.toString();
     }
 
+    //DateTime #####################################################################################
+
     @TypeConverter
-    public String converteLocalDateTime(Date date){
+    public String converteLocalDateTime(DateTime date){
         return date.toString();
     }
 
     @TypeConverter
-    public Date converteLocalDateTime(String date){
-        return new Date(date);
+    public DateTime converteLocalDateTime(String date){
+        return DateTime.parse(date);
     }
+
+    //List<LatLng> #################################################################################
 
     @TypeConverter
     public List<LatLng> convertArrayList(String value){

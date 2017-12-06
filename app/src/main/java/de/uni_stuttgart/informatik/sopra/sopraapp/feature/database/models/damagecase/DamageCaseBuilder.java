@@ -2,7 +2,8 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damag
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.Date;
+import org.joda.time.DateTime;
+
 import java.util.List;
 
 public class DamageCaseBuilder {
@@ -13,7 +14,7 @@ public class DamageCaseBuilder {
     private double areaSize;
     private long ownerID;
     private List<LatLng> coordinates;
-    private Date date;
+    private DateTime date;
 
     public DamageCaseBuilder setNameDamageCase(String nameDamageCase) {
         this.nameDamageCase = nameDamageCase;
@@ -50,7 +51,7 @@ public class DamageCaseBuilder {
         return this;
     }
 
-    public DamageCaseBuilder setDate(Date date) {
+    public DamageCaseBuilder setDate(DateTime date) {
         this.date = date;
         return this;
     }
