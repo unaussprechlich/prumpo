@@ -68,8 +68,8 @@ public class DamageCaseBuilder {
         return this;
     }
 
-    public DamageCase createDamageCase() throws UserManager.NoUserException {
+    public DamageCase create() throws UserManager.NoUserException {
         this.ownerID = userManager.getCurrentUser().getID();
-        return new DamageCase(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date);
+        return new DamageCase(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date, true);
     }
 }
