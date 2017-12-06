@@ -621,7 +621,7 @@ public class MapFragment
             if (testPolygonPosition > TEST_POLYGON_COORDINATES.size()-1) return;
 
             if (testPolygonPosition == 0) {
-                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, "1");
+                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, 1);
             }
 
             sopraMap.addVertex(TEST_POLYGON_COORDINATES.get(testPolygonPosition++));

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
+import android.util.LongSparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,8 +63,7 @@ public class SopraMap {
     private int indexActiveVertex = -1;
 
     private PolygonContainer activePolygon;
-    private PolygonContainer babyPolygon;
-    private HashMap<String, PolygonContainer> polygonStorage = new HashMap<>();
+    private LongSparseArray<PolygonContainer> polygonStorage = new LongSparseArray<>();
 
     @Inject
     Vibrator vibrator;
@@ -90,7 +90,7 @@ public class SopraMap {
         /* bindings */
 
         gMap.setOnPolygonClickListener(p -> {
-            PolygonContainer polygon  = polygonStorage.get(p.getTag());
+            PolygonContainer polygon  = polygonStorage.get((long)p.getTag());
 
             polygon.highlight();
         });
@@ -128,7 +128,7 @@ public class SopraMap {
 
     /* <--- exposed section ---> */
 
-    void createPolygon(LatLng startPoint, PolygonType type, String uniqueId) {
+    void createPolygon(LatLng startPoint, PolygonType type, long uniqueId) {
         List<LatLng> points = new ArrayList<>();
         points.add(startPoint);
 
@@ -169,7 +169,7 @@ public class SopraMap {
         return activePolygon.data.getPoints();
     }
 
-    void highlight(String uniqueId) {
+    void highlight(long uniqueId) {
         polygonStorage.get(uniqueId).highlight();
     }
 
@@ -181,7 +181,15 @@ public class SopraMap {
         return (String) activePolygon.mapObject.getTag();
     }
 
-    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, String uniqueId) {
+    void removeActivePolygon() {
+        if (activePolygon == null) return;
+
+        activePolygon.highlight();
+        polygonStorage.delete((long)activePolygon.mapObject.getTag());
+        activePolygon.mapObject.remove();
+    }
+
+    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
 
         int strokeColor;
         int fillColor;
