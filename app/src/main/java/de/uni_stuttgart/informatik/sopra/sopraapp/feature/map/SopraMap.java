@@ -56,8 +56,8 @@ public class SopraMap {
     private Location lastUserLocation;
 
     private Polyline previewPolyline;
-
     private Marker dragMarker;
+
     private boolean isHighlighted;
     private int indexActiveVertex = -1;
 
@@ -92,20 +92,6 @@ public class SopraMap {
         gMap.setOnPolygonClickListener(p -> {
             PolygonContainer polygon  = polygonStorage.get(p.getTag());
 
-            if (isHighlighted) {
-                indexActiveVertex = -1;
-
-                polygon.removeHighlight();
-
-                if (polygon == activePolygon) {
-                    activePolygon = null;
-                    return;
-                }
-            }
-
-            activePolygon = polygon;
-
-            isHighlighted = true;
             polygon.highlight();
         });
 
@@ -135,12 +121,26 @@ public class SopraMap {
                 vibrator.vibrate(100);
 
                 // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
-                marker.setPosition(activePolygon.data.getPoint(indexActiveVertex));
+//                marker.setPosition(activePolygon.data.getPoint(indexActiveVertex));
             }
         });
 
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
+    }
+
+    /* <--- exposed section ---> */
+
+    void dragMarkerToggle(int vertexNumber) {
+        makeDraggable(polygonHighlightVertex.get(vertexNumber));
+    }
+
+    void highlight(String uniqueId) {
+        polygonStorage.get(uniqueId).highlight();
+    }
+
+    void removeHighlight(String uniqueId) {
+        polygonStorage.get(uniqueId).removeHighlightCircles();
     }
 
     void drawPolygonOf(List<LatLng> coordinates, PolygonType type, String uniqueId) {
@@ -252,6 +252,8 @@ public class SopraMap {
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
     }
 
+    /* <--- helper section ---> */
+
     @TypeConverter
     private LatLng latLngOf(Location position) {
         if (position == null) {
@@ -283,7 +285,15 @@ public class SopraMap {
     }
 
     private void makeDraggable(Circle circle) {
-        indexActiveVertex = ((int) circle.getTag());
+
+        int circleIndex = (int) circle.getTag();
+
+        if (circleIndex == indexActiveVertex) {
+            removeMarker();
+            return;
+        }
+
+        indexActiveVertex = circleIndex;
 
         LatLng circlePosition = circle.getCenter();
 
@@ -309,6 +319,15 @@ public class SopraMap {
         }
 
         dragMarker.setPosition(circle.getCenter());
+    }
+
+    private void removeMarker() {
+        if (dragMarker == null) return;
+
+        dragMarker.remove();
+        dragMarker = null;
+
+        indexActiveVertex = -1;
     }
 
     private void onMarkerDrag(Marker marker) {
@@ -340,6 +359,7 @@ public class SopraMap {
 
     private void onMarkerDragEnd(Marker marker) {
 
+        // TODO: this should be an assertion
         if (indexActiveVertex < 0) return;
 
         LatLng markerPosition = marker.getPosition();
@@ -352,10 +372,14 @@ public class SopraMap {
         previewPolyline.remove();
         previewPolyline = null;
 
-        activePolygon.removeHighlight();
-        activePolygon.highlight();
+        activePolygon.removeHighlightCircles();
+        activePolygon.drawHighlightCircles();
     }
 
+    /**
+     * Combines SopraPolygon's validation/data logic
+     * with polygon objects on the google map
+     */
     private class PolygonContainer {
 
         PolygonType type;
@@ -374,20 +398,36 @@ public class SopraMap {
             this(polygonVisible, new SopraPolygon(), type);
         }
 
-        private void removeHighlight() {
+        private void highlight() {
+            if (isHighlighted) {
+                indexActiveVertex = -1;
+
+                this.removeHighlightCircles();
+
+                // deselect (and unhighlight) polygon if clicked twice in a row
+                if (this == activePolygon) {
+                    activePolygon = null;
+                    isHighlighted = false;
+                    return;
+                }
+            }
+
+            activePolygon = this;
+
+            isHighlighted = true;
+            this.drawHighlightCircles();
+        }
+
+        private void removeHighlightCircles() {
             for (Circle vertex : polygonHighlightVertex) {
                 vertex.remove();
             }
 
             polygonHighlightVertex.clear();
-
-            if (dragMarker != null) {
-                dragMarker.remove();
-                dragMarker = null;
-            }
+            removeMarker();
         }
 
-        private void highlight() {
+        private void drawHighlightCircles() {
 
             List<LatLng> points = data.getPoints();
             CircleOptions options =
