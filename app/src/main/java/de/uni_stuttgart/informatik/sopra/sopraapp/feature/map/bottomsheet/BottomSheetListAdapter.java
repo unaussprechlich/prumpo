@@ -24,6 +24,7 @@ public class BottomSheetListAdapter
     private ItemCountListener itemCountListener;
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
+
     /**
      * The damage case whose coordinates will be collected.
      */
@@ -41,9 +42,9 @@ public class BottomSheetListAdapter
 
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
-        for (int i = 1; i < amountBubbles; i++)
-            add();
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
+        for (int i = 0; i < amountBubbles; i++)
+            add();
     }
 
     /**
@@ -96,21 +97,6 @@ public class BottomSheetListAdapter
     }
 
     /**
-     * Method which gets called when adapter changed for example.
-     * <p>
-     * Is used to keep the label of the bubbles in sync with its list position
-     *
-     * @param holder The holder of the item to update
-     */
-    @Override
-    public void onViewRecycled(BottomSheetItemViewHolder holder) {
-        super.onViewRecycled(holder);
-
-        // Keep label in sync with position
-        // holder.label.setText(String.valueOf(holder.getAdapterPosition() + 1));
-    }
-
-    /**
      * Returns the item count of the data handled by the adapter.
      * Must always be equal to the current data size of the adapter.
      *
@@ -124,6 +110,19 @@ public class BottomSheetListAdapter
     @Override
     public void add() {
         bubbleHolder.bubbleList.add(new Bubble(counter.getAndIncrement()));
+        if (itemCountListener != null)
+            itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
+        notifyDataSetChanged();
+    }
+
+    private void remove(int position) {
+        bubbleHolder.bubbleList.remove(position);
+
+        if (selectedViewIndex > position)
+            selectedViewIndex--;
+        else if (selectedViewIndex == position)
+            selectedViewIndex = -1;
+
         if (itemCountListener != null)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
         notifyDataSetChanged();
@@ -153,20 +152,8 @@ public class BottomSheetListAdapter
      */
     public boolean onLongClick(View view, int position) {
 
-        if (bubbleHolder.bubbleList.size() > 1) {
-
-            bubbleHolder.bubbleList.remove(position);
-
-            if (selectedViewIndex > position)
-                selectedViewIndex--;
-            else if (selectedViewIndex == position)
-                selectedViewIndex = -1;
-
-            if (itemCountListener != null)
-                itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
-            notifyDataSetChanged();
-
-        }
+        if (bubbleHolder.bubbleList.size() > 1)
+            remove(position);
 
         Toast.makeText(view.getContext(), " " + position + " Long pressed!", Toast.LENGTH_SHORT).show();
 

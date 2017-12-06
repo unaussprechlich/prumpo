@@ -11,16 +11,28 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 
 /**
  * Used for creating an input dialog which
  * automatically sets the text to the bound EditText.
  * Implements the Builder pattern.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class InputRetriever implements View.OnClickListener {
+
+    @BindString(R.string.map_frag_botsheet_dialog_default_header)
+    String defaultTitle;
+
+    @BindString(R.string.map_frag_botsheet_dialog_positive)
+    String dialogAccept;
+
+    @BindString(R.string.map_frag_botsheet_dialog_negative)
+    String dialogReject;
 
     /**
      * Holder for the positive action: When user selects "OK".
@@ -57,6 +69,8 @@ public class InputRetriever implements View.OnClickListener {
         SopraApp.getAppComponent().inject(this);
         editText.setClickable(true);
         this.pressedTextField = editText;
+
+        ButterKnife.bind(this, editText);
     }
 
     /**
@@ -179,24 +193,20 @@ public class InputRetriever implements View.OnClickListener {
         editText.setText(pressedTextField.getText());
 
         // sets courser at the end of the input field
-        int lastChar = editText.length();
-        Editable editable = editText.getText();
-        Selection.setSelection(editable, lastChar);
+        Selection.setSelection(editText.getText(), editText.length());
 
         // create the alert an show
-        AlertDialog alertDialog = new AlertDialog.Builder(context)
+        AlertDialog alertDialog = new FixedDialog(context)
                 .setView(dialogLayout)
                 .setCancelable(false)
-                .setTitle(title == null
-                        ? getString(R.string.map_frag_botsheet_dialog_default_header)
-                        : title)
-                .setPositiveButton(getString(R.string.map_frag_botsheet_alert_yes), (dialogInterface, i) -> {
+                .setTitle(title == null ? defaultTitle : title)
+                .setPositiveButton(dialogAccept, (dialogInterface, i) -> {
                             if (positiveAction != null)
                                 positiveAction.onClick(dialogInterface, i);
                             pressedTextField.setText(editText.getText());
                         }
                 )
-                .setNegativeButton(getString(R.string.map_frag_botsheet_alert_no), (dialogInterface, i) -> {
+                .setNegativeButton(dialogReject, (dialogInterface, i) -> {
                     if (negativeAction != null)
                         negativeAction.onClick(dialogInterface, i);
                 })
