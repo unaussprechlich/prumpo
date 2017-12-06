@@ -16,26 +16,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
@@ -50,12 +47,28 @@ public class DamageCaseListFragment
         extends DaggerFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
-    @Inject DamageCaseRepository damageCaseRepository;
-    @Inject ViewModelProvider.Factory viewModelFactory;
-    @Inject UserManager userManager;
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+    @Inject
+    UserManager userManager;
+
+    @BindView(R.id.dc_recycler_view)
+    RecyclerView recyclerView;
+
+    @BindView(R.id.dc_fab_ADD)
+    FloatingActionButton testFloatingActionButton;
+
+    @BindString(R.string.dc_fragment_search_hint)
+    String searchHint;
+
+    @BindString(R.string.damageCases)
+    String toolbarTitle;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
-    private RecyclerView recyclerView;
     private SearchView searchView;
 
     public void setDamageCaseList(List<DamageCase> damageCaseList) {
@@ -68,7 +81,12 @@ public class DamageCaseListFragment
         // specify that fragment controls toolbar
         setHasOptionsMenu(true);
 
-        return inflater.inflate(R.layout.activity_main_fragment_damagecases, container, false);
+        View view = inflater.inflate(R.layout.activity_main_fragment_damagecases,
+                container, false);
+
+        ButterKnife.bind(this, view);
+
+        return view;
     }
 
     @Override
@@ -87,52 +105,26 @@ public class DamageCaseListFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = view.findViewById(R.id.dc_recycler_view);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(new DamageCaseListAdapter(damageCaseList));
 
-        recyclerView.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-
-                    @Override
-                    public boolean onPreDraw() {
-                        recyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-
-                        for (int i = 0; i < recyclerView.getChildCount(); i++) {
-                            View v = recyclerView.getChildAt(i);
-                            v.setAlpha(0.0f);
-                            v.animate().alpha(1.0f)
-                                    .setDuration(500)
-                                    .setStartDelay(i * 40)
-                                    .start();
-                        }
-
-                        return true;
-                    }
-                });
-
-        FloatingActionButton fabAdd = view.findViewById(R.id.dc_fab_ADD);
-        fabAdd.setOnClickListener(v -> {
-            long r = Math.round(Math.random() * 100);
-            try {
-                Toast.makeText(v.getContext(), "Adding new DamageCase with random:" + r, Toast.LENGTH_SHORT).show();
-                try {
-                    damageCaseRepository.insert(
-                            new DamageCaseBuilder().setNameDamageCase("DamageCase_" + r).setNamePolicyholder("PolicyHolder_" + r).setNameExpert("NameExper_" + r).setAreaCode("70374").setAreaSize(r).setOwnerID(userManager.getCurrentUser().getID()).setCoordinates(new ArrayList<LatLng>()).setDate(DateTime.now()).createDamageCase()
-                    );
-                } catch (UserManager.NoUserException e) {
-                    e.printStackTrace();
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        // title of app-bar
-        getActivity().setTitle(R.string.damageCases);
+        getActivity().setTitle(toolbarTitle);
 
         onResume();
+    }
+
+    @OnClick(R.id.dc_fab_ADD)
+    void OnFloatingActionButtonPressed(View view) {
+        Toast.makeText(view.getContext(), "Adding new DamageCase with random", Toast.LENGTH_SHORT).show();
+
+        // Create new fragment and transaction
+//        Fragment newFragment = new MapFragment();
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//
+//        transaction.replace(R.id.content_main_fragment_damagecases, newFragment);
+//        transaction.addToBackStack(null);
+//
+//        transaction.commit();
     }
 
     @Override
@@ -158,7 +150,7 @@ public class DamageCaseListFragment
         MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint(getString(R.string.dc_fragment_search_hint));
+        searchView.setQueryHint(searchHint);
 
         // attach navigation blocker if search menu item is opened
         NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
@@ -166,14 +158,13 @@ public class DamageCaseListFragment
     }
 
     /**
-     * Called when the search query changes.
+     * Called when the search query changes. Performs a filtering and changes the list items.
      *
      * @param newText the updated query.
      */
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        // filter damage cases with newText
         ArrayList<DamageCase> damageCases = new ArrayList<>();
 
         for (DamageCase damageCase : damageCaseList)
@@ -201,6 +192,7 @@ public class DamageCaseListFragment
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow()
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 }
