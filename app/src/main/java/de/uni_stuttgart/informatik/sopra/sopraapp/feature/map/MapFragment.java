@@ -70,8 +70,8 @@ public class MapFragment
 
     @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject UserManager userManager;
     @Inject DamageCaseHandler damageCaseHandler;
+    @Inject UserManager userManager;
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
@@ -86,6 +86,7 @@ public class MapFragment
             (textView, index) -> textView.setVisibility(View.INVISIBLE);
 
     /* Knife-N'-Butter section!' */
+
     View mRootView;
     @BindView(R.id.mapView)
     MapView mMapView;
@@ -231,9 +232,6 @@ public class MapFragment
 
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
-
-    private int testPolygonPosition = 0;
-
 
     /**
      * The provided bottom sheet behaviour object
@@ -593,41 +591,7 @@ public class MapFragment
                         .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
                         .show()
                 );
-                return;
             }
-
-//            if (waitingForResponse) return;
-//
-//            Context context = getContext();
-//
-//            LocationCallbackListener lcl = new LocationCallbackListener() {
-//                @Override
-//                public void onLocationFound(Location location) {
-//                    double lat = location.getLatitude();
-//                    double lng = location.getLongitude();
-//
-//                    Toast.makeText(context, String.format("%s %s\n%s %s", strLatitude, lat, strLongitude, lng),
-//                            Toast.LENGTH_LONG).show();
-//                    waitingForResponse = false;
-//                }
-//
-//                @Override
-//                public void onLocationNotFound() {
-//                    Toast.makeText(context, sirNoPositionDatesFound, Toast.LENGTH_LONG).show();
-//                    waitingForResponse = false;
-//                }
-//            };
-
-//            waitingForResponse = true;
-//            gpsService.singleLocationCallback(lcl, 10000);
-
-            if (testPolygonPosition > TEST_POLYGON_COORDINATES.size() - 1) return;
-
-            if (testPolygonPosition == 0) {
-                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, 1);
-            }
-
-            sopraMap.addVertex(TEST_POLYGON_COORDINATES.get(testPolygonPosition++));
 
         } else if (floatingActionButton.equals(mMapFabLocate)) {
             if (gpsService.wasLocationDisabled()) {
