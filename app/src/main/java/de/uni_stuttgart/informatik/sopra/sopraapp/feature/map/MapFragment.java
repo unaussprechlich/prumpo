@@ -1,10 +1,10 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,18 +13,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -33,13 +32,17 @@ import com.google.android.gms.maps.MapsInitializer;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
@@ -50,13 +53,16 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_DAMAGE;
 
-public class MapFragment extends DaggerFragment implements FragmentBackPressed {
+public class MapFragment
+        extends DaggerFragment
+        implements FragmentBackPressed, LocationCallbackListener {
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
@@ -101,6 +107,13 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     @BindView(R.id.bottom_sheet_input_date)
     EditText mBSEditTextInputDate;
 
+    @BindViews({R.id.bottom_sheet_input_title,
+            R.id.bottom_sheet_input_location,
+            R.id.bottom_sheet_input_policyholder,
+            R.id.bottom_sheet_input_expert,
+            R.id.bottom_sheet_input_date})
+    List<EditText> damageCaseBottomSheetInputFields;
+
     @BindString(R.string.map)
     String strAppbarTitle;
 
@@ -128,11 +141,17 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     @BindString(R.string.map_frag_botsheet_dialog_dc_expert_hint)
     String strBSDialogDCExpertHint;
 
-    @BindString(R.string.map_frag_botsheet_alert_title)
+    @BindString(R.string.map_frag_botsheet_alert_close_title)
     String strBSDialogCloseTitle;
 
-    @BindString(R.string.map_frag_botsheet_alert_text)
+    @BindString(R.string.map_frag_botsheet_alert_close_text)
     String strBSDialogCloseText;
+
+    @BindString(R.string.map_frag_botsheet_alert_delete_title)
+    String strBSDialogDeleteTitle;
+
+    @BindString(R.string.map_frag_botsheet_alert_delete_text)
+    String strBSDialogDeleteText;
 
     @BindString(R.string.prompt_enable_localization)
     String strPromptEnableLocation;
@@ -143,11 +162,32 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     @BindString(R.string.map_frag_botsheet_alert_no)
     String strBSDialogCloseCancel;
 
+    @BindString(R.string.map_fab_no_gps)
+    String sirNoPositionDatesFound;
+
+    @BindString(R.string.map_fab_messages_latitude)
+    String strLatitude;
+
+    @BindString(R.string.map_fab_messages_longitude)
+    String strLongitude;
+
+    @BindString(R.string.map_frag_botsheet_dialog_dc_date_pattern)
+    String simpleDateFormatPattern;
+
+    @BindDrawable(R.drawable.ic_my_location_black_24dp)
+    Drawable currentLocationKnownDrawable;
+
+    @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
+    Drawable currentLocationUnknownDrawable;
+
+    Calendar myCalendar = Calendar.getInstance();
+
     /**
      * The adapter for the horizontal recycler view
      */
     BottomSheetListAdapter bottomSheetListAdapter;
-    ActionMenuItemView tbCloseButton;
+    MenuItem tbCloseButton;
+    MenuItem tbDeleteButton;
     ActionMenuItemView tbSaveButton;
 
     private BottomSheetExpandHandler bottomSheetExpandHandler;
@@ -208,52 +248,24 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
+
     }
 
-    /**
-     * Sets up bottom sheet
-     */
     private void initBottomSheet() {
 
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 
             @Override
             public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
+
                 MainActivity activity = (MainActivity) getActivity();
+                activity.setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
 
-                boolean navigationDrawerEnabled = false;
-
-
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        navigationDrawerEnabled = true;
-                        mBSRecyclerView.setAdapter(null);
-                        mBSEditTextInputTitle.setText("");
-                        mBSEditTextInputPolicyholder.setText("");
-                        mBSEditTextInputExpert.setText("");
-                        mBSEditTextInputDate.setText("");
-                        bottomSheetExpandHandler = null;
-                        tbSaveButton.setAlpha(0.25f);
-                        mBottomSheetBehavior.allowUserSwipe(false);
-                        removeErrorsFromTextFromEditTextFields();
-                        break;
-
-                    case BottomSheetBehavior.STATE_COLLAPSED:
-
-                        break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED:
-
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-
-                        break;
+                if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                    onBottomSheetIsHidden(bottomSheetContainer);
+                else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    onBottomSheetCollapsed(bottomSheetContainer);
                 }
-
-
-                activity.setDrawerEnabled(navigationDrawerEnabled);
 
             }
 
@@ -264,215 +276,89 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         });
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        mBSContainer.setNestedScrollingEnabled(false);
         mBSToolbar.inflateMenu(R.menu.bottom_sheet);
+
         mBSRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        mBSEditTextInputTitle.setOnClickListener(InputRetriever.of(mBSEditTextInputTitle)
-                .withTitle(strBSDialogName)
-                .withHint(strBSDialogNameHint));
-
-        mBSEditTextInputLocation.setOnClickListener(InputRetriever.of(mBSEditTextInputLocation)
-                .withTitle(strBSDialogDCLocation)
-                .withHint(strBSDialogDCLocationHint));
-
-        mBSEditTextInputPolicyholder.setOnClickListener(InputRetriever.of(mBSEditTextInputPolicyholder)
-                .withTitle(strBSDialogDCPolicyholder)
-                .withHint(strBSDialogDCPolicyholderHint));
-
-        mBSEditTextInputExpert.setOnClickListener(InputRetriever.of(mBSEditTextInputExpert)
-                .withTitle(strBSDialogDCExpert)
-                .withHint(strBSDialogDCExpertHint));
-
-        Calendar myCalendar = Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-            }
-
-            private void updateLabel() {
-                String myFormat = "MM/dd/yy"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
-                mBSEditTextInputDate.setText(sdf.format(myCalendar.getTime()));
-            }
-
-        };
-
-        mBSEditTextInputDate.setOnClickListener(v -> {
-            new DatePickerDialog(getContext(), date, myCalendar
-                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-        });
-
-        // init toolbar close button
-        tbCloseButton = mBSToolbar.findViewById(R.id.act_botsheet_close);
-        tbCloseButton.setOnClickListener(v -> {
-            boolean isImportantChanged = true;
-
-            if (isImportantChanged) {
-                showCloseAlert();
-
-            } else {
-
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-            }
-        });
 
         tbSaveButton = mBSToolbar.findViewById(R.id.act_botsheet_save);
         tbSaveButton.setAlpha(0.25f);
-        tbSaveButton.setOnClickListener(v -> {
+        tbSaveButton.setOnClickListener(this::onBottomSheetSaveButtonPressed);
 
-            removeErrorsFromTextFromEditTextFields();
+        tbCloseButton = mBSToolbar.getMenu().findItem(R.id.act_botsheet_close);
+        tbCloseButton.setOnMenuItemClickListener(this::onBottomSheetCloseButtonPressed);
 
-            try {
-                String titleString = getFieldValueIfNotEmpty(mBSEditTextInputTitle);
-                String locationString = getFieldValueIfNotEmpty(mBSEditTextInputLocation);
-                String policyholderString = getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder);
-                String exportString = getFieldValueIfNotEmpty(mBSEditTextInputExpert);
-                String dateString = getFieldValueIfNotEmpty(mBSEditTextInputDate);
-
-            } catch (EditFieldValueIsEmptyException e) {
-                e.showError();
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mMapFabPlus.setOnClickListener(v -> {
-
-            /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
-            loadDamageCaseBottomSheet(null);
-
-            /* GPS/Map-related section */
-
-            if (gpsService.wasLocationDisabled()) {
-                promptEnableLocation();
-                return;
-            }
-
-            if (waitingForResponse) return;
-
-            Context context = getContext();
-
-            LocationCallbackListener lcl = new LocationCallbackListener() {
-                @Override
-                public void onLocationFound(Location location) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-
-                    Toast.makeText(context,
-                            String.format("Latitude %s\nLongitude %s", lat, lng),
-                            Toast.LENGTH_LONG)
-                            .show();
-
-                    waitingForResponse = false;
-                }
-
-                @Override
-                public void onLocationNotFound() {
-                    Toast.makeText(context,
-                            "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
-                            Toast.LENGTH_LONG)
-                            .show();
-                    waitingForResponse = false;
-                }
-            };
-
-            waitingForResponse = true;
-            gpsService.singleLocationCallback(lcl, 10000);
-        });
-
-        mMapFabLocate.setOnClickListener(v -> {
-            // locate the user
-
-            if (gpsService.wasLocationDisabled()) {
-                fabLocateDeactivate();
-                return;
-            }
-
-            sopraMap.mapCameraMoveToUser();
-        });
+        tbDeleteButton = mBSToolbar.getMenu().findItem(R.id.act_botsheet_delete);
+        tbDeleteButton.setOnMenuItemClickListener(this::onBottomSheetDeleteButtonPressed);
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    @SuppressWarnings("unused")
+    private void onBottomSheetSaveButtonPressed(View view) {
+        removeErrorsFromTextFromEditTextFields();
 
-        startGps();
+        try {
+            String titleString = getFieldValueIfNotEmpty(mBSEditTextInputTitle);
+            String locationString = getFieldValueIfNotEmpty(mBSEditTextInputLocation);
+            String policyholderString = getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder);
+            String exportString = getFieldValueIfNotEmpty(mBSEditTextInputExpert);
+            String dateString = getFieldValueIfNotEmpty(mBSEditTextInputDate);
 
-        fabLocateDeactivate();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        stopGps();
-    }
-
-    private void startGps() {
-        gpsService.startGps();
-        isGpsServiceBound = true;
-
-        gpsService.ongoingLocationCallback(new LocationCallbackListener() {
-            @Override
-            public void onLocationFound(Location location) {
-                fabLocateActivate();
-
-                if (sopraMap == null) return;
-
-                sopraMap.drawUserPositionIndicator(location);
-            }
-
-            @Override
-            public void onLocationNotFound() {
-                fabLocateDeactivate();
-
-                if (sopraMap == null) return;
-
-                sopraMap.removeUserPositionIndicator();
-            }
-        });
-    }
-
-    private void stopGps() {
-        if (isGpsServiceBound) {
-            gpsService.stopGps();
-            isGpsServiceBound = false;
+        } catch (EditFieldValueIsEmptyException e) {
+            e.showError();
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
-
-        gpsService.stopCallback();
     }
 
-    private void fabLocateActivate() {
-        mMapFabLocate.setClickable(true);
-        mMapFabLocate.setImageResource(R.drawable.ic_my_location_black_24dp);
+    @SuppressWarnings("unused")
+    private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
+        boolean isImportantChanged = true;
+
+        if (isImportantChanged) {
+            showAlert(AlertType.CLOSE);
+            // Close Action will be handled in alert method
+
+
+        } else {
+
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        }
+        return true;
     }
 
-    private void fabLocateDeactivate() {
-        mMapFabLocate.setClickable(false);
-        mMapFabLocate.setImageResource(R.drawable.ic_location_disabled_black_24dp);
+    @SuppressWarnings("unused")
+    private boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem) {
+        showAlert(AlertType.DELETE);
+        // Delete Action will be handled in alert method
+        return true;
+    }
+
+    @SuppressWarnings("unused")
+    private void onBottomSheetIsHidden(View bottomSheetContainer) {
+
+        mBSRecyclerView.setAdapter(null);
+        mBSEditTextInputTitle.setText("");
+        mBSEditTextInputPolicyholder.setText("");
+        mBSEditTextInputExpert.setText("");
+        mBSEditTextInputDate.setText("");
+        bottomSheetExpandHandler = null;
+        tbSaveButton.setAlpha(0.25f);
+        mBottomSheetBehavior.allowUserSwipe(false);
+        removeErrorsFromTextFromEditTextFields();
+
+    }
+
+    @SuppressWarnings("unused")
+    private void onBottomSheetCollapsed(View bottomSheetContainer) {
+
     }
 
     @Override
     public BackButtonProceedPolicy onBackPressed() {
 
         if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-            showCloseAlert();
+            showAlert(AlertType.CLOSE);
             return BackButtonProceedPolicy.SKIP_ACTIVITY;
         }
 
@@ -488,79 +374,95 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         return text;
     }
 
-    private void loadDamageCaseBottomSheet(DamageCase damageCase) {
+    private void onDamageCaseInteraction(InteractionType interactionType, DamageCase damageCase) {
 
-        int state = mBottomSheetBehavior.getState();
-        if (state == BottomSheetBehavior.STATE_HIDDEN) {
+        if (interactionType == InteractionType.NEW) {
+            if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
 
-            // set state 1st time
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                mBSContainer.setNestedScrollingEnabled(false);
 
-            // lock hide mode
-            mBottomSheetBehavior.setHideable(false);
+                // set state 1st time
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-            // set new adapter
-            bottomSheetListAdapter = new BottomSheetListAdapter(0);
-            mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
+                // lock hide mode
+                mBottomSheetBehavior.setHideable(false);
 
-            // Add first location point
-            bottomSheetListAdapter.add();
+                // set new adapter
+                bottomSheetListAdapter = new BottomSheetListAdapter(1);
+                bottomSheetListAdapter.notifyDataSetChanged();
+                mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
 
-            // Add listener to recycler view: disable button if less than 3 elements are there
-            bottomSheetListAdapter.setOnItemCountChanged(newItemCount ->
-                    bottomSheetExpandHandler.handleNewAmount(newItemCount)
-            );
+                // Add listener to recycler view: disable button if less than 3 elements are there
+                bottomSheetListAdapter.setOnItemCountChanged(newItemCount ->
+                        bottomSheetExpandHandler.handleNewAmount(newItemCount)
+                );
 
-            // measure height of toolbar and recycler view
-            mBSToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            mBSRecyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            mBottomSheetBehavior.setPeekHeight(mBSToolbar.getMeasuredHeight() + mBSRecyclerView.getMeasuredHeight());
+                // measure height of toolbar and recycler view
+                mBSToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                mBSRecyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                mBottomSheetBehavior.setPeekHeight(mBSToolbar.getMeasuredHeight() + mBSRecyclerView.getMeasuredHeight());
 
-            bottomSheetExpandHandler = new BottomSheetExpandHandler();
+                bottomSheetExpandHandler = new BottomSheetExpandHandler();
 
-            // set state 2nd time
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
+                // set state 2nd time
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else {
 
-            // add next point
-            bottomSheetListAdapter.add();
+                // add next point
+                bottomSheetListAdapter.add();
 
-            // scroll to last added item
-            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+                // scroll to last added item
+                mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+            }
+
+        } else if (interactionType == InteractionType.EDIT) {
+
         }
+
     }
 
-    private void promptEnableLocation() {
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+    private void showAlert(AlertType alertType) {
 
-        getActivity().runOnUiThread(() -> Toast
-                .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
-                .show()
-        );
-    }
+        String title = "";
+        String hint = "";
+        DialogInterface.OnClickListener positiveAction = null;
+        DialogInterface.OnClickListener negativeAction = null;
 
-    private void showCloseAlert() {
-        new AlertDialog.Builder(getContext())
-                .setTitle(strBSDialogCloseTitle)
-                .setMessage(strBSDialogCloseText)
+
+        if (alertType == AlertType.CLOSE) {
+            title = strBSDialogCloseTitle;
+            hint = strBSDialogCloseText;
+            positiveAction = (dialog, id) -> {
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            };
+            negativeAction = (dialog, id) -> {
+
+            };
+
+
+        } else if (alertType == AlertType.DELETE) {
+            title = strBSDialogDeleteTitle;
+            hint = strBSDialogDeleteText;
+            positiveAction = (dialog, id) -> {
+                Toast.makeText(getContext(), "DEL", Toast.LENGTH_SHORT).show();
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                // TODO
+            };
+            negativeAction = (dialog, id) -> {
+                Toast.makeText(getContext(), "NOTDEL", Toast.LENGTH_SHORT).show();
+            };
+        }
+
+        new FixedDialog(getContext())
+                .setTitle(title)
+                .setMessage(hint)
                 .setCancelable(false)
-                .setPositiveButton(strBSDialogCloseOk, (dialog, id) -> {
-                    mBottomSheetBehavior.setHideable(true);
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                })
-                .setNegativeButton(strBSDialogCloseCancel, (dialog, id) -> {
-
-                })
+                .setPositiveButton(strBSDialogCloseOk, positiveAction)
+                .setNegativeButton(strBSDialogCloseCancel, negativeAction)
                 .create()
                 .show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
     private void removeErrorsFromTextFromEditTextFields() {
@@ -571,31 +473,190 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         mBSEditTextInputDate.setError(null);
     }
 
+    @OnClick({R.id.bottom_sheet_input_title,
+            R.id.bottom_sheet_input_location,
+            R.id.bottom_sheet_input_policyholder,
+            R.id.bottom_sheet_input_expert,
+            R.id.bottom_sheet_input_date})
+    void onClickBottomSheetDamageCaseInput(EditText editText) {
+
+        if (editText.equals(mBSEditTextInputDate)) {
+            new DatePickerDialog(
+                    getContext(),
+                    (view, year, monthOfYear, dayOfMonth) -> {
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        mBSEditTextInputDate.setText(new SimpleDateFormat(simpleDateFormatPattern, Locale.GERMANY)
+                                .format(myCalendar.getTime()));
+                    },
+                    myCalendar.get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH))
+                    .show();
+            return;
+        }
+
+        String title = "";
+        String hint = "";
+
+        if (editText.equals(mBSEditTextInputTitle)) {
+            title = strBSDialogName;
+            hint = strBSDialogNameHint;
+        } else if (editText.equals(mBSEditTextInputLocation)) {
+            title = strBSDialogDCLocation;
+            hint = strBSDialogDCLocationHint;
+        } else if (editText.equals(mBSEditTextInputPolicyholder)) {
+            title = strBSDialogDCPolicyholder;
+            hint = strBSDialogDCPolicyholderHint;
+        } else if (editText.equals(mBSEditTextInputExpert)) {
+            title = strBSDialogDCExpert;
+            hint = strBSDialogDCExpertHint;
+        }
+
+        InputRetriever.of(editText)
+                .withTitle(title)
+                .withHint(hint)
+                .onClick(editText);
+    }
+
+    @OnClick({R.id.map_fab_plus,
+            R.id.map_fab_locate})
+    void onClickFloatingActionButtons(FloatingActionButton floatingActionButton) {
+
+        if (floatingActionButton.equals(mMapFabPlus)) {
+
+            /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
+            onDamageCaseInteraction(InteractionType.NEW, null);
+
+            /* GPS/Map-related section */
+
+            if (gpsService.wasLocationDisabled()) {
+
+                // prompt enable location
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                getActivity().runOnUiThread(() -> Toast
+                        .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
+                        .show()
+                );
+                return;
+            }
+
+            if (waitingForResponse) return;
+
+            Context context = getContext();
+
+            LocationCallbackListener lcl = new LocationCallbackListener() {
+                @Override
+                public void onLocationFound(Location location) {
+//                    double lat = location.getLatitude();
+//                    double lng = location.getLongitude();
+//
+//                    Toast.makeText(context, String.format("%s %s\n%s %s", strLatitude, lat, strLongitude, lng),
+//                            Toast.LENGTH_LONG).show();
+                    waitingForResponse = false;
+                }
+
+                @Override
+                public void onLocationNotFound() {
+//                    Toast.makeText(context, sirNoPositionDatesFound, Toast.LENGTH_LONG).show();
+                    waitingForResponse = false;
+                }
+            };
+
+            waitingForResponse = true;
+            gpsService.singleLocationCallback(lcl, 10000);
+        } else if (floatingActionButton.equals(mMapFabLocate)) {
+            if (gpsService.wasLocationDisabled()) {
+                mMapFabLocate.setClickable(false);
+                mMapFabLocate.setImageDrawable(currentLocationUnknownDrawable);
+                return;
+            }
+            sopraMap.mapCameraMoveToUser();
+        }
+    }
+
+    @Override
+    public void onLocationFound(Location location) {
+        mMapFabLocate.setClickable(true);
+        mMapFabLocate.setImageDrawable(currentLocationKnownDrawable);
+
+        if (sopraMap == null) return;
+
+        sopraMap.drawUserPositionIndicator(location);
+    }
+
+    @Override
+    public void onLocationNotFound() {
+        mMapFabLocate.setClickable(false);
+        mMapFabLocate.setImageDrawable(currentLocationUnknownDrawable);
+
+        if (sopraMap == null) return;
+
+        sopraMap.removeUserPositionIndicator();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // start gps
+        gpsService.startGps();
+        isGpsServiceBound = true;
+
+        gpsService.ongoingLocationCallback(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // stop gps
+        if (isGpsServiceBound) {
+            gpsService.stopGps();
+            isGpsServiceBound = false;
+        }
+
+        gpsService.stopCallback();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+    }
+
+    private enum AlertType {
+        CLOSE, DELETE
+    }
+
+    private enum InteractionType {
+        NEW, EDIT
+    }
+
     private class BottomSheetExpandHandler {
         boolean animationShown = false;
 
         void handleNewAmount(int newAmount) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             boolean enabled = newAmount > 2;
+
             tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
             tbSaveButton.setEnabled(enabled);
             mBottomSheetBehavior.allowUserSwipe(enabled);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             if (enabled && !animationShown) {
-                this.show(100);
-                this.hide(300);
+                mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
+                        .translationY(-100);
+                new Handler().postDelayed(() -> mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
+                        .translationY(-0), 300);
                 animationShown = !animationShown;
             }
-        }
-
-        private void show(long value) {
-            mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
-                    .translationY(-value);
-        }
-
-        private void hide(long delay) {
-            new Handler().postDelayed(() -> mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
-                    .translationY(-0), delay);
         }
     }
 }

@@ -41,10 +41,22 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <!--map fragment : bottom sheet -->
-    <string name="map_frag_botsheet_alert_title">Änderungen verwerfen?</string>
-    <string name="map_frag_botsheet_alert_text">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
+    <string name="map_frag_botsheet_alert_close_title">Änderungen verwerfen?</string>
+    <string name="map_frag_botsheet_alert_close_text">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
+    <string name="map_frag_botsheet_alert_delete_title">Löschen?</string>
+    <string name="map_frag_botsheet_alert_delete_text">Möchten Sie den bestehenden Schadensfall löschen?</string>
     <string name="map_frag_botsheet_alert_yes">Ja</string>
     <string name="map_frag_botsheet_alert_no">Nein</string>
+
+    <string name="map_frag_botsheet_menu_close">Schließen</string>
+    <string name="map_frag_botsheet_menu_save_enabled_apha">1</string>
+    <string name="map_frag_botsheet_menu_save_disabled_apha">0.25</string>
+
+    <string name="map_frag_botsheet_menu_delete">Löschen</string>
+
+    <string name="map_fab_messages_latitude">Latitude</string>
+    <string name="map_fab_messages_longitude">Longitude</string>
+    <string name="map_fab_no_gps">Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.</string>
 
 
     <string name="map_frag_botsheet_dialog_default_header">"Bitte eingeben …"</string>
