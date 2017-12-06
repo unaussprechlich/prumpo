@@ -13,14 +13,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import javax.inject.Inject;
-
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Serving mostly-accurate GpsService-readings since 2017
@@ -38,6 +35,8 @@ public class GpsService {
     private boolean locationWasDisabled = true;
 
     private boolean hadPermission = false;
+
+    private List<LocationCallbackListener> subscribers = new ArrayList<>();
 
     // to manage single location callbacks
     private boolean callbackOver = false;
@@ -96,10 +95,18 @@ public class GpsService {
 
     /**
      * After running this method {@link GpsService#singleLocationCallback}
-     * won't run any supplied callbacks
+     * won't run any supplied callbacks. (Ongoing requests must be rebound, as well).
      */
     public void stopCallback() {
         callbackOver = true;
+
+        // notify all subscribers, that the current location update failed
+        for (LocationCallbackListener subscriber : subscribers) {
+            subscriber.onLocationNotFound();
+        }
+
+        // subscribers must resubscribe manually after the callback was stopped
+        subscribers.clear();
     }
 
     /**
@@ -115,6 +122,10 @@ public class GpsService {
         if (lastLocation == null) return null;
 
         return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+    }
+
+    public void ongoingLocationCallback(LocationCallbackListener listener) {
+        subscribers.add(listener);
     }
 
     /**
@@ -198,6 +209,16 @@ public class GpsService {
         @Override
         public void onLocationChanged(Location location) {
             lastLocation = location;
+
+            if (locationWasDisabled) {
+                for (LocationCallbackListener subscriber : subscribers) {
+                    subscriber.onLocationNotFound();
+                }
+            } else {
+                for (LocationCallbackListener subscriber : subscribers) {
+                    subscriber.onLocationFound(location);
+                }
+            }
         }
 
         @Override
