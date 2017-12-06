@@ -397,6 +397,12 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         mMapFabLocate.setOnClickListener(v -> {
             // locate the user
+
+            if (gpsService.wasLocationDisabled()) {
+                fabLocateDeactivate();
+                return;
+            }
+
             sopraMap.mapCameraMoveToUser();
         });
 
