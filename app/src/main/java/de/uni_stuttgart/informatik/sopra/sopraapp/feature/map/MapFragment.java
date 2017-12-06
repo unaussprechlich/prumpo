@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
@@ -106,6 +107,18 @@ public class MapFragment
 
     @BindView(R.id.bottom_sheet_input_date)
     EditText mBSEditTextInputDate;
+
+    @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
+    TextView mBSTextViewTitleValue;
+
+    @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
+    TextView mBSTextViewAreaValue;
+
+    @BindView(R.id.bottom_sheet_toolbar_dc_title)
+    TextView mBSTextViewTitle;
+
+    @BindView(R.id.bottom_sheet_toolbar_dc_area)
+    TextView mBSTextViewArea;
 
     @BindViews({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
@@ -347,6 +360,9 @@ public class MapFragment
         mBottomSheetBehavior.allowUserSwipe(false);
         removeErrorsFromTextFromEditTextFields();
 
+        mBSTextViewTitle.setVisibility(View.INVISIBLE);
+        mBSTextViewTitleValue.setVisibility(View.INVISIBLE);
+        mBSTextViewTitleValue.setText("");
     }
 
     @SuppressWarnings("unused")
@@ -500,10 +516,17 @@ public class MapFragment
 
         String title = "";
         String hint = "";
+        DialogInterface.OnClickListener positiveAction = null;
+        DialogInterface.OnClickListener negativeAction = null;
 
         if (editText.equals(mBSEditTextInputTitle)) {
             title = strBSDialogName;
             hint = strBSDialogNameHint;
+            positiveAction = (dialogInterface, i) -> {
+                mBSTextViewTitle.setVisibility(View.VISIBLE);
+                mBSTextViewTitleValue.setVisibility(View.VISIBLE);
+                mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
+            };
         } else if (editText.equals(mBSEditTextInputLocation)) {
             title = strBSDialogDCLocation;
             hint = strBSDialogDCLocationHint;
@@ -518,6 +541,8 @@ public class MapFragment
         InputRetriever.of(editText)
                 .withTitle(title)
                 .withHint(hint)
+                .setPositiveButtonAction(positiveAction)
+                .setNegativeButtonAction(negativeAction)
                 .onClick(editText);
     }
 
@@ -649,6 +674,10 @@ public class MapFragment
             tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
             tbSaveButton.setEnabled(enabled);
             mBottomSheetBehavior.allowUserSwipe(enabled);
+
+            mBSTextViewArea.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
+            mBSTextViewAreaValue.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
+            mBSTextViewAreaValue.setText(String.valueOf(newAmount)); // TODO! Update area
 
             if (enabled && !animationShown) {
                 mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
