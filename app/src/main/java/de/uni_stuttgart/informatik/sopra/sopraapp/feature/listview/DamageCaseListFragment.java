@@ -47,14 +47,9 @@ public class DamageCaseListFragment
         extends DaggerFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
-    @Inject
-    DamageCaseRepository damageCaseRepository;
-
-    @Inject
-    ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
-    UserManager userManager;
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject ViewModelProvider.Factory viewModelFactory;
+    @Inject UserManager userManager;
 
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;

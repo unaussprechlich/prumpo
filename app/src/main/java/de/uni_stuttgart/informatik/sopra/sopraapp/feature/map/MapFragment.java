@@ -52,7 +52,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -69,6 +68,11 @@ public class MapFragment
         extends DaggerFragment
         implements FragmentBackPressed, LocationCallbackListener {
 
+    @Inject GpsService gpsService;
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject UserManager userManager;
+    @Inject DamageCaseHandler damageCaseHandler;
+
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
 
@@ -80,13 +84,6 @@ public class MapFragment
 
     static final ButterKnife.Action<TextView> REMOVE_VISIBILITY =
             (textView, index) -> textView.setVisibility(View.INVISIBLE);
-
-    @Inject
-    GpsService gpsService;
-    @Inject
-    DamageCaseRepository damageCaseRepository;
-    @Inject
-    UserManager userManager;
 
     /* Knife-N'-Butter section!' */
     View mRootView;
@@ -337,20 +334,19 @@ public class MapFragment
         ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
 
         try {
-            int r = 21304;
-
-            DamageCase damageCase = new DamageCaseBuilder()
+            long id = damageCaseHandler.getValue()
                     .setNameDamageCase(getFieldValueIfNotEmpty(mBSEditTextInputTitle))
                     .setAreaCode(getFieldValueIfNotEmpty(mBSEditTextInputLocation))
                     .setNamePolicyholder(getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder))
                     .setNameExpert(getFieldValueIfNotEmpty(mBSEditTextInputExpert))
                     .setDate(damageCaseDate)
-                    .setAreaSize(200)
-                    .createDamageCase();
+                    .setAreaSize(sopraMap.getArea())
+                    .setCoordinates(sopraMap.getActivePoints())
+                    .save();
 
-            damageCaseRepository.insert(damageCase);
+            damageCaseHandler.loadFromDatabase(id);
 
-            Toast.makeText(getContext(), "Saving ...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
 
             mBottomSheetBehavior.setHideable(true);
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -358,7 +354,7 @@ public class MapFragment
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } catch (InterruptedException | ExecutionException | UserManager.NoUserException e) {
+        } catch (InterruptedException | ExecutionException e) {
             Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
@@ -631,7 +627,7 @@ public class MapFragment
             if (testPolygonPosition > TEST_POLYGON_COORDINATES.size() - 1) return;
 
             if (testPolygonPosition == 0) {
-                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, "1");
+                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, 1);
             }
 
             sopraMap.addVertex(TEST_POLYGON_COORDINATES.get(testPolygonPosition++));
@@ -719,6 +715,13 @@ public class MapFragment
             mBSTextViewArea.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
             mBSTextViewAreaValue.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
             mBSTextViewAreaValue.setText(String.valueOf(newAmount)); // TODO! Update area
+
+            if(enabled) try {
+                damageCaseHandler.createNewDamageCase();
+            } catch (UserManager.NoUserException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Something went wrong ...", Toast.LENGTH_SHORT).show();
+            }
 
             if (enabled && !animationShown) {
                 mBSContainer.animate().setInterpolator(new AccelerateInterpolator())

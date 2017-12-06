@@ -16,16 +16,18 @@ import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 
@@ -41,24 +43,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputR
 )
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
-
-    @ApplicationScope
     void inject(DamageCaseListAdapter damageCaseListAdapter);
-
-    @ApplicationScope
     void inject(SopraMap sopraMap);
-
-    @ApplicationScope
     void inject(Converters converters);
-
-    @ApplicationScope
     void inject(InputRetriever inputRetriever);
-
-    @ApplicationScope
     void inject(EditFieldValueException e);
-
-    @ApplicationScope
     void inject(DamageCaseBuilder damageCaseBuilder);
+    void inject(DamageCase damageCase);
+    void inject(DamageCaseHandler damageCaseHandler);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {

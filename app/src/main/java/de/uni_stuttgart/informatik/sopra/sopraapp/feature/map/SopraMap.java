@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
+import android.util.LongSparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,13 +29,14 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -62,8 +64,7 @@ public class SopraMap {
     private int indexActiveVertex = -1;
 
     private PolygonContainer activePolygon;
-    private PolygonContainer babyPolygon;
-    private HashMap<String, PolygonContainer> polygonStorage = new HashMap<>();
+    private LongSparseArray<PolygonContainer> polygonStorage = new LongSparseArray<>();
 
     @Inject
     Vibrator vibrator;
@@ -90,7 +91,7 @@ public class SopraMap {
         /* bindings */
 
         gMap.setOnPolygonClickListener(p -> {
-            PolygonContainer polygon  = polygonStorage.get(p.getTag());
+            PolygonContainer polygon  = polygonStorage.get((long)p.getTag());
 
             polygon.highlight();
         });
@@ -128,7 +129,7 @@ public class SopraMap {
 
     /* <--- exposed section ---> */
 
-    void createPolygon(LatLng startPoint, PolygonType type, String uniqueId) {
+    void createPolygon(LatLng startPoint, PolygonType type, long uniqueId) {
         List<LatLng> points = new ArrayList<>();
         points.add(startPoint);
 
@@ -169,7 +170,7 @@ public class SopraMap {
         return activePolygon.data.getPoints();
     }
 
-    void highlight(String uniqueId) {
+    void highlight(long uniqueId) {
         polygonStorage.get(uniqueId).highlight();
     }
 
@@ -181,7 +182,39 @@ public class SopraMap {
         return (String) activePolygon.mapObject.getTag();
     }
 
-    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, String uniqueId) {
+    void removeActivePolygon() {
+        if (activePolygon == null) return;
+
+        activePolygon.highlight();
+        polygonStorage.delete((long)activePolygon.mapObject.getTag());
+        activePolygon.mapObject.remove();
+    }
+
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+
+    @Inject
+    DamageCaseHandler damageCaseHandler;
+
+
+    void load(){
+
+        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
+            if(listOfDamageCases == null) return;
+
+            //TODO update with filter shit
+
+            // delete
+
+            // insert/replace
+
+            for (DamageCase damageCase : listOfDamageCases) {
+                drawPolygonOf(damageCase.getCoordinates(), PolygonType.DAMAGE_CASE, damageCase.getID());
+            }
+        });
+    }
+
+    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
 
         int strokeColor;
         int fillColor;

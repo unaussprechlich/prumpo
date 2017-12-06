@@ -12,9 +12,11 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
 
@@ -25,6 +27,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff
 public class DamageCase implements ModelDB {
 
     public static final String TABLE_NAME = "damagecase";
+    @Ignore private boolean isChanged = false;
+    @Ignore private boolean initial = false;
 
     @Ignore
     @Inject DamageCaseRepository damageCaseRepository;
@@ -44,6 +48,7 @@ public class DamageCase implements ModelDB {
 
     List<LatLng> coordinates = new ArrayList<>();
     String areaCode;
+
     @ColumnInfo(index = true)
     DateTime date;
     double areaSize;
@@ -57,8 +62,22 @@ public class DamageCase implements ModelDB {
             double areaSize,
             long ownerID,
             List<LatLng> coordinates,
-            DateTime date) {
+            DateTime date,
+            boolean intial) {
+        this(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date);
+        this.initial = intial;
+    }
 
+    public DamageCase(
+            String nameDamageCase,
+            String namePolicyholder,
+            String nameExpert,
+            String areaCode,
+            double areaSize,
+            long ownerID,
+            List<LatLng> coordinates,
+            DateTime date) {
+        SopraApp.getAppComponent().inject(this);
         this.nameDamageCase = nameDamageCase;
         this.namePolicyholder = namePolicyholder;
         this.nameExpert = nameExpert;
@@ -69,8 +88,17 @@ public class DamageCase implements ModelDB {
         this.date = date;
     }
 
-    public void save(){
-        damageCaseRepository.update(this);
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    //GETTER #######################################################################################
+
+    public long save() throws ExecutionException, InterruptedException {
+        if(initial) return damageCaseRepository.insert(this);
+        else if(isChanged) damageCaseRepository.update(this);
+        isChanged = false;
+        return id;
     }
 
     public String getNameDamageCase() {
@@ -101,34 +129,6 @@ public class DamageCase implements ModelDB {
         return areaSize;
     }
 
-    public void setNameDamageCase(String nameDamageCase) {
-        this.nameDamageCase = nameDamageCase;
-    }
-
-    public void setNamePolicyholder(String namePolicyholder) {
-        this.namePolicyholder = namePolicyholder;
-    }
-
-    public void setNameExpert(String nameExpert) {
-        this.nameExpert = nameExpert;
-    }
-
-    public void setCoordinates(List<LatLng> coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    public void setAreaCode(String areaCode) {
-        this.areaCode = areaCode;
-    }
-
-    public void setDate(DateTime date) {
-        this.date = date;
-    }
-
-    public void setAreaSize(double areaSize) {
-        this.areaSize = areaSize;
-    }
-
     @Override
     public long getID() {
         return id;
@@ -138,4 +138,50 @@ public class DamageCase implements ModelDB {
     public long getOwnerID() {
         return ownerID;
     }
+
+    // SETTER ######################################################################################
+
+    public DamageCase setNameDamageCase(String nameDamageCase) {
+        isChanged = true;
+        this.nameDamageCase = nameDamageCase;
+        return this;
+    }
+
+    public DamageCase setNamePolicyholder(String namePolicyholder) {
+        isChanged = true;
+        this.namePolicyholder = namePolicyholder;
+        return this;
+    }
+
+    public DamageCase setNameExpert(String nameExpert) {
+        isChanged = true;
+        this.nameExpert = nameExpert;
+        return this;
+    }
+
+    public DamageCase setCoordinates(List<LatLng> coordinates) {
+        isChanged = true;
+        this.coordinates = coordinates;
+        return this;
+    }
+
+    public DamageCase setAreaCode(String areaCode) {
+        isChanged = true;
+        this.areaCode = areaCode;
+        return this;
+    }
+
+    public DamageCase setDate(DateTime date) {
+        isChanged = true;
+        this.date = date;
+        return this;
+    }
+
+    public DamageCase setAreaSize(double areaSize) {
+        isChanged = true;
+        this.areaSize = areaSize;
+        return this;
+    }
+
+
 }
