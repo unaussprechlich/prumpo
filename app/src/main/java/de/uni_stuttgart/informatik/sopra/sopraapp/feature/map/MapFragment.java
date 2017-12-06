@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -394,7 +396,8 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         });
 
         mMapFabLocate.setOnClickListener(v -> {
-            locateUser();
+            // locate the user
+            sopraMap.mapCameraMoveToUser();
         });
 
     }
@@ -405,7 +408,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         startGps();
 
-        mMapFabLocate.setClickable(false);
+        fabLocateDeactivate();
     }
 
     @Override
@@ -422,7 +425,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         gpsService.ongoingLocationCallback(new LocationCallbackListener() {
             @Override
             public void onLocationFound(Location location) {
-                mMapFabLocate.setClickable(true);
+                fabLocateActivate();
 
                 if (sopraMap == null) return;
 
@@ -431,8 +434,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             @Override
             public void onLocationNotFound() {
-                mMapFabLocate.setClickable(false);
-
+                fabLocateDeactivate();
 
                 if (sopraMap == null) return;
 
@@ -450,13 +452,14 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         gpsService.stopCallback();
     }
 
-    private void locateUser() {
-        if (gpsService.wasLocationDisabled()) {
-            promptEnableLocation();
-            return;
-        }
+    private void fabLocateActivate() {
+        mMapFabLocate.setClickable(true);
+        mMapFabLocate.setImageResource(R.drawable.ic_my_location_black_24dp);
+    }
 
-        sopraMap.mapCameraMoveToUser();
+    private void fabLocateDeactivate() {
+        mMapFabLocate.setClickable(false);
+        mMapFabLocate.setImageResource(R.drawable.ic_location_disabled_black_24dp);
     }
 
     @Override

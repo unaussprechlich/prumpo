@@ -155,7 +155,7 @@ public class SopraMap {
 
         } else {
             strokeColor = resources.getColor(R.color.white, null);
-            fillColor = resources.getColor(R.color.white_38percent, null);
+            fillColor = resources.getColor(R.color.white_15percent, null);
             strokeWidth = 18;
         }
 
@@ -189,7 +189,7 @@ public class SopraMap {
         float radius = location.getAccuracy();
 
         if (radius == 0) {
-            radius = 6;
+            radius = 5;
         }
 
         if (userPositionIndicator != null) {
@@ -202,14 +202,14 @@ public class SopraMap {
                 .center(latLngOf(location))
                 .radius(radius)
                 .strokeColor(resources.getColor(R.color.accent, null))
-                .fillColor(resources.getColor(R.color.accent_38percent, null))
+                .fillColor(resources.getColor(R.color.accent_15percent, null))
                 .zIndex(0);
 
         userPositionIndicator = gMap.addCircle(options);
         userPositionIndicatorCenter =
                 gMap.addCircle(
                         options
-                            .radius(3)
+                            .radius(1)
                             .fillColor(resources.getColor(R.color.accent, null))
                 );
     }
