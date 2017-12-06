@@ -29,13 +29,14 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -187,6 +188,30 @@ public class SopraMap {
         activePolygon.highlight();
         polygonStorage.delete((long)activePolygon.mapObject.getTag());
         activePolygon.mapObject.remove();
+    }
+
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+
+    @Inject
+    DamageCaseHandler damageCaseHandler;
+
+
+    void load(){
+
+        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
+            if(listOfDamageCases == null) return;
+
+            //TODO update with filter shit
+
+            // delete
+
+            // insert/replace
+
+            for (DamageCase damageCase : listOfDamageCases) {
+                drawPolygonOf(damageCase.getCoordinates(), PolygonType.DAMAGE_CASE, damageCase.getID());
+            }
+        });
     }
 
     void drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {

@@ -88,6 +88,10 @@ public class DamageCase implements ModelDB {
         this.date = date;
     }
 
+    public boolean isChanged() {
+        return isChanged;
+    }
+
     //GETTER #######################################################################################
 
     public long save() throws ExecutionException, InterruptedException {
