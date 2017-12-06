@@ -2,13 +2,13 @@
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottom_sheet"
+    android:id="@+id/bottom_sheet_container"
     android:layout_width="match_parent"
     android:layout_height="350dp"
     android:background="@color/white"
     android:clipToPadding="true"
     app:behavior_hideable="true"
-    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+    app:layout_behavior="de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour">
     <!--        app:behavior_peekHeight="?android:attr/actionBarSize"-->
 
     <RelativeLayout
@@ -28,7 +28,7 @@
             app:titleTextColor="@color/white" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/bottom_sheet_list"
+            android:id="@+id/bottom_sheet_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/bottom_sheet_toolbar"
@@ -39,19 +39,10 @@
             tools:layout_editor_absoluteY="0dp"
             tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item" />
 
-        <View
-            android:id="@+id/bottom_sheet_divider"
-            android:layout_width="fill_parent"
-            android:layout_height="2dip"
-            android:layout_below="@id/bottom_sheet_list"
-            android:background="@color/primary"
-            android:paddingEnd="4dp"
-            android:paddingStart="4dp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bottom_sheet_divider"
+            android:layout_below="@id/bottom_sheet_recyclerview"
             android:orientation="vertical"
             android:padding="8dp">
             <!--android:layout_below="@id/bottom_sheet_list"-->
@@ -71,18 +62,24 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="@string/map_frag_botsheet_dialog_dc_name"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:scrollHorizontally="true"
+                    android:text="@string/map_frag_botsheet_dialog_dc_name_hint"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <EditText
-                    android:id="@+id/bs_control_title_input"
-                    android:layout_width="206dp"
+                    android:id="@+id/bottom_sheet_input_title"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:lines="1"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -92,18 +89,23 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="@string/map_frag_botsheet_dialog_dc_location"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:text="@string/map_frag_botsheet_dialog_dc_location_hint"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <EditText
-                    android:id="@+id/bs_control_location_input"
-                    android:layout_width="206dp"
+                    android:id="@+id/bottom_sheet_input_location"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:maxLines="1"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -113,18 +115,23 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="@string/map_frag_botsheet_dialog_dc_policyholder"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:text="@string/map_frag_botsheet_dialog_dc_policyholder_hint"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <EditText
-                    android:id="@+id/bs_control_policyholder_input"
-                    android:layout_width="206dp"
+                    android:id="@+id/bottom_sheet_input_policyholder"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:maxLines="1"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -134,18 +141,23 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="@string/map_frag_botsheet_dialog_dc_expert"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:text="@string/map_frag_botsheet_dialog_dc_expert_hint"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <EditText
-                    android:id="@+id/bs_control_expert_input"
-                    android:layout_width="206dp"
+                    android:id="@+id/bottom_sheet_input_expert"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:maxLines="1"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -155,18 +167,23 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="@string/map_frag_botsheet_dialog_dc_date"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:text="@string/map_frag_botsheet_dialog_dc_date_hint"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <EditText
-                    android:id="@+id/bs_control_date_input"
-                    android:layout_width="206dp"
+                    android:id="@+id/bottom_sheet_input_date"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:maxLines="1"
                     android:textSize="16sp" />
 
             </LinearLayout>

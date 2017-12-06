@@ -21,9 +21,9 @@ public class BottomSheetListAdapter
 
     // TODO! Remove "MapPoint" Implement DamageCase
 
-    Holder bubbleHolder = new Holder();
-    AtomicInteger counter;
-
+    private ItemCountListener itemCountListener;
+    private Holder bubbleHolder = new Holder();
+    private AtomicInteger counter;
     /**
      * The damage case whose coordinates will be collected.
      */
@@ -127,6 +127,8 @@ public class BottomSheetListAdapter
     @Override
     public void add() {
         bubbleHolder.bubbleList.add(new Bubble(counter.getAndIncrement()));
+        if (itemCountListener != null)
+            itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
         notifyDataSetChanged();
     }
 
@@ -163,6 +165,8 @@ public class BottomSheetListAdapter
             else if (selectedViewIndex == position)
                 selectedViewIndex = -1;
 
+            if (itemCountListener != null)
+                itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
             notifyDataSetChanged();
 
         }
@@ -183,6 +187,14 @@ public class BottomSheetListAdapter
         recyclerView.getRecycledViewPool().clear();
     }
 
+    public ItemCountListener getItemCountListener() {
+        return itemCountListener;
+    }
+
+    public void setOnItemCountChanged(ItemCountListener itemCountListener) {
+        this.itemCountListener = itemCountListener;
+    }
+
     /**
      * Updates the selected view index.
      * Calls to refresh recycler view.
@@ -192,6 +204,10 @@ public class BottomSheetListAdapter
     private void updateSelectedViewIndex(int position) {
         selectedViewIndex = position;
         notifyDataSetChanged();
+    }
+
+    public interface ItemCountListener {
+        void onItemCountChanged(int newItemCount);
     }
 
     /**

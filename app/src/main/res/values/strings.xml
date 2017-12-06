@@ -51,20 +51,21 @@
     <string name="map_frag_botsheet_dialog_positive">OK</string>
     <string name="map_frag_botsheet_dialog_negative">Abbrechen</string>
 
-    <string name="map_frag_botsheet_dialog_dc_name">Bezeichnung</string>
-    <string name="map_frag_botsheet_dialog_dc_name_hint">Bezeichnung für den Schadensfall</string>
+    <string name="map_frag_botsheet_dialog_dc_name">Bezeichnung des Schadenfalls</string>
+    <string name="map_frag_botsheet_dialog_dc_name_hint">Bezeichnung</string>
 
-    <string name="map_frag_botsheet_dialog_dc_policyholder">Versicherungsnehmer</string>
-    <string name="map_frag_botsheet_dialog_dc_policyholder_hint">Name des Versicherungsnehmers</string>
+    <string name="map_frag_botsheet_dialog_dc_policyholder">Name des Versicherungsnehmers</string>
+    <string name="map_frag_botsheet_dialog_dc_policyholder_hint">Versicherungsnehmer</string>
 
-    <string name="map_frag_botsheet_dialog_dc_expert">Gutachter</string>
-    <string name="map_frag_botsheet_dialog_dc_expert_hint">Name des Gutachters</string>
+    <string name="map_frag_botsheet_dialog_dc_expert">Name des Gutachters</string>
+    <string name="map_frag_botsheet_dialog_dc_expert_hint">Gutachter</string>
 
-    <string name="map_frag_botsheet_dialog_dc_date">Datum</string>
-    <string name="map_frag_botsheet_dialog_dc_date_hint">Geben Sie das Datum an …</string>
+    <string name="map_frag_botsheet_dialog_dc_date">Zeitpunkt des Schadens</string>
+    <string name="map_frag_botsheet_dialog_dc_date_hint">Schadenszeitpunkt</string>
+    <string name="map_frag_botsheet_dialog_dc_date_pattern">EEE, d MMM yyyy</string>
 
-    <string name="map_frag_botsheet_dialog_dc_location">Ort</string>
-    <string name="map_frag_botsheet_dialog_dc_location_hint">Geben Sie den Ort an …</string>
+    <string name="map_frag_botsheet_dialog_dc_location">Ort des Schadens</string>
+    <string name="map_frag_botsheet_dialog_dc_location_hint">Ort</string>
 
     <string name="title_activity_sign_up">Sign Up</string>
 
