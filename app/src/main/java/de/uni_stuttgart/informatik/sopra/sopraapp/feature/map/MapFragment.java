@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,11 +57,14 @@ import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLY
 public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
+    // TODO: replace remaining onClickListeners with ButterKnife annotations
 
     @Inject
     GpsService gpsService;
 
     View mRootView;
+
+    /* Knife-N'-Butter section!' */
 
     @BindView(R.id.mapView)
     MapView mMapView;
@@ -138,16 +140,21 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
     @BindString(R.string.map_frag_botsheet_alert_no)
     String strBSDialogCloseCancel;
+
     /**
      * The adapter for the horizontal recycler view
      */
     BottomSheetListAdapter bottomSheetListAdapter;
     ActionMenuItemView tbCloseButton;
     ActionMenuItemView tbSaveButton;
+
     private BottomSheetExpandHandler bottomSheetExpandHandler;
+
     private SopraMap sopraMap;
+
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
+
     /**
      * The provided bottom sheet behaviour object
      */
@@ -197,6 +204,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.drawPolygonOf(TEST_POLYGON_DAMAGE, PolygonType.DAMAGE_CASE, "2");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
+
         });
     }
 
@@ -387,16 +395,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         });
 
         mMapFabLocate.setOnClickListener(v -> {
-            LatLng targetPos = gpsService.lastKnownLocation();
-
-            if (gpsService.wasLocationDisabled()) {
-                promptEnableLocation();
-                return;
-            }
-
-            if (targetPos == null) return;
-
-            sopraMap.mapCameraMove(gpsService.lastKnownLocation());
+            locateUser();
         });
 
     }
@@ -405,20 +404,54 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
     public void onStart() {
         super.onStart();
 
-        isGpsServiceBound = true;
-        gpsService.startGps();
+        startGps();
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
+        stopGps();
+    }
+
+    private void startGps() {
+        gpsService.startGps();
+        isGpsServiceBound = true;
+
+        gpsService.ongoingLocationCallback(new LocationCallbackListener() {
+            @Override
+            public void onLocationFound(Location location) {
+                if (sopraMap == null) return;
+
+                sopraMap.drawUserPositionIndicator(location);
+            }
+
+            @Override
+            public void onLocationNotFound() {
+                if (sopraMap == null) return;
+
+                sopraMap.removeUserPositionIndicator();
+            }
+        });
+    }
+
+    private void stopGps() {
         if (isGpsServiceBound) {
             gpsService.stopGps();
             isGpsServiceBound = false;
         }
 
         gpsService.stopCallback();
+    }
+
+    private void locateUser() {
+        if (gpsService.wasLocationDisabled()) {
+            promptEnableLocation();
+            return;
+        }
+
+        sopraMap.mapCameraMoveToUser();
     }
 
     @Override

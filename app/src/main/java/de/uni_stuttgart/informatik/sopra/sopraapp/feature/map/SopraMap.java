@@ -1,14 +1,13 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.arch.persistence.room.TypeConverter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
+import android.location.Location;
 import android.os.Vibrator;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,8 +39,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
 
-import static android.support.v7.content.res.AppCompatResources.getDrawable;
-
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
@@ -53,6 +50,9 @@ public class SopraMap {
     private GoogleMap gMap;
 
     private List<Circle> polygonHighlightVertex = new ArrayList<>();
+
+    private Circle userPositionIndicator;
+    private Location lastUserLocation;
 
     private Polyline previewPolyline;
 
@@ -182,6 +182,44 @@ public class SopraMap {
 
     }
 
+    void drawUserPositionIndicator(Location location) {
+        lastUserLocation = location;
+
+        float radius = location.getAccuracy();
+
+        if (radius == 0) {
+            radius = 5;
+        }
+
+        if (userPositionIndicator != null) {
+            userPositionIndicator.remove();
+        }
+
+        userPositionIndicator =
+                gMap.addCircle(
+                        new CircleOptions()
+                                .center(latLngOf(location))
+                                .radius(radius)
+                                .strokeColor(resources.getColor(R.color.accent, null))
+                                .fillColor(resources.getColor(R.color.accent_38percent, null))
+                                .zIndex(0)
+                );
+    }
+
+    void removeUserPositionIndicator() {
+        if (userPositionIndicator != null) {
+            userPositionIndicator.remove();
+        }
+
+        lastUserLocation = null;
+    }
+
+    void mapCameraMoveToUser() {
+        if (lastUserLocation == null) return;
+
+        mapCameraMove(latLngOf(lastUserLocation));
+    }
+
     void mapCameraJump(LatLng target) {
         // jumping to the location of the data
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
@@ -189,7 +227,8 @@ public class SopraMap {
 
     void mapCameraJump(List<LatLng> polygon) {
         // jumping to the location of the polygons centroid
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
+        gMap.moveCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
     }
 
     void mapCameraMove(LatLng target) {
@@ -200,6 +239,15 @@ public class SopraMap {
     void mapCameraMove(List<LatLng> polygon) {
         // panning to the location of the polygons centroid
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
+    }
+
+    @TypeConverter
+    private LatLng latLngOf(Location position) {
+        if (position == null) {
+            return null;
+        }
+
+        return new LatLng(position.getLatitude(), position.getLongitude());
     }
 
     private CameraPosition cameraPosOf(LatLng target, int zoom) {

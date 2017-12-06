@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Serving mostly-accurate GpsService-readings since 2017
+ * Serving mostly-accurate GpsService-readings since 2017.
  */
 public class GpsService {
 
@@ -210,19 +210,14 @@ public class GpsService {
         public void onLocationChanged(Location location) {
             lastLocation = location;
 
-            if (locationWasDisabled) {
-                for (LocationCallbackListener subscriber : subscribers) {
-                    subscriber.onLocationNotFound();
-                }
-            } else {
-                for (LocationCallbackListener subscriber : subscribers) {
-                    subscriber.onLocationFound(location);
-                }
+            for (LocationCallbackListener subscriber : subscribers) {
+                subscriber.onLocationFound(location);
             }
         }
 
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle) {
+            locationWasDisabled = !isLocationEnabled();
         }
 
         @Override
