@@ -9,7 +9,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
@@ -22,24 +25,27 @@ public class DamageCase implements ModelDB {
 
     public static final String TABLE_NAME = "damagecase";
 
+    @Inject DamageCaseRepository damageCaseRepository;
+
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(index = true, name = BaseColumns._ID)
-    public long id;
+    long id;
 
     @ColumnInfo(index = true)
-    public long ownerID;
+    long ownerID;
 
     @ColumnInfo(index = true)
-    public String nameDamageCase;
-    public String namePolicyholder;
-    public String nameExpert;
+    String nameDamageCase;
+    String namePolicyholder;
+    String nameExpert;
 
-    public List<LatLng> coordinates;
-    public String areaCode;
+    List<LatLng> coordinates = new ArrayList<>();
+    String areaCode;
     @ColumnInfo(index = true)
-    public DateTime date;
-    public double areaSize;
+    DateTime date;
+    double areaSize;
+
 
     public DamageCase(
             String nameDamageCase,
@@ -59,6 +65,70 @@ public class DamageCase implements ModelDB {
         this.ownerID = ownerID;
         this.coordinates = coordinates;
         this.date = date;
+    }
+
+    public void save(){
+        damageCaseRepository.update(this);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getNameDamageCase() {
+        return nameDamageCase;
+    }
+
+    public String getNamePolicyholder() {
+        return namePolicyholder;
+    }
+
+    public String getNameExpert() {
+        return nameExpert;
+    }
+
+    public List<LatLng> getCoordinates() {
+        return coordinates;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public DateTime getDate() {
+        return date;
+    }
+
+    public double getAreaSize() {
+        return areaSize;
+    }
+
+    public void setNameDamageCase(String nameDamageCase) {
+        this.nameDamageCase = nameDamageCase;
+    }
+
+    public void setNamePolicyholder(String namePolicyholder) {
+        this.namePolicyholder = namePolicyholder;
+    }
+
+    public void setNameExpert(String nameExpert) {
+        this.nameExpert = nameExpert;
+    }
+
+    public void setCoordinates(List<LatLng> coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public void setDate(DateTime date) {
+        this.date = date;
+    }
+
+    public void setAreaSize(double areaSize) {
+        this.areaSize = areaSize;
     }
 
     @Override

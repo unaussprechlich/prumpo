@@ -52,6 +52,7 @@ public class SopraPolygon {
         return vertices.size();
     }
 
+
     public double getArea() {
         return Helper.areaOfPolygon(vertices);
     }

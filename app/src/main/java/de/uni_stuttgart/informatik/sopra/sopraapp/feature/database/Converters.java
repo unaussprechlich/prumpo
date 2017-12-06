@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,18 +44,19 @@ public class Converters {
 
     @TypeConverter
     public String converteLocalDateTime(DateTime date){
-        return date.toString();
+        return date.toString(DateTimeFormat.fullDate());
     }
 
     @TypeConverter
     public DateTime converteLocalDateTime(String date){
-        return DateTime.parse(date);
+        return DateTime.parse(date, DateTimeFormat.fullDate());
     }
 
     //List<LatLng> #################################################################################
 
     @TypeConverter
     public List<LatLng> convertArrayList(String value){
+        if (value.equals("")) return new ArrayList<>();
         ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<LatLng> points = new ArrayList<>();
         for(String str : pointsAsString){
@@ -66,6 +68,7 @@ public class Converters {
 
     @TypeConverter
     public String convertArrayList(List<LatLng> value){
+        if(value == null) return "";
         ArrayList<String> asString = new ArrayList<>();
         for(LatLng latLng : value){
             asString.add(latLng.latitude + "-" + latLng.latitude);

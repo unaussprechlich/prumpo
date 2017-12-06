@@ -1,0 +1,197 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "7e41c0123d233502ec40e481dec4f4b0",
+    "entities": [
+      {
+        "tableName": "user",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `email` TEXT, `password` TEXT, `ownerID` INTEGER NOT NULL, `role` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "ownerID",
+            "columnName": "ownerID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_user__id",
+            "unique": false,
+            "columnNames": [
+              "_id"
+            ],
+            "createSql": "CREATE  INDEX `index_user__id` ON `${TABLE_NAME}` (`_id`)"
+          },
+          {
+            "name": "index_user_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "createSql": "CREATE  INDEX `index_user_name` ON `${TABLE_NAME}` (`name`)"
+          },
+          {
+            "name": "index_user_email",
+            "unique": false,
+            "columnNames": [
+              "email"
+            ],
+            "createSql": "CREATE  INDEX `index_user_email` ON `${TABLE_NAME}` (`email`)"
+          },
+          {
+            "name": "index_user_role",
+            "unique": false,
+            "columnNames": [
+              "role"
+            ],
+            "createSql": "CREATE  INDEX `index_user_role` ON `${TABLE_NAME}` (`role`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "damagecase",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ownerID` INTEGER NOT NULL, `nameDamageCase` TEXT, `namePolicyholder` TEXT, `nameExpert` TEXT, `coordinates` TEXT, `areaCode` TEXT, `date` TEXT, `areaSize` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerID",
+            "columnName": "ownerID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameDamageCase",
+            "columnName": "nameDamageCase",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "namePolicyholder",
+            "columnName": "namePolicyholder",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nameExpert",
+            "columnName": "nameExpert",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "coordinates",
+            "columnName": "coordinates",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "areaCode",
+            "columnName": "areaCode",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "areaSize",
+            "columnName": "areaSize",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_damagecase__id",
+            "unique": false,
+            "columnNames": [
+              "_id"
+            ],
+            "createSql": "CREATE  INDEX `index_damagecase__id` ON `${TABLE_NAME}` (`_id`)"
+          },
+          {
+            "name": "index_damagecase_ownerID",
+            "unique": false,
+            "columnNames": [
+              "ownerID"
+            ],
+            "createSql": "CREATE  INDEX `index_damagecase_ownerID` ON `${TABLE_NAME}` (`ownerID`)"
+          },
+          {
+            "name": "index_damagecase_nameDamageCase",
+            "unique": false,
+            "columnNames": [
+              "nameDamageCase"
+            ],
+            "createSql": "CREATE  INDEX `index_damagecase_nameDamageCase` ON `${TABLE_NAME}` (`nameDamageCase`)"
+          },
+          {
+            "name": "index_damagecase_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE  INDEX `index_damagecase_date` ON `${TABLE_NAME}` (`date`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"7e41c0123d233502ec40e481dec4f4b0\")"
+    ]
+  }
+}

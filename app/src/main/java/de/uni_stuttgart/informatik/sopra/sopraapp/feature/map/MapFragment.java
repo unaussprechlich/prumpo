@@ -30,10 +30,13 @@ import android.widget.Toast;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 
+import org.joda.time.DateTime;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -46,8 +49,11 @@ import butterknife.OnClick;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
@@ -67,8 +73,9 @@ public class MapFragment
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
 
-    @Inject
-    GpsService gpsService;
+    @Inject GpsService gpsService;
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject UserManager userManager;
 
     View mRootView;
 
@@ -263,14 +270,13 @@ public class MapFragment
 
                 if (newState == BottomSheetBehavior.STATE_HIDDEN)
                     onBottomSheetIsHidden(bottomSheetContainer);
-                else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                else if (newState == BottomSheetBehavior.STATE_COLLAPSED)
                     onBottomSheetCollapsed(bottomSheetContainer);
-                }
-
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheetContainer, float slideOffset) {
+
             }
 
         });
@@ -297,15 +303,27 @@ public class MapFragment
         removeErrorsFromTextFromEditTextFields();
 
         try {
-            String titleString = getFieldValueIfNotEmpty(mBSEditTextInputTitle);
-            String locationString = getFieldValueIfNotEmpty(mBSEditTextInputLocation);
-            String policyholderString = getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder);
-            String exportString = getFieldValueIfNotEmpty(mBSEditTextInputExpert);
-            String dateString = getFieldValueIfNotEmpty(mBSEditTextInputDate);
+            int r = 21304;
+
+            DamageCase damageCase = new DamageCaseBuilder()
+                    .setNameDamageCase(getFieldValueIfNotEmpty(mBSEditTextInputTitle))
+                    .setAreaCode(getFieldValueIfNotEmpty(mBSEditTextInputLocation))
+                    .setNamePolicyholder(getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder))
+                    .setNameExpert(getFieldValueIfNotEmpty(mBSEditTextInputExpert))
+                    .setDate(damageCaseDate)
+                    .setAreaSize(200)
+                    .createDamageCase();
+
+            damageCaseRepository.insert(damageCase);
+
+            Toast.makeText(getContext(), "Saving ...", Toast.LENGTH_SHORT).show();
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } catch (InterruptedException | ExecutionException | UserManager.NoUserException e) {
+            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -316,7 +334,6 @@ public class MapFragment
         if (isImportantChanged) {
             showAlert(AlertType.CLOSE);
             // Close Action will be handled in alert method
-
 
         } else {
 
@@ -428,7 +445,6 @@ public class MapFragment
         DialogInterface.OnClickListener positiveAction = null;
         DialogInterface.OnClickListener negativeAction = null;
 
-
         if (alertType == AlertType.CLOSE) {
             title = strBSDialogCloseTitle;
             hint = strBSDialogCloseText;
@@ -448,7 +464,8 @@ public class MapFragment
                 Toast.makeText(getContext(), "DEL", Toast.LENGTH_SHORT).show();
                 mBottomSheetBehavior.setHideable(true);
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                // TODO
+
+                // TODO damageCaseRepository.delete(damageCase);
             };
             negativeAction = (dialog, id) -> {
                 Toast.makeText(getContext(), "NOTDEL", Toast.LENGTH_SHORT).show();
@@ -473,6 +490,8 @@ public class MapFragment
         mBSEditTextInputDate.setError(null);
     }
 
+    private DateTime damageCaseDate = DateTime.now();
+
     @OnClick({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
             R.id.bottom_sheet_input_policyholder,
@@ -490,6 +509,9 @@ public class MapFragment
 
                         mBSEditTextInputDate.setText(new SimpleDateFormat(simpleDateFormatPattern, Locale.GERMANY)
                                 .format(myCalendar.getTime()));
+
+                        damageCaseDate = new DateTime(myCalendar.getTime());
+
                     },
                     myCalendar.get(Calendar.YEAR),
                     myCalendar.get(Calendar.MONTH),

@@ -20,6 +20,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.excepti
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
@@ -55,6 +56,9 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     @ApplicationScope
     void inject(EditFieldValueException e);
+
+    @ApplicationScope
+    void inject(DamageCaseBuilder damageCaseBuilder);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
