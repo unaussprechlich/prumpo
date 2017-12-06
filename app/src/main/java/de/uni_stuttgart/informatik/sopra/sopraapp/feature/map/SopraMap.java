@@ -199,18 +199,20 @@ public class SopraMap {
 
         CircleOptions options =
                 new CircleOptions()
-                .center(latLngOf(location))
-                .radius(radius)
-                .strokeColor(resources.getColor(R.color.accent, null))
-                .fillColor(resources.getColor(R.color.accent_15percent, null))
-                .zIndex(0);
+                        .center(latLngOf(location))
+                        .radius(radius)
+                        .strokeWidth(4f)
+                        .strokeColor(resources.getColor(R.color.accent, null))
+                        .fillColor(resources.getColor(R.color.accent_15percent, null))
+                        .zIndex(0);
 
         userPositionIndicator = gMap.addCircle(options);
         userPositionIndicatorCenter =
                 gMap.addCircle(
                         options
-                            .radius(1)
-                            .fillColor(resources.getColor(R.color.accent, null))
+                                .radius(1)
+                                .strokeWidth(10)
+                                .fillColor(resources.getColor(R.color.accent, null))
                 );
     }
 
