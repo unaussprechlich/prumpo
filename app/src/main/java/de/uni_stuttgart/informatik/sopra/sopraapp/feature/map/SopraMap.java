@@ -52,6 +52,7 @@ public class SopraMap {
     private List<Circle> polygonHighlightVertex = new ArrayList<>();
 
     private Circle userPositionIndicator;
+    private Circle userPositionIndicatorCenter;
     private Location lastUserLocation;
 
     private Polyline previewPolyline;
@@ -188,27 +189,35 @@ public class SopraMap {
         float radius = location.getAccuracy();
 
         if (radius == 0) {
-            radius = 5;
+            radius = 6;
         }
 
         if (userPositionIndicator != null) {
             userPositionIndicator.remove();
+            userPositionIndicatorCenter.remove();
         }
 
-        userPositionIndicator =
+        CircleOptions options =
+                new CircleOptions()
+                .center(latLngOf(location))
+                .radius(radius)
+                .strokeColor(resources.getColor(R.color.accent, null))
+                .fillColor(resources.getColor(R.color.accent_38percent, null))
+                .zIndex(0);
+
+        userPositionIndicator = gMap.addCircle(options);
+        userPositionIndicatorCenter =
                 gMap.addCircle(
-                        new CircleOptions()
-                                .center(latLngOf(location))
-                                .radius(radius)
-                                .strokeColor(resources.getColor(R.color.accent, null))
-                                .fillColor(resources.getColor(R.color.accent_38percent, null))
-                                .zIndex(0)
+                        options
+                            .radius(3)
+                            .fillColor(resources.getColor(R.color.accent, null))
                 );
     }
 
     void removeUserPositionIndicator() {
         if (userPositionIndicator != null) {
             userPositionIndicator.remove();
+            userPositionIndicatorCenter.remove();
         }
 
         lastUserLocation = null;

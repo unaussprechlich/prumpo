@@ -406,6 +406,7 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
         startGps();
 
+        mMapFabLocate.setClickable(false);
     }
 
     @Override
@@ -422,6 +423,8 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         gpsService.ongoingLocationCallback(new LocationCallbackListener() {
             @Override
             public void onLocationFound(Location location) {
+                mMapFabLocate.setClickable(true);
+
                 if (sopraMap == null) return;
 
                 sopraMap.drawUserPositionIndicator(location);
@@ -429,6 +432,9 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
 
             @Override
             public void onLocationNotFound() {
+                mMapFabLocate.setClickable(false);
+
+
                 if (sopraMap == null) return;
 
                 sopraMap.removeUserPositionIndicator();
