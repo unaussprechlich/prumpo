@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damag
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
@@ -25,6 +26,7 @@ public class DamageCase implements ModelDB {
 
     public static final String TABLE_NAME = "damagecase";
 
+    @Ignore
     @Inject DamageCaseRepository damageCaseRepository;
 
     /** The unique ID of the user. */
@@ -69,10 +71,6 @@ public class DamageCase implements ModelDB {
 
     public void save(){
         damageCaseRepository.update(this);
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getNameDamageCase() {

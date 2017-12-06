@@ -177,7 +177,7 @@ public class DamageCaseListFragment
         ArrayList<DamageCase> damageCases = new ArrayList<>();
 
         for (DamageCase damageCase : damageCaseList)
-            if (damageCase.namePolicyholder.toUpperCase().contains(newText.toUpperCase()))
+            if (damageCase.getNamePolicyholder().toUpperCase().contains(newText.toUpperCase()))
                 damageCases.add(damageCase);
 
         // swap adapter to adapter with new items

@@ -19,12 +19,9 @@ public interface IDao<T extends ModelDB> {
      * Update the userDB. The userDB is identified by the row ID.
      *
      * @param t         The userDB to update.
-     *
-     * @return          The number of users updated.
-     *                  This should always be {@code 1}.
      */
     @Update
-    int update(T t);
+    void update(T t);
 
     /**
      * Creates a new table entry.
