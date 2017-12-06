@@ -199,7 +199,10 @@ public class BottomSheetListAdapter
      * @param position The new position of the selected item.
      */
     private void updateSelectedViewIndex(int position) {
-        selectedViewIndex = position;
+        if (selectedViewIndex == position)
+            selectedViewIndex = -1;
+        else
+            selectedViewIndex = position;
         notifyDataSetChanged();
     }
 
