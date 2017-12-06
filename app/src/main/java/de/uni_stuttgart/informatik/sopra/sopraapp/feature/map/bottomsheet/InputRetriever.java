@@ -99,7 +99,7 @@ public class InputRetriever implements View.OnClickListener {
      * @param positiveAction the action to invoke when "OK" is pressed.
      * @return a reference to it self
      */
-    public InputRetriever setPositiveButton(DialogInterface.OnClickListener positiveAction) {
+    public InputRetriever setPositiveButtonAction(DialogInterface.OnClickListener positiveAction) {
         this.positiveAction = positiveAction;
         return this;
     }
@@ -110,7 +110,7 @@ public class InputRetriever implements View.OnClickListener {
      * @param negativeAction the action to invoke when "Cancel" is pressed.
      * @return a reference to it self
      */
-    public InputRetriever setNegativeButton(DialogInterface.OnClickListener negativeAction) {
+    public InputRetriever setNegativeButtonAction(DialogInterface.OnClickListener negativeAction) {
         this.negativeAction = negativeAction;
         return this;
     }
@@ -201,9 +201,9 @@ public class InputRetriever implements View.OnClickListener {
                 .setCancelable(false)
                 .setTitle(title == null ? defaultTitle : title)
                 .setPositiveButton(dialogAccept, (dialogInterface, i) -> {
+                    pressedTextField.setText(editText.getText());
                             if (positiveAction != null)
                                 positiveAction.onClick(dialogInterface, i);
-                            pressedTextField.setText(editText.getText());
                         }
                 )
                 .setNegativeButton(dialogReject, (dialogInterface, i) -> {

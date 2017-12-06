@@ -4,17 +4,29 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+
 public class DamageCaseBuilder {
-    private String nameDamageCase;
-    private String namePolicyholder;
-    private String nameExpert;
-    private String areaCode;
-    private double areaSize;
-    private long ownerID;
-    private List<LatLng> coordinates;
-    private DateTime date;
+    private String nameDamageCase = "";
+    private String namePolicyholder = "";
+    private String nameExpert = "";
+    private String areaCode = "";
+    private double areaSize = 0;
+    private long ownerID = 0;
+    private List<LatLng> coordinates = new ArrayList<>();
+    private DateTime date = DateTime.now();
+
+    @Inject UserManager userManager;
+
+    public DamageCaseBuilder() {
+        SopraApp.getAppComponent().inject(this);
+    }
 
     public DamageCaseBuilder setNameDamageCase(String nameDamageCase) {
         this.nameDamageCase = nameDamageCase;
@@ -56,7 +68,8 @@ public class DamageCaseBuilder {
         return this;
     }
 
-    public DamageCase createDamageCase() {
+    public DamageCase createDamageCase() throws UserManager.NoUserException {
+        this.ownerID = userManager.getCurrentUser().getID();
         return new DamageCase(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date);
     }
 }
