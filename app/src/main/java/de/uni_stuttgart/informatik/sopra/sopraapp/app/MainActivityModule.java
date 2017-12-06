@@ -9,6 +9,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.Fra
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
 
 /**
  * Here goes all the stuff provided for the MainActivity, to be injected.
@@ -27,7 +28,7 @@ public abstract class MainActivityModule {
     }
 
     @FragmentScope
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = {MapFragmentModule.class})
     abstract MapFragment contributeMainFragment();
 
     @ActivityScope

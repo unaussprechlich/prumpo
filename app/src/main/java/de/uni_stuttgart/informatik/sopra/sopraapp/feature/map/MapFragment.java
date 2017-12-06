@@ -1,7 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -53,7 +52,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -70,17 +68,25 @@ public class MapFragment
         extends DaggerFragment
         implements FragmentBackPressed, LocationCallbackListener {
 
-    // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
-    // TODO: replace remaining onClickListeners with ButterKnife annotations
-
     @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject UserManager userManager;
+    @Inject DamageCaseHandler damageCaseHandler;
 
-    View mRootView;
+    // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
+    // TODO: replace remaining onClickListeners with ButterKnife annotations
+
+    static final ButterKnife.Action<EditText> REMOVE_ERRORS =
+            (editText, index) -> editText.setError(null);
+
+    static final ButterKnife.Action<TextView> REMOVE_TEXT =
+            (editText, index) -> editText.setText("");
+
+    static final ButterKnife.Action<TextView> REMOVE_VISIBILITY =
+            (textView, index) -> textView.setVisibility(View.INVISIBLE);
 
     /* Knife-N'-Butter section!' */
-
+    View mRootView;
     @BindView(R.id.mapView)
     MapView mMapView;
 
@@ -132,6 +138,16 @@ public class MapFragment
             R.id.bottom_sheet_input_expert,
             R.id.bottom_sheet_input_date})
     List<EditText> damageCaseBottomSheetInputFields;
+
+    @BindViews({R.id.bottom_sheet_toolbar_dc_title_value,
+            R.id.bottom_sheet_toolbar_dc_area_value,
+            R.id.bottom_sheet_toolbar_dc_title,
+            R.id.bottom_sheet_toolbar_dc_area})
+    List<TextView> damageCaseBottomSheetToolbarFields;
+
+    @BindViews({R.id.bottom_sheet_toolbar_dc_title_value,
+            R.id.bottom_sheet_toolbar_dc_area_value})
+    List<TextView> damageCaseBottomSheetToolbarUserInserted;
 
     @BindString(R.string.map)
     String strAppbarTitle;
@@ -218,10 +234,12 @@ public class MapFragment
 
     private int testPolygonPosition = 0;
 
+
     /**
      * The provided bottom sheet behaviour object
      */
     private LockableBottomSheetBehaviour mBottomSheetBehavior;
+    private DateTime damageCaseDate = DateTime.now();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -313,28 +331,27 @@ public class MapFragment
 
     @SuppressWarnings("unused")
     private void onBottomSheetSaveButtonPressed(View view) {
-        removeErrorsFromTextFromEditTextFields();
+        ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
 
         try {
-            int r = 21304;
-
-            DamageCase damageCase = new DamageCaseBuilder()
+            long id = damageCaseHandler.getValue()
                     .setNameDamageCase(getFieldValueIfNotEmpty(mBSEditTextInputTitle))
                     .setAreaCode(getFieldValueIfNotEmpty(mBSEditTextInputLocation))
                     .setNamePolicyholder(getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder))
                     .setNameExpert(getFieldValueIfNotEmpty(mBSEditTextInputExpert))
                     .setDate(damageCaseDate)
-                    .setAreaSize(200)
-                    .createDamageCase();
+                    .setAreaSize(sopraMap.getArea())
+                    .setCoordinates(sopraMap.getActivePoints())
+                    .save();
 
-            damageCaseRepository.insert(damageCase);
+            damageCaseHandler.loadFromDatabase(id);
 
-            Toast.makeText(getContext(), "Saving ...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } catch (InterruptedException | ExecutionException | UserManager.NoUserException e) {
+        } catch (InterruptedException | ExecutionException e) {
             Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
@@ -368,18 +385,14 @@ public class MapFragment
     private void onBottomSheetIsHidden(View bottomSheetContainer) {
 
         mBSRecyclerView.setAdapter(null);
-        mBSEditTextInputTitle.setText("");
-        mBSEditTextInputPolicyholder.setText("");
-        mBSEditTextInputExpert.setText("");
-        mBSEditTextInputDate.setText("");
         bottomSheetExpandHandler = null;
         tbSaveButton.setAlpha(0.25f);
         mBottomSheetBehavior.allowUserSwipe(false);
-        removeErrorsFromTextFromEditTextFields();
 
-        mBSTextViewTitle.setVisibility(View.INVISIBLE);
-        mBSTextViewTitleValue.setVisibility(View.INVISIBLE);
-        mBSTextViewTitleValue.setText("");
+        ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_TEXT);
+        ButterKnife.apply(damageCaseBottomSheetToolbarUserInserted, REMOVE_TEXT);
+        ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
+        ButterKnife.apply(damageCaseBottomSheetToolbarFields, REMOVE_VISIBILITY);
     }
 
     @SuppressWarnings("unused")
@@ -498,16 +511,6 @@ public class MapFragment
                 .show();
     }
 
-    private void removeErrorsFromTextFromEditTextFields() {
-        mBSEditTextInputTitle.setError(null);
-        mBSEditTextInputLocation.setError(null);
-        mBSEditTextInputPolicyholder.setError(null);
-        mBSEditTextInputExpert.setError(null);
-        mBSEditTextInputDate.setError(null);
-    }
-
-    private DateTime damageCaseDate = DateTime.now();
-
     @OnClick({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
             R.id.bottom_sheet_input_policyholder,
@@ -618,7 +621,7 @@ public class MapFragment
 //            waitingForResponse = true;
 //            gpsService.singleLocationCallback(lcl, 10000);
 
-            if (testPolygonPosition > TEST_POLYGON_COORDINATES.size()-1) return;
+            if (testPolygonPosition > TEST_POLYGON_COORDINATES.size() - 1) return;
 
             if (testPolygonPosition == 0) {
                 sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, 1);
@@ -710,6 +713,13 @@ public class MapFragment
             mBSTextViewAreaValue.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
             mBSTextViewAreaValue.setText(String.valueOf(newAmount)); // TODO! Update area
 
+            if(enabled) try {
+                damageCaseHandler.createNewDamageCase();
+            } catch (UserManager.NoUserException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Something went wrong ...", Toast.LENGTH_SHORT).show();
+            }
+
             if (enabled && !animationShown) {
                 mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
                         .translationY(-100);
@@ -719,4 +729,6 @@ public class MapFragment
             }
         }
     }
+
+
 }

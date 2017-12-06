@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
@@ -29,13 +33,15 @@ public class DamageCaseListAdapter
     @Inject
     DamageCaseRepository damageCaseRepository;
 
+    private Holder dataHolder = new Holder();
+
     /**
      * Constructor
      *
      * @param damageCaseList list of data to be displayed
      */
     public DamageCaseListAdapter(List<DamageCase> damageCaseList) {
-        Holder.damageCaseList = damageCaseList;
+        dataHolder.damageCaseList = damageCaseList;
         SopraApp.getAppComponent().inject(this);
     }
 
@@ -48,32 +54,36 @@ public class DamageCaseListAdapter
      */
     @Override
     public DamageCaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater
-                .from(parent.getContext())
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.activity_main_fragment_damagecases_list_item,
                         parent,
                         false);
+
+        ButterKnife.bind(this, view);
 
         return new DamageCaseViewHolder(view);
     }
 
     /**
-     * Binds the view holder to the item at the {@code position}.
+     * Binds the view dataHolder to the item at the {@code position}.
      * Method gets called when called {@code notifyDataSetChanged} or when scrolled.
      *
-     * @param holder   The holder at {@code position} of the recycler view.
+     * @param holder   The dataHolder at {@code position} of the recycler view.
      * @param position The position in the recycler view
      */
     @Override
     public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
-        DamageCase damageCase = Holder.damageCaseList.get(position);
+        DamageCase damageCase = dataHolder.damageCaseList.get(position);
 
         // set bindings
         holder.damageCaseName.setText(damageCase.getNameDamageCase());
         holder.policyHolder.setText(damageCase.getNamePolicyholder());
         holder.areaCode.setText(String.valueOf(damageCase.getAreaCode()));
 
-        holder.cardView.setOnClickListener(v -> onClick(v, position));
+        holder.cardView.setOnClickListener(v -> onCardViewPressed(v, position));
+
+        Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), android.R.anim.fade_in);
+        holder.itemView.startAnimation(animation);
     }
 
     /**
@@ -84,7 +94,7 @@ public class DamageCaseListAdapter
      */
     @Override
     public int getItemCount() {
-        return Holder.damageCaseList.size();
+        return dataHolder.damageCaseList.size();
     }
 
     @Override
@@ -98,44 +108,45 @@ public class DamageCaseListAdapter
      * @param view     The view which got clicked
      * @param position The current position in the visible list.
      */
-    public void onClick(View view, int position) {
-        DamageCase damageCase = Holder.damageCaseList.get(position);
+    public void onCardViewPressed(View view, int position) {
+        DamageCase damageCase = dataHolder.damageCaseList.get(position);
 
         Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
     }
 
     /**
      * A static Holder for damage cases. After a adapter swap -> this list gets updated.
-     * This holder always holds the up to date underlying data.
+     * This dataHolder always holds the up to date underlying data.
      */
-    private static class Holder {
-        private static List<DamageCase> damageCaseList = new ArrayList<>();
+    private class Holder {
+        private List<DamageCase> damageCaseList = new ArrayList<>();
     }
 
     /**
-     * A view holder holds the view of a list item.
+     * A view dataHolder holds the view of a list item.
      * In this class the xml attributes are bound to local variables (by id) once to use them later.
      *
      * @see <a href="https://developer.android.com/reference/android/support/v7/widget/RecyclerView.ViewHolder.html">
      * Android Developer Guide (RecyclerView.ViewHolder)
      * </a>
      */
-    class DamageCaseViewHolder extends RecyclerView.ViewHolder{
+    class DamageCaseViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.dc_card)
         CardView cardView;
 
-        /* define attributes to change them later */
+        @BindView(R.id.dc_name)
         TextView damageCaseName;
+
+        @BindView(R.id.dc_policyholder)
         TextView policyHolder;
+
+        @BindView(R.id.dc_areacode)
         TextView areaCode;
 
         DamageCaseViewHolder(View itemView) {
             super(itemView);
-
-            cardView = itemView.findViewById(R.id.dc_card);
-
-            damageCaseName = itemView.findViewById(R.id.dc_name);
-            policyHolder = itemView.findViewById(R.id.dc_policyholder);
-            areaCode = itemView.findViewById(R.id.dc_areacode);
+            ButterKnife.bind(this, itemView);
         }
 
     }

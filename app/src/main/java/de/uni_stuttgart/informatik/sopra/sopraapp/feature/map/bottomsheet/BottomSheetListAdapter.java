@@ -31,11 +31,6 @@ public class BottomSheetListAdapter
     private DamageCase damageCase;
 
     /**
-     * The recycler view which holds this adapter.
-     */
-    private RecyclerView recyclerView;
-
-    /**
      * Save the selected view position.
      */
     private int selectedViewIndex = -1;
@@ -62,17 +57,6 @@ public class BottomSheetListAdapter
                         parent,
                         false);
         return new BottomSheetItemViewHolder(view);
-    }
-
-    /**
-     * Method for getting a reference to the recycler view.
-     *
-     * @param recyclerView The recycler view which holds this adapter.
-     */
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        this.recyclerView = recyclerView;
     }
 
     /**
