@@ -32,13 +32,15 @@
         <activity
             android:name=".feature.authentication.LoginActivity"
             android:label="@string/title_activity_login"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".app.MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
             android:parentActivityName=".feature.authentication.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.LoginActivity" />
@@ -51,7 +53,8 @@
         </activity>
         <activity
             android:name=".feature.sidebar.profile.ProfileActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity" />
@@ -72,7 +75,8 @@
         <activity
             android:name=".feature.authentication.AuthenticationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_authentication" />
+            android:label="@string/title_activity_authentication"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".feature.authentication.SignUpActivity"
             android:label="@string/title_activity_sign_up" />
