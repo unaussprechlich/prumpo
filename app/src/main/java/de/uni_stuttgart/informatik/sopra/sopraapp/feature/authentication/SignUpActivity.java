@@ -18,9 +18,13 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 
@@ -29,15 +33,16 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
  */
 public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
-    private EditText mEmailView;
-    private EditText mNameFirstView;
-    private EditText mNameLastView;
-    private EditText mPasswordView;
-    private EditText mPasswordConfirmView;
+    @BindView(R.id.su_email)        EditText mEmailView;
+    @BindView(R.id.su_name_first)   EditText mNameFirstView;
+    @BindView(R.id.su_name_last)    EditText mNameLastView;
+    @BindView(R.id.su_password)     EditText mPasswordView;
+    @BindView(R.id.su_password_confirm) EditText mPasswordConfirmView;
+
     private User.EnumUserRoles userRole;
 
-    private View mProgressView;
-    private View mSignupFormView;
+    @BindView(R.id.su_progress)     View mProgressView;
+    @BindView(R.id.su_form_layout)  View mSignupFormView;
 
     @Inject UserRepository userRepository;
     @Inject Vibrator vibrator;
@@ -46,13 +51,7 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
-        // Set up the login form.
-        mNameFirstView = findViewById(R.id.su_name_first);
-        mNameLastView = findViewById(R.id.su_name_last);
-        mEmailView = findViewById(R.id.su_email);
-        mPasswordView = findViewById(R.id.su_password);
-        mPasswordConfirmView = findViewById(R.id.su_password_confirm);
+        ButterKnife.bind(this);
 
         //Spinner
         Spinner spinner = findViewById(R.id.su_usergroup_spinner);
@@ -64,12 +63,7 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
 
         //Button
         findViewById(R.id.su_signup_button).setOnClickListener(this::signUp);
-
-        mSignupFormView = findViewById(R.id.su_form_layout);
-        mProgressView = findViewById(R.id.su_progress);
     }
-
-
 
     private boolean signUp(View v) {
         try{
@@ -81,17 +75,17 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
             mPasswordView.setError(null);
             mPasswordConfirmView.setError(null);
 
-            final String nameFirst = getFieldValueIfNotEmpty(mNameFirstView);
-            final String nameLast = getFieldValueIfNotEmpty(mNameLastView);
-            final String email = getFieldValueIfNotEmpty(mEmailView);
-            final String password = getFieldValueIfNotEmpty(mPasswordView);
-            final String passwordConfirm = getFieldValueIfNotEmpty(mPasswordConfirmView);
+            final String nameFirst          = getFieldValueIfNotEmpty(mNameFirstView);
+            final String nameLast           = getFieldValueIfNotEmpty(mNameLastView);
+            final String email              = getFieldValueIfNotEmpty(mEmailView);
+            final String password           = getFieldValueIfNotEmpty(mPasswordView);
+            final String passwordConfirm    = getFieldValueIfNotEmpty(mPasswordConfirmView);
 
             if(!password.equals(passwordConfirm))
-                throw new SignUpValueException(mPasswordConfirmView, "Passwords do not match!");
+                throw new EditFieldValueException(mPasswordConfirmView, "Passwords do not match!");
 
             if(!Pattern.matches(Constants.EMAIL_REGEX, email))
-                throw new SignUpValueException(mEmailView, "Invalid mail address!");
+                throw new EditFieldValueException(mEmailView, "Invalid mail address!");
 
             //TODO check if user exists
 
@@ -107,7 +101,7 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
 
-        } catch(SignUpValueException e){
+        } catch(EditFieldValueException e){
             e.showError();
             showProgress(false);
             return false;
@@ -121,34 +115,11 @@ public class SignUpActivity extends BaseActivity implements AdapterView.OnItemSe
         return true;
     }
 
-    private class SignUpValueIsEmptyException extends SignUpValueException{
-        public SignUpValueIsEmptyException(EditText editText) {
-            super(editText, "Field is empty!");
-        }
-    }
-
-    private class SignUpValueException extends Exception{
-
-        public void showError(){
-            editText.setError(getMessage());
-            editText.requestFocus();
-            vibrator.vibrate(500);
-        }
-
-        final EditText editText;
-
-        public SignUpValueException(EditText editText, String message) {
-            super(message);
-            this.editText = editText;
-        }
-    }
-
-    private String getFieldValueIfNotEmpty(EditText editText) throws SignUpValueIsEmptyException {
+    private String getFieldValueIfNotEmpty(EditText editText) throws EditFieldValueIsEmptyException {
         String text = editText.getText().toString();
-        if(text.isEmpty()) throw new SignUpValueIsEmptyException(editText);
+        if(text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
         return text;
     }
-
 
     /**
      * Shows the progress UI and hides the login form.

@@ -19,12 +19,6 @@ public class UserManager {
     private LiveData<User> currentUser = null;
     private SopraApp context;
 
-    /**
-     * Yes, I abuse LiveData to be an Eventbus .... I don't have time to wait a week until
-     * a useful library like http://greenrobot.org/eventbus/ is accepted.
-     */
-
-
     @Inject
     public UserManager(SopraApp app) {
         this.context = app;
@@ -37,8 +31,6 @@ public class UserManager {
         context.startActivity(intent);
     }
 
-
-
     public void login(@NonNull LiveData<User> currentUser){
         this.currentUser = currentUser;
         EventBus.getDefault().removeAllStickyEvents();
@@ -49,9 +41,16 @@ public class UserManager {
         EventBus.getDefault().removeAllStickyEvents();
         EventBus.getDefault().postSticky(new AuthenticationEvents.Logout(currentUser.getValue()));
         this.currentUser = null;
-        //TODO testing only
-        //This is how you clean all activities and all the other junk ... trust me i found this on stackoverflow .. this can't be wrong!!111!111!!
+
+        //TODO testing only ########################################################################
+        //DANGER!
+        //SHIT!
+        //DON'T DO THIZZZZ
+        //This is how you clean all activities and all the other junk ...
+        //trust me i found this on stackoverflow .. this can't be wrong!!111!111!!
         System.exit(0);
+        //TODO SHIT ################################################################################
+
         startAuthenticationActivity();
     }
 
@@ -66,8 +65,6 @@ public class UserManager {
         startAuthenticationActivity();
         throw new NoUserException();
     }
-
-
 
     public class NoUserException extends Exception{
         public NoUserException() {

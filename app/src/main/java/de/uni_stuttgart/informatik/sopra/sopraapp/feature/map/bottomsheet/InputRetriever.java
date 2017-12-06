@@ -22,7 +22,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 @SuppressWarnings("unused")
 public class InputRetriever implements View.OnClickListener {
 
-
     /**
      * Holder for the positive action: When user selects "OK".
      */

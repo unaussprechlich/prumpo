@@ -3,6 +3,8 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 import android.content.Intent;
 import android.os.Bundle;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 
@@ -15,21 +17,21 @@ public class AuthenticationActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_authentication);
-
-        findViewById(R.id.login_button).setOnClickListener(v -> {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        });
-
-        findViewById(R.id.signup_button).setOnClickListener(v -> {
-            Intent intent = new Intent(this, SignUpActivity.class);
-            startActivity(intent);
-        });
+        ButterKnife.bind(this);
     }
 
+    @OnClick(R.id.login_button)
+    public void onClickLogin(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 
+    @OnClick(R.id.signup_button)
+    public void onClickSignUp(){
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+    }
     /**
      * Lock the User in place ¯\_(ツ)_/¯
      */

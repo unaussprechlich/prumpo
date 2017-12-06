@@ -16,7 +16,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.LogInValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
@@ -54,7 +54,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(InputRetriever inputRetriever);
 
     @ApplicationScope
-    void inject(LogInValueException e);
+    void inject(EditFieldValueException e);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
