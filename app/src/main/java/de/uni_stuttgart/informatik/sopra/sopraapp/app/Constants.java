@@ -38,14 +38,4 @@ public class Constants {
                     new LatLng(48.807047, 8.849072)
             )
     );
-
-    public static final ArrayList<LatLng> TEST_POLYGON_DAMAGE = new ArrayList<>(
-            Arrays.asList(
-                    new LatLng(48.808304, 8.853308),
-                    new LatLng(48.807021, 8.853443), new LatLng(48.807157, 8.851568),
-                    new LatLng(48.806494, 8.851383), new LatLng(48.806448, 8.851114),
-                    new LatLng(48.806565, 8.850313), new LatLng(48.806940, 8.849134),
-                    new LatLng(48.807047, 8.849072)
-            )
-    );
 }

@@ -61,8 +61,8 @@ public class SopraMap {
     private boolean isHighlighted;
     private int indexActiveVertex = -1;
 
-    // TODO: rework to hold and view List of polygons
     private PolygonContainer activePolygon;
+    private PolygonContainer babyPolygon;
     private HashMap<String, PolygonContainer> polygonStorage = new HashMap<>();
 
     @Inject
@@ -119,9 +119,6 @@ public class SopraMap {
 
                 // final haptic feedback
                 vibrator.vibrate(100);
-
-                // to fix zooming issue (suddenly setting a navigational tag upon leaving zoom)
-//                marker.setPosition(activePolygon.data.getPoint(indexActiveVertex));
             }
         });
 
@@ -131,16 +128,57 @@ public class SopraMap {
 
     /* <--- exposed section ---> */
 
+    void createPolygon(LatLng startPoint, PolygonType type, String uniqueId) {
+        List<LatLng> points = new ArrayList<>();
+        points.add(startPoint);
+
+        drawPolygonOf(points, type, uniqueId);
+
+        highlight(uniqueId);
+    }
+
+    void addVertex(LatLng position) {
+        List<LatLng> points = activePolygon.data.getPoints();
+        points.add(position);
+
+        activePolygon.mapObject.setPoints(points);
+
+        activePolygon.removeHighlightCircles();
+        activePolygon.drawHighlightCircles();
+    }
+
+    void removeVertex(int vertexNumber) {
+        List<LatLng> points = activePolygon.data.getPoints();
+        points.remove(vertexNumber);
+
+        activePolygon.mapObject.setPoints(points);
+
+        activePolygon.removeHighlightCircles();
+        activePolygon.drawHighlightCircles();
+    }
+
+    double getArea() {
+        return activePolygon.data.getArea();
+    }
+
     void dragMarkerToggle(int vertexNumber) {
         makeDraggable(polygonHighlightVertex.get(vertexNumber));
+    }
+
+    List<LatLng> getActivePoints() {
+        return activePolygon.data.getPoints();
     }
 
     void highlight(String uniqueId) {
         polygonStorage.get(uniqueId).highlight();
     }
 
-    void removeHighlight(String uniqueId) {
-        polygonStorage.get(uniqueId).removeHighlightCircles();
+    boolean hasActivePolygon() {
+        return (activePolygon != null);
+    }
+
+    String activePolygonId() {
+        return (String) activePolygon.mapObject.getTag();
     }
 
     void drawPolygonOf(List<LatLng> coordinates, PolygonType type, String uniqueId) {
@@ -180,7 +218,6 @@ public class SopraMap {
                         PolygonType.DAMAGE_CASE
                 )
         );
-
     }
 
     void drawUserPositionIndicator(Location location) {
@@ -439,7 +476,16 @@ public class SopraMap {
                             .clickable(true);
 
             for (int i = 0; i < points.size(); ++i) {
-                Circle circle = gMap.addCircle(options.center(points.get(i)));
+                options.center(points.get(i));
+
+                if (i == points.size()-1) {
+                    options.fillColor(resources.getColor(R.color.accent, null));
+
+                } else if (i == points.size()-2) {
+                    options.fillColor(resources.getColor(R.color.accent_light, null));
+                }
+
+                Circle circle = gMap.addCircle(options);
 
                 polygonHighlightVertex.add(circle);
                 circle.setTag(i);

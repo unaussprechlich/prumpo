@@ -23,6 +23,8 @@ public class Helper {
      */
     static double areaOfPolygon(List<LatLng> vertices) {
 
+        if (vertices.size() < 3) return 0;
+
         double areaSum = 0;
 
         ArrayList<Point2D> coordinates = projectAndNormalize(vertices);

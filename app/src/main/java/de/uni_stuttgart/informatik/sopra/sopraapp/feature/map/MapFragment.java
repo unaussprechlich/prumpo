@@ -58,7 +58,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonTyp
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
-import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_DAMAGE;
 
 public class MapFragment
         extends DaggerFragment
@@ -197,6 +196,8 @@ public class MapFragment
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
 
+    private int testPolygonPosition = 0;
+
     /**
      * The provided bottom sheet behaviour object
      */
@@ -243,8 +244,7 @@ public class MapFragment
         mMapView.getMapAsync(googleMap -> {
             sopraMap = new SopraMap(googleMap, getContext());
 
-            sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
-            sopraMap.drawPolygonOf(TEST_POLYGON_DAMAGE, PolygonType.DAMAGE_CASE, "2");
+//            sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
@@ -546,30 +546,39 @@ public class MapFragment
                 return;
             }
 
-            if (waitingForResponse) return;
-
-            Context context = getContext();
-
-            LocationCallbackListener lcl = new LocationCallbackListener() {
-                @Override
-                public void onLocationFound(Location location) {
+//            if (waitingForResponse) return;
+//
+//            Context context = getContext();
+//
+//            LocationCallbackListener lcl = new LocationCallbackListener() {
+//                @Override
+//                public void onLocationFound(Location location) {
 //                    double lat = location.getLatitude();
 //                    double lng = location.getLongitude();
 //
 //                    Toast.makeText(context, String.format("%s %s\n%s %s", strLatitude, lat, strLongitude, lng),
 //                            Toast.LENGTH_LONG).show();
-                    waitingForResponse = false;
-                }
-
-                @Override
-                public void onLocationNotFound() {
+//                    waitingForResponse = false;
+//                }
+//
+//                @Override
+//                public void onLocationNotFound() {
 //                    Toast.makeText(context, sirNoPositionDatesFound, Toast.LENGTH_LONG).show();
-                    waitingForResponse = false;
-                }
-            };
+//                    waitingForResponse = false;
+//                }
+//            };
 
-            waitingForResponse = true;
-            gpsService.singleLocationCallback(lcl, 10000);
+//            waitingForResponse = true;
+//            gpsService.singleLocationCallback(lcl, 10000);
+
+            if (testPolygonPosition > TEST_POLYGON_COORDINATES.size()-1) return;
+
+            if (testPolygonPosition == 0) {
+                sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, "1");
+            }
+
+            sopraMap.addVertex(TEST_POLYGON_COORDINATES.get(testPolygonPosition++));
+
         } else if (floatingActionButton.equals(mMapFabLocate)) {
             if (gpsService.wasLocationDisabled()) {
                 mMapFabLocate.setClickable(false);

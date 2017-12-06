@@ -61,7 +61,7 @@ public class SopraPolygon {
     }
 
     public boolean isValidPolygon() {
-        return vertices.size() > 2 && notIntersecting();
+        return notIntersecting();
     }
 
     public static SopraPolygon loadPolygon(List<LatLng> vertices) {

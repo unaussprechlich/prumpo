@@ -4,6 +4,7 @@
     <color name="primaryDark">#303f9f</color>
 
     <color name="accent">#ffff4081</color>
+    <color name="accent_light">#ff85af</color>
     <color name="accent_15percent">#26ff4081</color>
 
     <color name="contrast">#ff9900ff</color>
