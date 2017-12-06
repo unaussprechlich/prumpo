@@ -65,7 +65,7 @@ abstract class AppModule {
 
     @ApplicationScope //TODO move this to a lower level
     @Provides
-    public DamageCaseHandler provideDamageCaseHandler(SopraApp app){
+    public static DamageCaseHandler provideDamageCaseHandler(SopraApp app){
         return new DamageCaseHandler(app);
     }
 
