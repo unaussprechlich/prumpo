@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,6 +38,7 @@ import javax.inject.Inject;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
@@ -210,9 +209,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         });
     }
 
-    /**
-     * Sets up bottom sheet
-     */
     private void initBottomSheet() {
 
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -267,22 +263,6 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         mBSContainer.setNestedScrollingEnabled(false);
         mBSToolbar.inflateMenu(R.menu.bottom_sheet);
         mBSRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        mBSEditTextInputTitle.setOnClickListener(InputRetriever.of(mBSEditTextInputTitle)
-                .withTitle(strBSDialogName)
-                .withHint(strBSDialogNameHint));
-
-        mBSEditTextInputLocation.setOnClickListener(InputRetriever.of(mBSEditTextInputLocation)
-                .withTitle(strBSDialogDCLocation)
-                .withHint(strBSDialogDCLocationHint));
-
-        mBSEditTextInputPolicyholder.setOnClickListener(InputRetriever.of(mBSEditTextInputPolicyholder)
-                .withTitle(strBSDialogDCPolicyholder)
-                .withHint(strBSDialogDCPolicyholderHint));
-
-        mBSEditTextInputExpert.setOnClickListener(InputRetriever.of(mBSEditTextInputExpert)
-                .withTitle(strBSDialogDCExpert)
-                .withHint(strBSDialogDCExpertHint));
 
         Calendar myCalendar = Calendar.getInstance();
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -347,60 +327,56 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         });
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mMapFabPlus.setOnClickListener(v -> {
-
-            /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
-            loadDamageCaseBottomSheet(null);
+    @OnClick(R.id.map_fab_plus)
+    void onClickMapFabPlus() {
+        /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
+        loadDamageCaseBottomSheet(null);
 
             /* GPS/Map-related section */
 
-            if (gpsService.wasLocationDisabled()) {
-                promptEnableLocation();
-                return;
+        if (gpsService.wasLocationDisabled()) {
+            promptEnableLocation();
+            return;
+        }
+
+        if (waitingForResponse) return;
+
+        Context context = getContext();
+
+        LocationCallbackListener lcl = new LocationCallbackListener() {
+            @Override
+            public void onLocationFound(Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+
+                Toast.makeText(context,
+                        String.format("Latitude %s\nLongitude %s", lat, lng),
+                        Toast.LENGTH_LONG)
+                        .show();
+
+                waitingForResponse = false;
             }
 
-            if (waitingForResponse) return;
+            @Override
+            public void onLocationNotFound() {
+                Toast.makeText(context,
+                        "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
+                        Toast.LENGTH_LONG)
+                        .show();
+                waitingForResponse = false;
+            }
+        };
 
-            Context context = getContext();
-
-            LocationCallbackListener lcl = new LocationCallbackListener() {
-                @Override
-                public void onLocationFound(Location location) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-
-                    Toast.makeText(context,
-                            String.format("Latitude %s\nLongitude %s", lat, lng),
-                            Toast.LENGTH_LONG)
-                            .show();
-
-                    waitingForResponse = false;
-                }
-
-                @Override
-                public void onLocationNotFound() {
-                    Toast.makeText(context,
-                            "Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.",
-                            Toast.LENGTH_LONG)
-                            .show();
-                    waitingForResponse = false;
-                }
-            };
-
-            waitingForResponse = true;
-            gpsService.singleLocationCallback(lcl, 10000);
-        });
-
-        mMapFabLocate.setOnClickListener(v -> {
-            // locate the user
-            sopraMap.mapCameraMoveToUser();
-        });
-
+        waitingForResponse = true;
+        gpsService.singleLocationCallback(lcl, 10000);
     }
+
+
+    @OnClick(R.id.map_fab_locate)
+    void onClickMapFabLocate() {
+        sopraMap.mapCameraMoveToUser();
+    }
+
 
     @Override
     public void onStart() {
@@ -565,6 +541,38 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
         mBSEditTextInputDate.setError(null);
     }
 
+    @OnClick(R.id.bottom_sheet_input_title)
+    void onClickBSEditTextInputTitle(View view) {
+        InputRetriever.of(mBSEditTextInputTitle)
+                .withTitle(strBSDialogName)
+                .withHint(strBSDialogNameHint)
+                .onClick(view);
+    }
+
+    @OnClick(R.id.bottom_sheet_input_location)
+    void onClickBSEditTextInputLocation(View view) {
+        InputRetriever.of(mBSEditTextInputLocation)
+                .withTitle(strBSDialogDCLocation)
+                .withHint(strBSDialogDCLocationHint)
+                .onClick(view);
+    }
+
+    @OnClick(R.id.bottom_sheet_input_policyholder)
+    void onClickBSEditTextInputPolicyholder(View view) {
+        InputRetriever.of(mBSEditTextInputPolicyholder)
+                .withTitle(strBSDialogDCPolicyholder)
+                .withHint(strBSDialogDCPolicyholderHint)
+                .onClick(view);
+    }
+
+    @OnClick(R.id.bottom_sheet_input_expert)
+    void onClickBSEditTextInputExpert(View view) {
+        InputRetriever.of(mBSEditTextInputExpert)
+                .withTitle(strBSDialogDCExpert)
+                .withHint(strBSDialogDCExpertHint)
+                .onClick(view);
+    }
+
     private class BottomSheetExpandHandler {
         boolean animationShown = false;
 
@@ -576,20 +584,13 @@ public class MapFragment extends DaggerFragment implements FragmentBackPressed {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             if (enabled && !animationShown) {
-                this.show(100);
-                this.hide(300);
+                mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
+                        .translationY(-100);
+                new Handler().postDelayed(() -> mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
+                        .translationY(-0), 300);
                 animationShown = !animationShown;
             }
         }
-
-        private void show(long value) {
-            mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
-                    .translationY(-value);
-        }
-
-        private void hide(long delay) {
-            new Handler().postDelayed(() -> mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
-                    .translationY(-0), delay);
-        }
     }
+
 }
