@@ -63,6 +63,12 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 @Module
 abstract class AppModule {
 
+    @ApplicationScope //TODO move this to a lower level
+    @Provides
+    public static DamageCaseHandler provideDamageCaseHandler(SopraApp app){
+        return new DamageCaseHandler(app);
+    }
+
     @Provides
     @ApplicationScope
     static Context provideContext(Application application) {

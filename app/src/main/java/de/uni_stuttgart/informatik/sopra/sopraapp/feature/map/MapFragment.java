@@ -346,6 +346,9 @@ public class MapFragment
 
             Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
 
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

@@ -21,8 +21,7 @@ public class DamageCaseHandler implements LifecycleOwner{
     private MutableLiveData<DamageCase> damageCase = new MutableLiveData<>();
     private LiveData<DamageCase> damageCaseDB = null;
 
-    @Inject
-    DamageCaseRepository damageCaseRepository;
+    @Inject DamageCaseRepository damageCaseRepository;
 
     private LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
