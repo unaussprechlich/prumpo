@@ -26,71 +26,68 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextColor="@color/white">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    tools:ignore="RtlSymmetry">
-
-                    <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:text="@string/map_frag_botsheet_toolbar_dc_name"
-                        android:textColor="@color/white"
-                        android:visibility="invisible" />
-
-                    <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_area"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:text="@string/map_frag_botsheet_toolbar_dc_area"
-                        android:textColor="@color/white"
-                        android:visibility="invisible" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_title_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:textColor="@color/white"
-                        android:textStyle="italic"
-                        android:visibility="invisible" />
-
-                    <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_area_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:textColor="@color/white"
-                        android:textStyle="italic"
-                        android:visibility="invisible" />
-                </LinearLayout>
-            </LinearLayout>
-
 
         </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bottom_sheet_toolbar_dc_title_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:background="@null"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:visibility="visible"
+                tools:text="Unbenannter Schadensfall" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/bottom_sheet_toolbar_dc_area_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:textColor="@color/white"
+                    android:visibility="visible"
+                    tools:text="0" />
+
+                <TextView
+                    android:id="@+id/bottom_sheet_toolbar_dc_seperate_area_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:text='" ha  |  "'
+                    android:textColor="@color/white"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/bottom_sheet_toolbar_dc_date_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:textColor="@color/white"
+                    android:visibility="visible"
+                    tools:text="Thu, 7 Dec 2017" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bottom_sheet_recyclerview"

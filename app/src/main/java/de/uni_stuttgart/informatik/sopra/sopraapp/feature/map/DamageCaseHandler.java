@@ -65,7 +65,7 @@ public class DamageCaseHandler implements LifecycleOwner{
             damageCaseDB = null;
         }
 
-        set(new DamageCaseBuilder().create());
+        set(new DamageCaseBuilder().setNameDamageCase("Unbenannter Schadensfall").create());
         EventBus.getDefault().post(new DamageCaseEvent.Created(getLiveData()));
     }
 

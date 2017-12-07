@@ -1,5 +1,8 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.persistence.room.TypeConverter;
 import android.content.Context;
 import android.content.res.Resources;
@@ -52,7 +55,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolyg
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
-public class SopraMap{
+public class SopraMap implements LifecycleObserver{
 
     @Inject Vibrator vibrator;
 
@@ -82,17 +85,12 @@ public class SopraMap{
 
     SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
-        EventBus.getDefault().register(this);
 
         this.resources = context.getResources();
         this.gMap = googleMap;
 
         initResources(context);
         initMap();
-    }
-
-    void unregisterEvents() {
-        EventBus.getDefault().unregister(this);
     }
 
     private void initMap() {
@@ -161,6 +159,32 @@ public class SopraMap{
                 );
             }
         });
+    }
+
+    //LifecycleObserver ############################################################################
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    void onStart() {
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    void onResume() {
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    void onStop() {
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    void onPause() {
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
     }
 
     /* <----- event handling methods -----> */

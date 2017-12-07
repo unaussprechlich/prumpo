@@ -31,6 +31,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -58,6 +60,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Bottom
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
@@ -125,11 +128,8 @@ public class MapFragment
     @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
     TextView mBSTextViewAreaValue;
 
-    @BindView(R.id.bottom_sheet_toolbar_dc_title)
-    TextView mBSTextViewTitle;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_area)
-    TextView mBSTextViewArea;
+    @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
+    TextView mBSTextViewDateValue;
 
     @BindViews({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
@@ -137,16 +137,6 @@ public class MapFragment
             R.id.bottom_sheet_input_expert,
             R.id.bottom_sheet_input_date})
     List<EditText> damageCaseBottomSheetInputFields;
-
-    @BindViews({R.id.bottom_sheet_toolbar_dc_title_value,
-            R.id.bottom_sheet_toolbar_dc_area_value,
-            R.id.bottom_sheet_toolbar_dc_title,
-            R.id.bottom_sheet_toolbar_dc_area})
-    List<TextView> damageCaseBottomSheetToolbarFields;
-
-    @BindViews({R.id.bottom_sheet_toolbar_dc_title_value,
-            R.id.bottom_sheet_toolbar_dc_area_value})
-    List<TextView> damageCaseBottomSheetToolbarUserInserted;
 
     @BindString(R.string.map)
     String strAppbarTitle;
@@ -261,7 +251,14 @@ public class MapFragment
 
         damageCaseHandler.getLiveData().observe(getActivity(), this::updateDamageCase);
 
+        getLifecycle().addObserver(bottomSheetListAdapter);
+
         return mRootView;
+    }
+
+    @Subscribe
+    void onVertexCreated(VertexCreated event){
+        mBSTextViewAreaValue.setText("" + sopraMap.getArea()); // TODO! Update area
     }
 
     private void updateDamageCase(DamageCase damageCase){
@@ -271,17 +268,24 @@ public class MapFragment
         }
 
         openDamageCase();
-
-        mBSEditTextInputTitle.setText(damageCase.getNameDamageCase());
-        mBSEditTextInputLocation.setText(damageCase.getAreaCode());
-        mBSEditTextInputPolicyholder.setText(damageCase.getNamePolicyholder());
-        mBSEditTextInputExpert.setText(damageCase.getNameExpert());
-        mBSEditTextInputDate.setText(damageCase.getDate().toString(simpleDateFormatPattern));
-        mBSEditDate = damageCase.getDate();
+        setTextFromDamageCase(damageCase);
 
         for (LatLng latLng : damageCase.getCoordinates()) {
             bottomSheetListAdapter.add();
         }
+    }
+
+
+    private void setTextFromDamageCase(DamageCase damageCase){
+        mBSTextViewAreaValue.setText("0");
+        mBSEditTextInputTitle.setText(damageCase.getNameDamageCase());
+        mBSTextViewTitleValue.setText(damageCase.getNameDamageCase());
+        mBSEditTextInputLocation.setText(damageCase.getAreaCode());
+        mBSEditTextInputPolicyholder.setText(damageCase.getNamePolicyholder());
+        mBSEditTextInputExpert.setText(damageCase.getNameExpert());
+        mBSEditTextInputDate.setText(damageCase.getDate().toString(simpleDateFormatPattern));
+        mBSTextViewDateValue.setText(damageCase.getDate().toString(simpleDateFormatPattern));
+        mBSEditDate = damageCase.getDate();
     }
 
     private void initMapView(Bundle savedInstanceState) {
@@ -298,6 +302,7 @@ public class MapFragment
 
         mMapView.getMapAsync(googleMap -> {
             sopraMap = new SopraMap(googleMap, getContext());
+            getLifecycle().addObserver(sopraMap);
 
             //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
@@ -402,9 +407,7 @@ public class MapFragment
         mBottomSheetBehavior.allowUserSwipe(false);
 
         ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_TEXT);
-        ButterKnife.apply(damageCaseBottomSheetToolbarUserInserted, REMOVE_TEXT);
         ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
-        ButterKnife.apply(damageCaseBottomSheetToolbarFields, REMOVE_VISIBILITY);
     }
 
     @SuppressWarnings("unused")
@@ -536,6 +539,7 @@ public class MapFragment
                 .show();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @OnClick({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
             R.id.bottom_sheet_input_policyholder,
@@ -549,6 +553,7 @@ public class MapFragment
                     (view, year, monthOfYear, dayOfMonth) -> {
                         mBSEditDate = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
                         mBSEditTextInputDate.setText(mBSEditDate.toString(simpleDateFormatPattern));
+                        mBSTextViewDateValue.setText(mBSEditDate.toString(simpleDateFormatPattern));
                     },
                     mBSEditDate.getYear(),
                     mBSEditDate.getMonthOfYear(),
@@ -566,11 +571,9 @@ public class MapFragment
             title = strBSDialogName;
             hint = strBSDialogNameHint;
             positiveAction = (dialogInterface, i) -> {
-                mBSTextViewTitle.setVisibility(View.VISIBLE);
-                mBSTextViewTitleValue.setVisibility(View.VISIBLE);
                 mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
                 if(damageCaseHandler.hasValue())
-                    damageCaseHandler.getValue().setNameDamageCase(mBSTextViewTitle.getText().toString());
+                    damageCaseHandler.getValue().setNameDamageCase(mBSEditTextInputTitle.getText().toString());
             };
         } else if (editText.equals(mBSEditTextInputLocation)) {
             title = strBSDialogDCLocation;
@@ -668,10 +671,13 @@ public class MapFragment
         sopraMap.removeUserPositionIndicator();
     }
 
+    //Lifecycle ####################################################################################
+
     @Override
     public void onStart() {
         super.onStart();
-
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         // start gps
         gpsService.startGps();
         isGpsServiceBound = true;
@@ -679,14 +685,11 @@ public class MapFragment
         gpsService.ongoingLocationCallback(this);
     }
 
-
     @Override
     public void onStop() {
         super.onStop();
-
-        if (sopraMap != null) {
-            sopraMap.unregisterEvents();
-        }
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
 
         // stop gps
         if (isGpsServiceBound) {
@@ -700,13 +703,19 @@ public class MapFragment
     @Override
     public void onPause() {
         super.onPause();
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
+
+    //##############################################################################################
 
     private enum AlertType {
         CLOSE, DELETE
@@ -722,10 +731,6 @@ public class MapFragment
             tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
             tbSaveButton.setEnabled(enabled);
             mBottomSheetBehavior.allowUserSwipe(enabled);
-
-            mBSTextViewArea.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
-            mBSTextViewAreaValue.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
-            mBSTextViewAreaValue.setText(String.valueOf(newAmount)); // TODO! Update area
 
             if (enabled && !animationShown) {
                 mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
