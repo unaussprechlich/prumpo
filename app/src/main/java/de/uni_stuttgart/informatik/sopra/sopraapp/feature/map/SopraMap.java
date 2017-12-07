@@ -242,7 +242,7 @@ public class SopraMap implements LifecycleObserver {
             activePolygon.highlight();
         }
 
-        clearAllDamages();
+        reloadDamageCases();
     }
 
    /* <----- exposed methods -----> */
@@ -429,7 +429,9 @@ public class SopraMap implements LifecycleObserver {
         PolygonContainer polygon;
 
         for (int i = 0; i < damagePolygons.size(); ++i) {
-            polygon = damagePolygons.valueAt(i);
+            long key = damagePolygons.keyAt(i);
+
+            polygon = damagePolygons.get(key);
             polygon.mapObject.remove();
         }
 
