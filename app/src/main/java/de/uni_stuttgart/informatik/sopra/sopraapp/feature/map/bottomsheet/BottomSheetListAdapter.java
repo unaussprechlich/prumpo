@@ -98,6 +98,7 @@ public class BottomSheetListAdapter
                 .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
                         parent,
                         false);
+
         return new BottomSheetItemViewHolder(view);
     }
 
@@ -120,6 +121,7 @@ public class BottomSheetListAdapter
 
         // if selected item set selected
         holder.itemView.setSelected(selectedViewIndex == position);
+
     }
 
     /**

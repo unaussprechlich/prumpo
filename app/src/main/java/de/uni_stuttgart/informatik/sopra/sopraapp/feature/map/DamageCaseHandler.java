@@ -23,18 +23,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseS
 
 public class DamageCaseHandler implements LifecycleOwner{
 
+    @Inject
+    DamageCaseRepository damageCaseRepository;
     private MutableLiveData<DamageCase> damageCase = new MutableLiveData<>();
     private LiveData<DamageCase> damageCaseDB = null;
-
-    @Inject DamageCaseRepository damageCaseRepository;
-
     private LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycleRegistry;
-    }
 
     public DamageCaseHandler(SopraApp sopraApp) {
         SopraApp.getAppComponent().inject(this);
@@ -43,12 +36,18 @@ public class DamageCaseHandler implements LifecycleOwner{
         damageCase.postValue(null);
     }
 
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
+    }
+
     private void set(DamageCase damageCase){
         this.damageCase.postValue(damageCase);
     }
 
     @Subscribe
-    void onDamageCaseSelected(DamageCaseSelected event){
+    public void onDamageCaseSelected(DamageCaseSelected event) {
         loadFromDatabase(event.uniqueId);
     }
 

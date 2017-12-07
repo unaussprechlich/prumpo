@@ -82,7 +82,6 @@ public class MainActivity extends BaseEventBusActivity implements
         // set navigation header listener to display profile view
         header.setOnClickListener(view -> displayActivity(R.id.profile_layout));
 
-
         // set navigation menu drawer toggle
         drawerToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
@@ -197,10 +196,10 @@ public class MainActivity extends BaseEventBusActivity implements
     @Override
     public void setDrawerEnabled(boolean enabled) {
 
-//        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
-//            getSupportActionBar().hide();
-//        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
-//            getSupportActionBar().show();
+        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
+            getSupportActionBar().hide();
+        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
+            getSupportActionBar().show();
 
         // lock or unlock drawer
         int lockMode = enabled

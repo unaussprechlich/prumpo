@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -36,7 +34,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.Act
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
@@ -50,9 +47,12 @@ public class DamageCaseListFragment
         extends DaggerFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
-    @Inject DamageCaseRepository damageCaseRepository;
-    @Inject ViewModelProvider.Factory viewModelFactory;
-    @Inject UserManager userManager;
+    @Inject
+    DamageCaseRepository damageCaseRepository;
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+    @Inject
+    UserManager userManager;
 
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;
@@ -115,14 +115,6 @@ public class DamageCaseListFragment
     void OnFloatingActionButtonPressed(View view) {
         Toast.makeText(view.getContext(), "Adding new DamageCase with random", Toast.LENGTH_SHORT).show();
 
-        // Create new fragment and transaction
-        Fragment newFragment = new MapFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.content_main_fragment_damagecases, newFragment);
-        transaction.addToBackStack(null);
-
-        transaction.commit();
     }
 
     @Override

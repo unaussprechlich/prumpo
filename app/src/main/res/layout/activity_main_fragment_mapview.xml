@@ -23,6 +23,15 @@
     <!--Bottom sheet layout-->
     <include layout="@layout/activity_main_bottom_sheet" />
 
+    <LinearLayout
+        android:id="@+id/bottom_sheet_anchor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
     <!--Both floating action buttons
     Align on top of hidden bottom sheet-->
     <LinearLayout
@@ -31,7 +40,8 @@
         android:layout_gravity="top"
         android:gravity="end"
         android:orientation="vertical"
-        app:layout_anchor="@id/bottom_sheet_container">
+        app:layout_anchor="@id/bottom_sheet_container"
+        app:layout_anchorGravity="top|end">
 
         <!--Align right-->
         <LinearLayout
@@ -43,7 +53,7 @@
             app:layout_anchor="@id/bottom_sheet_container">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/map_fab_locate"
+                android:id="@+id/fab_locate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
@@ -58,7 +68,7 @@
                 app:srcCompat="@drawable/ic_location_disabled_black_24dp" />
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/map_fab_plus"
+                android:id="@+id/fab_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"

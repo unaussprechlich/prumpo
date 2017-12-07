@@ -23,7 +23,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDial
  * Implements the Builder pattern.
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class InputRetriever implements View.OnClickListener {
+public class InputRetriever {
 
     @BindString(R.string.map_frag_botsheet_dialog_default_header)
     String defaultTitle;
@@ -172,11 +172,10 @@ public class InputRetriever implements View.OnClickListener {
         return pressedTextField.getResources().getString(id);
     }
 
-    @Override
-    public void onClick(View view) {
+    public void show() {
 
         // retrieve context
-        Context context = view.getContext();
+        Context context = pressedTextField.getContext();
 
         // sets the layout of the dialog
         LayoutInflater layoutInflater = LayoutInflater.from(context);

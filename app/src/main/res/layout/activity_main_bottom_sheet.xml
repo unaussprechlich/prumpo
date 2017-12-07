@@ -8,6 +8,7 @@
     android:background="@color/white"
     android:clipToPadding="true"
     app:behavior_hideable="true"
+    app:behavior_peekHeight="@dimen/bottomsheet_peek_height"
     app:layout_behavior="de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour">
     <!--        app:behavior_peekHeight="?android:attr/actionBarSize"-->
 
@@ -90,13 +91,12 @@
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/bottom_sheet_recyclerview"
+            android:id="@+id/bottom_sheet_bubblelist"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/bottomsheet_bubblelist_height"
             android:layout_below="@id/bottom_sheet_toolbar"
             android:orientation="horizontal"
             android:scrollbars="horizontal"
-            android:tag="sticky"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="0dp"
             tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item" />
@@ -104,7 +104,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bottom_sheet_recyclerview"
+            android:layout_below="@id/bottom_sheet_bubblelist"
             android:orientation="vertical"
             android:padding="8dp">
             <!--android:layout_below="@id/bottom_sheet_list"-->
@@ -131,7 +131,7 @@
                     android:maxLines="1"
                     android:paddingEnd="8dp"
                     android:scrollHorizontally="true"
-                    android:text="@string/map_frag_botsheet_dialog_dc_name_hint"
+                    android:text="@string/map_frag_bottomsheet_inp_dialog_dc_title_hint"
                     android:textSize="16sp"
                     tools:ignore="RtlSymmetry" />
 
@@ -158,7 +158,7 @@
                     android:gravity="end"
                     android:maxLines="1"
                     android:paddingEnd="8dp"
-                    android:text="@string/map_frag_botsheet_dialog_dc_location_hint"
+                    android:text="@string/map_frag_bottomsheet_inp_dialog_dc_location_hint"
                     android:textSize="16sp"
                     tools:ignore="RtlSymmetry" />
 
@@ -186,7 +186,7 @@
                     android:gravity="end"
                     android:maxLines="1"
                     android:paddingEnd="8dp"
-                    android:text="@string/map_frag_botsheet_dialog_dc_policyholder_hint"
+                    android:text="@string/map_frag_bottomsheet_inp_dialog_dc_policyholder_hint"
                     android:textColorLink="@android:color/transparent"
                     android:textSize="16sp"
                     tools:ignore="RtlSymmetry" />
@@ -215,7 +215,7 @@
                     android:gravity="end"
                     android:maxLines="1"
                     android:paddingEnd="8dp"
-                    android:text="@string/map_frag_botsheet_dialog_dc_expert_hint"
+                    android:text="@string/map_frag_bottomsheet_inp_dialog_dc_expert_hint"
                     android:textSize="16sp"
                     tools:ignore="RtlSymmetry" />
 

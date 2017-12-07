@@ -12,128 +12,102 @@ import com.google.android.gms.maps.MapView;
 
 import java.util.List;
 
+import butterknife.BindDimen;
 import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.BindViews;
+import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 
 public abstract class MapBindFragment extends DaggerFragment {
 
+    static final ButterKnife.Action<EditText> REMOVE_ERRORS =
+            (editText, index) -> editText.setError(null);
+    static final ButterKnife.Action<TextView> REMOVE_TEXT =
+            (editText, index) -> editText.setText("");
     @BindView(R.id.mapView)
     MapView mMapView;
-
-    @BindView(R.id.map_fab_plus)
-    FloatingActionButton mMapFabPlus;
-
-    @BindView(R.id.map_fab_locate)
-    FloatingActionButton mMapFabLocate;
-
+    @BindView(R.id.fab_plus)
+    FloatingActionButton mFabPlus;
+    @BindView(R.id.fab_locate)
+    FloatingActionButton mFabLocate;
     @BindView(R.id.bottom_sheet_container)
-    NestedScrollView mBSContainer;
-
+    NestedScrollView mBottomSheetContainer;
     @BindView(R.id.bottom_sheet_toolbar)
-    Toolbar mBSToolbar;
-
-    @BindView(R.id.bottom_sheet_recyclerview)
-    RecyclerView mBSRecyclerView;
-
+    Toolbar mBottomSheetToolbar;
+    @BindView(R.id.bottom_sheet_bubblelist)
+    RecyclerView mBottomSheetBubbleList;
     @BindView(R.id.bottom_sheet_input_title)
-    EditText mBSEditTextInputTitle;
-
+    EditText mBottomSheetInputTitle;
     @BindView(R.id.bottom_sheet_input_location)
-    EditText mBSEditTextInputLocation;
-
+    EditText mBottomSheetInputLocation;
     @BindView(R.id.bottom_sheet_input_policyholder)
-    EditText mBSEditTextInputPolicyholder;
-
+    EditText mBottomSheetInputPolicyholder;
     @BindView(R.id.bottom_sheet_input_expert)
-    EditText mBSEditTextInputExpert;
-
+    EditText mBottomSheetInputExpert;
     @BindView(R.id.bottom_sheet_input_date)
-    EditText mBSEditTextInputDate;
-
+    EditText mBottomSheetInputDate;
     @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
-    TextView mBSTextViewTitleValue;
-
+    TextView mBottomSheetToolbarViewTitle;
     @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
-    TextView mBSTextViewAreaValue;
-
+    TextView mBottomSheetToolbarViewArea;
     @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
-    TextView mBSTextViewDateValue;
-
+    TextView mBottomSheetToolbarViewDate;
     @BindViews({R.id.bottom_sheet_input_title,
             R.id.bottom_sheet_input_location,
             R.id.bottom_sheet_input_policyholder,
             R.id.bottom_sheet_input_expert,
             R.id.bottom_sheet_input_date})
-    List<EditText> damageCaseBottomSheetInputFields;
-
-    @BindString(R.string.map)
+    List<EditText> mBottomSheetInputs;
+    @BindString(R.string.appbar_title_map)
     String strAppbarTitle;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_name)
-    String strBSDialogName;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_name_hint)
-    String strBSDialogNameHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_location)
-    String strBSDialogDCLocation;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_location_hint)
-    String strBSDialogDCLocationHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_policyholder)
-    String strBSDialogDCPolicyholder;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_policyholder_hint)
-    String strBSDialogDCPolicyholderHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_expert)
-    String strBSDialogDCExpert;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_expert_hint)
-    String strBSDialogDCExpertHint;
-
-    @BindString(R.string.map_frag_botsheet_alert_close_title)
-    String strBSDialogCloseTitle;
-
-    @BindString(R.string.map_frag_botsheet_alert_close_text)
-    String strBSDialogCloseText;
-
-    @BindString(R.string.map_frag_botsheet_alert_delete_title)
-    String strBSDialogDeleteTitle;
-
-    @BindString(R.string.map_frag_botsheet_alert_delete_text)
-    String strBSDialogDeleteText;
-
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_title_header)
+    String strBottomSheetInpDialogTitleHeader;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_title_hint)
+    String strBottomSheetInpDialogTitleHint;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_location_header)
+    String strBottomSheetInpDialogLocationHeader;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_location_hint)
+    String strBottomSheetInpDialogLocationHint;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_policyholder_header)
+    String strBottomSheetInpDialogPolicyholderHeader;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_policyholder_hint)
+    String strBottomSheetInpDialogPolicyholderHint;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_expert_header)
+    String strBottomSheetInpDialogExpertHeader;
+    @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_expert_hint)
+    String strBottomSheetInpDialogExpertHint;
+    @BindString(R.string.map_frag_bottomsheet_close_dialog_header)
+    String strBottomSheetCloseDialogHeader;
+    @BindString(R.string.map_frag_bottomsheet_close_dialog_message)
+    String strBottomSheetCloseDialogMessage;
+    @BindString(R.string.map_frag_bottomsheet_delete_dialog_header)
+    String strBottomSheetDeleteDialogHeader;
+    @BindString(R.string.map_frag_bottomsheet_delete_dialog_message)
+    String strBottomSheetDeleteDialogMessage;
     @BindString(R.string.prompt_enable_localization)
     String strPromptEnableLocation;
-
-    @BindString(R.string.map_frag_botsheet_alert_yes)
-    String strBSDialogCloseOk;
-
-    @BindString(R.string.map_frag_botsheet_alert_no)
-    String strBSDialogCloseCancel;
-
+    @BindString(R.string.map_frag_botsheet_dialog_yes)
+    String strBottomSheetCloseDialogOk;
+    @BindString(R.string.map_frag_botsheet_dialog_no)
+    String strBottomSheetCloseDialogCancel;
     @BindString(R.string.map_fab_no_gps)
-    String sirNoPositionDatesFound;
-
+    String strNoLocationDatesFound;
     @BindString(R.string.map_fab_messages_latitude)
     String strLatitude;
-
     @BindString(R.string.map_fab_messages_longitude)
     String strLongitude;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_date_pattern)
-    String simpleDateFormatPattern;
-
+    @BindString(R.string.map_frag_bottomsheet_date_pattern)
+    String strSimpleDateFormatPattern;
     @BindDrawable(R.drawable.ic_my_location_black_24dp)
     Drawable currentLocationKnownDrawable;
-
     @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
     Drawable currentLocationUnknownDrawable;
+    @BindDimen(R.dimen.bottomsheet_bubblelist_height)
+    int dimenBottomSheetBubbleListHeight;
+    @BindDimen(R.dimen.bottomsheet_toolbar_height)
+    int dimenBottomSheetToolbarHeight;
 }
