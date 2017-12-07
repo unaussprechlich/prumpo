@@ -2,8 +2,9 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.OnLifecycleEvent;
-import android.arch.persistence.room.TypeConverter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -53,15 +54,19 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
 
+import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper.latLngOf;
+
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
-public class SopraMap implements LifecycleObserver{
+public class SopraMap implements LifecycleObserver {
 
     @Inject Vibrator vibrator;
 
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
+
+    private MutableLiveData<Double> currentArea = new MutableLiveData<>();
 
     private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
 
@@ -200,6 +205,8 @@ public class SopraMap implements LifecycleObserver{
 
         activePolygon.addAndDisplay(event.position);
         activePolygon.redrawHighlightCircles();
+
+        refreshAreaLivedata();
     }
 
     @Subscribe
@@ -211,16 +218,22 @@ public class SopraMap implements LifecycleObserver{
     public void onVertexDeleted(VertexDeleted event) {
         activePolygon.removeAndDisplay(event.vertexNumber);
         activePolygon.redrawHighlightCircles();
+
+        refreshAreaLivedata();
     }
 
     @Subscribe
     public void onDamageCaseSelected(DamageCaseSelected event) {
         polygonFrom(event.uniqueId, PolygonType.DAMAGE_CASE).highlight();
+
+        refreshAreaLivedata();
     }
 
     @Subscribe
     public void onInsuranceCoverageSelected(InsuranceCoverageSelected event) {
         polygonFrom(event.uniqueId, PolygonType.INSURANCE_COVERAGE).highlight();
+
+        refreshAreaLivedata();
     }
 
     @Subscribe
@@ -236,6 +249,10 @@ public class SopraMap implements LifecycleObserver{
 
     List<LatLng> getActivePoints() {
         return activePolygon.data.getPoints();
+    }
+
+    LiveData<Double> areaLiveData() {
+        return currentArea;
     }
 
     double getArea() {
@@ -438,18 +455,13 @@ public class SopraMap implements LifecycleObserver{
         }
     }
 
-    @TypeConverter
-    private LatLng latLngOf(Location position) {
-        if (position == null) {
-            return null;
-        }
-
-        return new LatLng(position.getLatitude(), position.getLongitude());
-    }
-
     private CameraPosition cameraPosOf(LatLng target, int zoom) {
         return new CameraPosition.Builder()
                 .target(target).zoom(zoom).build();
+    }
+
+    private void refreshAreaLivedata() {
+        currentArea.postValue(activePolygon.data.getArea());
     }
 
     private void initResources(Context context) {
@@ -551,7 +563,9 @@ public class SopraMap implements LifecycleObserver{
         previewPolyline.remove();
         previewPolyline = null;
 
+        int tmpIndex = indexActiveVertex;
         activePolygon.redrawHighlightCircles();
+        makeDraggable(polygonHighlightVertex.get(tmpIndex));
     }
 
     /**

@@ -121,7 +121,6 @@ public class MainActivity extends BaseEventBusActivity implements
         drawer.closeDrawer(GravityCompat.START);
     }
 
-
     @Subscribe(sticky = true)
     public void handelLogin(AuthenticationEvents.Login event) {
         ((TextView) findViewById(R.id.user_role_text)).setText(event.user.role.toString());
