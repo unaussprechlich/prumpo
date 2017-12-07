@@ -106,6 +106,8 @@ public class SopraMap implements LifecycleObserver{
         /* bindings */
 
         gMap.setOnPolygonClickListener(p -> {
+            if (isHighlighted) return;
+
             PolygonContainer polygon = ((PolygonContainer) p.getTag());
 
             if (polygon.type == PolygonType.DAMAGE_CASE) {
