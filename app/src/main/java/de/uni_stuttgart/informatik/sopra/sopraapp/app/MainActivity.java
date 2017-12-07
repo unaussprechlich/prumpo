@@ -61,6 +61,8 @@ public class MainActivity extends BaseEventBusActivity implements
 
     private ActionBarDrawerToggle drawerToggle;
 
+    private int fragmentCreatedCounter = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,22 +104,31 @@ public class MainActivity extends BaseEventBusActivity implements
         displayMapFragment(true);
     }
 
-    private void displayMapFragment(boolean withBackpress){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_main_frame, mapFragment);
-        if(withBackpress) transaction.addToBackStack(null);
-        transaction.commit();
-
-        drawer.closeDrawer(GravityCompat.START);
+    private void displayMapFragment(boolean withBackpress) {
+        switchToFragment(mapFragment, withBackpress);
     }
 
-    private void displayDamageCaseListFragment(boolean withBackpress){
+    private void displayDamageCaseListFragment(boolean withBackPress) {
+        switchToFragment(damageCaseListFragment, withBackPress);
+    }
+
+    private void switchToFragment(Fragment fragment, boolean withBackPress) {
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_main_frame, damageCaseListFragment);
-        if(withBackpress) transaction.addToBackStack(null);
+        transaction.setCustomAnimations(R.anim.frag_enter,
+                R.anim.frag_exit,
+                R.anim.frag_pop_enter,
+                R.anim.frag_pop_exit);
+
+        transaction.replace(R.id.content_main_frame, fragment);
+
+        if (withBackPress)
+            transaction.addToBackStack("Fragment" + fragmentCreatedCounter);
+
         transaction.commit();
 
         drawer.closeDrawer(GravityCompat.START);
+        navigationView.setCheckedItem(fragment.getId());
     }
 
     @Subscribe(sticky = true)
@@ -144,6 +155,7 @@ public class MainActivity extends BaseEventBusActivity implements
 
         if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
             return;
+
 
         super.onBackPressed();
 
@@ -226,6 +238,13 @@ public class MainActivity extends BaseEventBusActivity implements
             return damageCaseListFragment;
 
         return mapFragment;
+    }
+
+    public int getMenuItemIDForFragment(Fragment fragment) {
+
+        if (fragment.equals(damageCaseListFragment))
+            return 1;
+        return 0;
     }
 
     private void checkPermissions() {

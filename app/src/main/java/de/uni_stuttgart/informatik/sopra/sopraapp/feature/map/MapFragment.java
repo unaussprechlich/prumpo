@@ -129,6 +129,13 @@ public class MapFragment
         return mRootView;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle(strAppbarTitle);
+
+    }
+
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
         mBottomSheetBubbleList.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
@@ -163,7 +170,8 @@ public class MapFragment
     }
 
     private void setTextFromDamageCase(DamageCase damageCase) {
-        mBottomSheetToolbarViewArea.setText(damageCase.getAreaSize() + "");
+        String roundedArea = String.valueOf((double) Math.round(damageCase.getAreaSize() * 100d) / 100d);
+        mBottomSheetToolbarViewArea.setText(roundedArea);
         mBottomSheetInputTitle.setText(damageCase.getNameDamageCase());
         mBottomSheetToolbarViewTitle.setText(damageCase.getNameDamageCase());
         mBottomSheetInputLocation.setText(damageCase.getAreaCode());
@@ -530,6 +538,7 @@ public class MapFragment
         }
 
         gpsService.stopAllCallbacks();
+        bottomSheetListAdapter = null;
     }
 
     @Override

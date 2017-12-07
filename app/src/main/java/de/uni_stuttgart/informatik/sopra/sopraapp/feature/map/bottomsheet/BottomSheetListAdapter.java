@@ -164,7 +164,6 @@ public class BottomSheetListAdapter
      */
     public void onClick(View view, int position) {
         EventBus.getDefault().post(new VertexSelected(position));
-        updateSelectedViewIndex(position);
     }
 
     /**
