@@ -95,11 +95,17 @@ public class GpsService {
 
     /**
      * After running this method {@link GpsService#singleLocationCallback}
+     * won't run any supplied callbacks.
+     */
+    public void stopSingleCallback() {
+        callbackOver = true;
+    }
+
+    /**
+     * After running this method {@link GpsService#singleLocationCallback}
      * won't run any supplied callbacks. (Ongoing requests must be rebound, as well).
      */
-    public void stopCallback() {
-        callbackOver = true;
-
+    public void stopAllCallbacks() {
         // notify all subscribers, that the current location update failed
         for (LocationCallbackListener subscriber : subscribers) {
             subscriber.onLocationNotFound();
@@ -107,6 +113,8 @@ public class GpsService {
 
         // subscribers must resubscribe manually after the callback was stopped
         subscribers.clear();
+
+        stopSingleCallback();
     }
 
     /**

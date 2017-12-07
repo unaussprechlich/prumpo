@@ -52,9 +52,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDial
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-
-import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
 
 @SuppressLint("SetTextI18n")
 public class MapFragment
@@ -134,6 +133,7 @@ public class MapFragment
     }
 
     // Subscribe ###################################################################################
+
     @Subscribe
     void onVertexCreated(VertexCreated event){
         mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
@@ -148,13 +148,13 @@ public class MapFragment
     void onCloseBottomSheet(CloseBottomSheetEvent event) {
         if (gpsService == null) return;
 
-        gpsService.stopCallback();
+        gpsService.stopSingleCallback();
     }
 
     //##############################################################################################
 
     private void updateDamageCase(DamageCase damageCase){
-        if(damageCase == null){
+        if (damageCase == null){
             closeBottomSheet();
             return;
         }
@@ -199,9 +199,6 @@ public class MapFragment
             sopraMap.areaLiveData().observe(this, area ->
                     mBSTextViewAreaValue.setText("" + (double)Math.round(area * 100d) / 100d)
             );
-
-            //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
-            sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
 
@@ -502,6 +499,7 @@ public class MapFragment
             mMapFabLocate.setImageDrawable(currentLocationUnknownDrawable);
             return;
         }
+
         sopraMap.mapCameraMoveToUser();
     }
 
@@ -551,7 +549,7 @@ public class MapFragment
             isGpsServiceBound = false;
         }
 
-        gpsService.stopCallback();
+        gpsService.stopAllCallbacks();
     }
 
     @Override

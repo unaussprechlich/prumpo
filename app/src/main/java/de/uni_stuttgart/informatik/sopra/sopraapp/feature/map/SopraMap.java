@@ -211,7 +211,7 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onVertexSelected(VertexSelected event) {
-        makeDraggable(polygonHighlightVertex.get(event.vertexNumber));
+        makeDraggableAndMove(polygonHighlightVertex.get(event.vertexNumber));
     }
 
     @Subscribe
@@ -239,6 +239,7 @@ public class SopraMap implements LifecycleObserver {
     @Subscribe
     public void onCloseBottomSheet(CloseBottomSheetEvent event) {
         if (activePolygon != null && isHighlighted) {
+            activePolygon.mapObject.remove();
             activePolygon.highlight();
         }
 
@@ -256,6 +257,8 @@ public class SopraMap implements LifecycleObserver {
     }
 
     double getArea() {
+        if (activePolygon == null) return 0;
+
         return activePolygon.data.getArea();
     }
 
@@ -357,6 +360,8 @@ public class SopraMap implements LifecycleObserver {
                         sopraPolygon,
                         type
                 );
+
+        activePolygon.highlight();
     }
 
     private Polygon drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
@@ -401,10 +406,11 @@ public class SopraMap implements LifecycleObserver {
     }
 
 
-    private void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
+    void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
         PolygonContainer polygon =
                 (PolygonContainer)
-                        drawPolygonOf(coordinates, type, uniqueId).getTag();
+                        drawPolygonOf(coordinates, type, uniqueId)
+                                .getTag();
 
         polygon.storedIn().put(uniqueId, polygon);
     }
@@ -426,6 +432,12 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void clearAllDamages() {
+
+        if (activePolygon != null) {
+            activePolygon.mapObject.remove();
+            activePolygon = null;
+        }
+
         PolygonContainer polygon;
 
         for (int i = 0; i < damagePolygons.size(); ++i) {
@@ -519,6 +531,11 @@ public class SopraMap implements LifecycleObserver {
         dragMarker.setPosition(circle.getCenter());
     }
 
+    private void makeDraggableAndMove(Circle circle) {
+        makeDraggable(circle);
+        mapCameraMove(circle.getCenter());
+    }
+
     private void removeMarker() {
         if (dragMarker == null) return;
 
@@ -568,6 +585,8 @@ public class SopraMap implements LifecycleObserver {
         int tmpIndex = indexActiveVertex;
         activePolygon.redrawHighlightCircles();
         makeDraggable(polygonHighlightVertex.get(tmpIndex));
+
+        refreshAreaLivedata();
     }
 
     /**

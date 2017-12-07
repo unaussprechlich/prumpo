@@ -122,7 +122,7 @@ public class MainActivity extends BaseEventBusActivity implements
     }
 
     @Subscribe(sticky = true)
-    public void handelLogin(AuthenticationEvents.Login event) {
+    public void handleLogin(AuthenticationEvents.Login event) {
         ((TextView) findViewById(R.id.user_role_text)).setText(event.user.role.toString());
         ((TextView) findViewById(R.id.user_name_text)).setText(event.user.name);
     }
