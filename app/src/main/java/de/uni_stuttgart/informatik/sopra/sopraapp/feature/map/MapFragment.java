@@ -5,12 +5,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -19,8 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapsInitializer;
@@ -30,17 +30,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
@@ -72,6 +73,9 @@ public class MapFragment
     @Inject
     UserManager userManager;
 
+    @BindView(R.id.bottom_sheet_container)
+    NestedScrollView mBottomSheetContainer;
+
     /* Knife-N'-Butter section!' */
     View mRootView;
 
@@ -95,6 +99,8 @@ public class MapFragment
     private DateTime damageCaseDate = DateTime.now();
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
+    private boolean isBottomSheetExpanded = false;
+
     // Subscribe ###################################################################################
 
     @Override
@@ -116,27 +122,28 @@ public class MapFragment
         // create bottom sheet behaviour
         mBottomSheetBehavior = LockableBottomSheetBehaviour.from(mBottomSheetContainer);
 
+
         // init
         initMapView(savedInstanceState);
         initBottomSheet();
 
         onResume();
 
-        damageCaseHandler
-                .getLiveData()
-                .observe(getActivity(), this::updateDamageCase);
+//        damageCaseHandler
+//                .getLiveData()
+//                .observe(getActivity(), this::updateDamageCase);
 
         return mRootView;
     }
 
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
-        mBottomSheetBubbleList.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+//        mBottomSheetBubbleList.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
     }
 
     @Subscribe
     public void onVertexSelected(VertexSelected event) {
-        mBottomSheetBubbleList.smoothScrollToPosition(event.vertexNumber);
+//        mBottomSheetBubbleList.smoothScrollToPosition(event.vertexNumber);
     }
 
     //##############################################################################################
@@ -163,14 +170,14 @@ public class MapFragment
     }
 
     private void setTextFromDamageCase(DamageCase damageCase) {
-        mBottomSheetToolbarViewArea.setText(damageCase.getAreaSize() + "");
-        mBottomSheetInputTitle.setText(damageCase.getNameDamageCase());
-        mBottomSheetToolbarViewTitle.setText(damageCase.getNameDamageCase());
-        mBottomSheetInputLocation.setText(damageCase.getAreaCode());
-        mBottomSheetInputPolicyholder.setText(damageCase.getNamePolicyholder());
-        mBottomSheetInputExpert.setText(damageCase.getNameExpert());
-        mBottomSheetInputDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
-        mBottomSheetToolbarViewDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
+//        mBottomSheetToolbarViewArea.setText(damageCase.getAreaSize() + "");
+//        mBottomSheetInputTitle.setText(damageCase.getNameDamageCase());
+//        mBottomSheetToolbarViewTitle.setText(damageCase.getNameDamageCase());
+//        mBottomSheetInputLocation.setText(damageCase.getAreaCode());
+//        mBottomSheetInputPolicyholder.setText(damageCase.getNamePolicyholder());
+//        mBottomSheetInputExpert.setText(damageCase.getNameExpert());
+//        mBottomSheetInputDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
+//        mBottomSheetToolbarViewDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
         mBottomSheetDate = damageCase.getDate();
     }
 
@@ -190,9 +197,9 @@ public class MapFragment
             sopraMap = new SopraMap(googleMap, getContext());
             getLifecycle().addObserver(sopraMap);
 
-            sopraMap.areaLiveData().observe(this, area ->
-                    mBottomSheetToolbarViewArea.setText("" + (double) Math.round(area * 100d) / 100d)
-            );
+//            sopraMap.areaLiveData().observe(this, area ->
+////                    mBottomSheetToolbarViewArea.setText("" + (double) Math.round(area * 100d) / 100d)
+//            );
 
         });
 
@@ -201,6 +208,23 @@ public class MapFragment
     //Button #######################################################################################
 
     private void initBottomSheet() {
+
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+            @Override
+            public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
+                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheetContainer, float slideOffset) {
+
+            }
+
+        });
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        BaseBottomSheet baseBottomSheet = new BaseBottomSheet(mRootView);
+        baseBottomSheet.init();
 
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 
@@ -234,32 +258,32 @@ public class MapFragment
     }
 
     void onBottomSheetSaveButtonPressed(View view) {
-        ButterKnife.apply(mBottomSheetInputs, REMOVE_ERRORS);
-
-        try {
-            if (damageCaseHandler.getValue() != null) {
-                long id = damageCaseHandler.getValue()
-                        .setNameDamageCase(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
-                        .setAreaCode(getIfNotEmptyElseThrow(mBottomSheetInputLocation))
-                        .setNamePolicyholder(getIfNotEmptyElseThrow(mBottomSheetInputPolicyholder))
-                        .setNameExpert(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
-                        .setDate(damageCaseDate)
-                        .setAreaSize(sopraMap.getArea())
-                        .setCoordinates(sopraMap.getActivePoints())
-                        .save();
-
-                closeBottomSheet();
-                damageCaseHandler.loadFromDatabase(id);
-
-                Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
-            }
-        } catch (EditFieldValueIsEmptyException e) {
-            e.showError();
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        } catch (InterruptedException | ExecutionException e) {
-            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+////        ButterKnife.apply(mBottomSheetInputs, REMOVE_ERRORS);
+//
+//        try {
+//            if (damageCaseHandler.getValue() != null) {
+//                long id = damageCaseHandler.getValue()
+//                        .setNameDamageCase(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
+//                        .setAreaCode(getIfNotEmptyElseThrow(mBottomSheetInputLocation))
+//                        .setNamePolicyholder(getIfNotEmptyElseThrow(mBottomSheetInputPolicyholder))
+//                        .setNameExpert(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
+//                        .setDate(damageCaseDate)
+//                        .setAreaSize(sopraMap.getArea())
+//                        .setCoordinates(sopraMap.getActivePoints())
+//                        .save();
+//
+//                closeBottomSheet();
+//                damageCaseHandler.loadFromDatabase(id);
+//
+//                Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
+//            }
+//        } catch (EditFieldValueIsEmptyException e) {
+//            e.showError();
+//            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//        } catch (InterruptedException | ExecutionException e) {
+//            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+//            e.printStackTrace();
+//        }
     }
 
     private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
@@ -290,34 +314,36 @@ public class MapFragment
         }
 
         mBottomSheetDate = DateTime.now();
-        mBottomSheetInputDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
+//        mBottomSheetInputDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
         openDamageCase();
 
     }
 
     private void openDamageCase() {
+//        BaseBottomSheet baseBottomSheet = new BaseBottomSheet(mRootView);
+//        baseBottomSheet.init();
         /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
-        mBottomSheetContainer.setNestedScrollingEnabled(false);
-
-        // set state 1st time
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-        // lock hide mode
-        mBottomSheetBehavior.setHideable(false);
-
-        if (bottomSheetListAdapter != null)
-            getLifecycle().removeObserver(bottomSheetListAdapter);
-        // set new adapter
-        bottomSheetListAdapter = new BottomSheetListAdapter(0);
-        getLifecycle().addObserver(bottomSheetListAdapter);
-        bottomSheetListAdapter.notifyDataSetChanged();
-        mBottomSheetBubbleList.swapAdapter(bottomSheetListAdapter, false);
+//        mBottomSheetContainer.setNestedScrollingEnabled(false);
+//
+//        // set state 1st time
+//        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//
+//        // lock hide mode
+//        mBottomSheetBehavior.setHideable(false);
+//
+//        if (bottomSheetListAdapter != null)
+//            getLifecycle().removeObserver(bottomSheetListAdapter);
+//        // set new adapter
+//        bottomSheetListAdapter = new BottomSheetListAdapter(0);
+//        getLifecycle().addObserver(bottomSheetListAdapter);
+//        bottomSheetListAdapter.notifyDataSetChanged();
+//        mBottomSheetBubbleList.swapAdapter(bottomSheetListAdapter, false);
 
         // Add listener to recycler view: disable button if less than 3 elements are there
-        bottomSheetListAdapter.setOnItemCountChanged(new BottomSheetExpandHandler());
-
-        // set state 2nd time
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//        bottomSheetListAdapter.setOnItemCountChanged(new BottomSheetExpandHandler());
+//
+//        // set state 2nd time
+//        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     private void closeBottomSheet() {
@@ -330,14 +356,14 @@ public class MapFragment
     }
 
     private void resetBottomSheetContent() {
-        mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        mBottomSheetBubbleList.setAdapter(null);
-        tbSaveButton.setAlpha(0.25f);
-        mBottomSheetBehavior.allowUserSwipe(false);
+//        mBottomSheetBehavior.setHideable(true);
+//        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+////        mBottomSheetBubbleList.setAdapter(null);
+////        tbSaveButton.setAlpha(0.25f);
+//        mBottomSheetBehavior.allowUserSwipe(false);
 
-        ButterKnife.apply(mBottomSheetInputs, REMOVE_TEXT);
-        ButterKnife.apply(mBottomSheetInputs, REMOVE_ERRORS);
+//        ButterKnife.apply(mBottomSheetInputs, REMOVE_TEXT);
+//        ButterKnife.apply(mBottomSheetInputs, REMOVE_ERRORS);
 
     }
 
@@ -346,8 +372,6 @@ public class MapFragment
             showCloseAlert();
         else closeBottomSheet();
     }
-
-    //Alert ########################################################################################
 
     private void showCloseAlert() {
         new FixedDialog(getContext())
@@ -373,6 +397,8 @@ public class MapFragment
                 .show();
     }
 
+    //Alert ########################################################################################
+
     @OnClick(R.id.bottom_sheet_input_date)
     void onClickBottomSheetInputDate(EditText editText) {
         Log.e("DATE", editText.getText() + "");
@@ -380,16 +406,14 @@ public class MapFragment
                 getContext(),
                 (view, year, monthOfYear, dayOfMonth) -> {
                     mBottomSheetDate = new DateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-                    mBottomSheetInputDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
-                    mBottomSheetToolbarViewDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
+//                    mBottomSheetInputDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
+//                    mBottomSheetToolbarViewDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
                 },
                 mBottomSheetDate.getYear(),
                 mBottomSheetDate.getMonthOfYear() - 1,
                 mBottomSheetDate.getDayOfMonth()
         ).show();
     }
-
-    //Handle Input Retriever #######################################################################
 
     @SuppressWarnings("ConstantConditions")
     @OnClick(R.id.bottom_sheet_input_title)
@@ -398,9 +422,9 @@ public class MapFragment
                 .withTitle(strBottomSheetInpDialogTitleHeader)
                 .withHint(strBottomSheetInpDialogTitleHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
-                    mBottomSheetToolbarViewTitle.setText(mBottomSheetInputTitle.getText());
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNameDamageCase(mBottomSheetInputTitle.getText().toString());
+//                    mBottomSheetToolbarViewTitle.setText(mBottomSheetInputTitle.getText());
+//                    if (damageCaseHandler.hasValue())
+//                        damageCaseHandler.getValue().setNameDamageCase(mBottomSheetInputTitle.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
@@ -413,12 +437,14 @@ public class MapFragment
                 .withTitle(strBottomSheetInpDialogLocationHeader)
                 .withHint(strBottomSheetInpDialogLocationHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setAreaCode(mBottomSheetInputLocation.getText().toString());
+//                    if (damageCaseHandler.hasValue())
+//                        damageCaseHandler.getValue().setAreaCode(mBottomSheetInputLocation.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
     }
+
+    //Handle Input Retriever #######################################################################
 
     @SuppressWarnings("ConstantConditions")
     @OnClick(R.id.bottom_sheet_input_policyholder)
@@ -427,8 +453,8 @@ public class MapFragment
                 .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                 .withHint(strBottomSheetInpDialogPolicyholderHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNamePolicyholder(mBottomSheetInputPolicyholder.getText().toString());
+//                    if (damageCaseHandler.hasValue())
+//                        damageCaseHandler.getValue().setNamePolicyholder(mBottomSheetInputPolicyholder.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
@@ -441,8 +467,8 @@ public class MapFragment
                 .withTitle(strBottomSheetInpDialogExpertHeader)
                 .withHint(strBottomSheetInpDialogExpertHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNameExpert(mBottomSheetInputExpert.getText().toString());
+//                    if (damageCaseHandler.hasValue())
+//                        damageCaseHandler.getValue().setNameExpert(mBottomSheetInputExpert.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
@@ -470,8 +496,6 @@ public class MapFragment
         }
     }
 
-    //##############################################################################################
-
     @OnClick(R.id.fab_locate)
     void handelFloatingActionButtonLocateClick(FloatingActionButton floatingActionButton) {
         if (gpsService.wasLocationDisabled()) {
@@ -492,6 +516,8 @@ public class MapFragment
 
         sopraMap.drawUserPositionIndicator(location);
     }
+
+    //##############################################################################################
 
     @Override
     public void onLocationNotFound() {
@@ -515,8 +541,6 @@ public class MapFragment
         gpsService.ongoingLocationCallback(this);
     }
 
-    //Lifecycle ####################################################################################
-
     @Override
     public void onStop() {
         super.onStop();
@@ -539,6 +563,8 @@ public class MapFragment
             EventBus.getDefault().unregister(this);
     }
 
+    //Lifecycle ####################################################################################
+
     @Override
     public void onResume() {
         super.onResume();
@@ -556,15 +582,108 @@ public class MapFragment
         return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
 
-    //Override #####################################################################################
+    class BaseBottomSheet {
 
-    private class BottomSheetHere {
+        Toolbar toolbar;
 
-        BottomSheetHere(View view) {
-            ButterKnife.bind(this, view);
+        @BindView(R.id.bottom_sheet_bubblelist)
+        android.support.v7.widget.RecyclerView mBottomSheetBubbleList;
+
+        @BindView(R.id.bottom_sheet_toolbar)
+        android.support.v7.widget.Toolbar mBottomSheetToolbar;
+
+        @BindView(R.id.bottom_sheet_container)
+        NestedScrollView mBottomSheetContainer;
+
+        @BindView(R.id.bottom_sheet_input_title)
+        EditText mBottomSheetInputTitle;
+
+        @BindView(R.id.bottom_sheet_input_location)
+        EditText mBottomSheetInputLocation;
+
+        @BindView(R.id.bottom_sheet_input_policyholder)
+        EditText mBottomSheetInputPolicyholder;
+
+        @BindView(R.id.bottom_sheet_input_expert)
+        EditText mBottomSheetInputExpert;
+
+        @BindView(R.id.bottom_sheet_input_date)
+        EditText mBottomSheetInputDate;
+
+        @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
+        TextView mBottomSheetToolbarViewTitle;
+
+        @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
+        TextView mBottomSheetToolbarViewArea;
+
+        @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
+        TextView mBottomSheetToolbarViewDate;
+
+        @BindViews({R.id.bottom_sheet_input_title,
+                R.id.bottom_sheet_input_location,
+                R.id.bottom_sheet_input_policyholder,
+                R.id.bottom_sheet_input_expert,
+                R.id.bottom_sheet_input_date})
+        List<EditText> mBottomSheetInputs;
+
+        BaseBottomSheet(View target) {
+            ButterKnife.bind(this, target);
+
+        }
+
+        void init() {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            this.toolbar = new Toolbar(mBottomSheetToolbar);
+//            mBottomSheetBubbleList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            mBottomSheetBehavior.allowUserSwipe(false);
+            mBottomSheetBehavior.setHideable(false);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        }
+
+        class Toolbar {
+
+            ActionMenuItemView saveButton;
+            MenuItem closeButton;
+            MenuItem deleteButton;
+
+            public Toolbar(android.support.v7.widget.Toolbar toolbar) {
+                toolbar.inflateMenu(R.menu.bottom_sheet);
+
+                saveButton = toolbar.findViewById(R.id.act_botsheet_save);
+                saveButton.setOnClickListener(this::onSaveButtonPressed);
+                closeButton = toolbar.getMenu().findItem(R.id.act_botsheet_close);
+                closeButton.setOnMenuItemClickListener(this::onCloseButtonPressed);
+                deleteButton = toolbar.getMenu().findItem(R.id.act_botsheet_delete);
+                deleteButton.setOnMenuItemClickListener(this::onDeleteButtonPressed);
+            }
+
+            void onSaveButtonPressed(View view) {
+                Log.w("BINDING", "pressed" + saveButton + "");
+            }
+
+            boolean onCloseButtonPressed(MenuItem menuItem) {
+                Log.w("BINDING", "pressed" + closeButton + "");
+                mBottomSheetBehavior.setHideable(true);
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                mBottomSheetBubbleList.setAdapter(null);
+                saveButton.setAlpha(0.25f);
+                mBottomSheetBehavior.allowUserSwipe(false);
+                return true;
+            }
+
+            boolean onDeleteButtonPressed(MenuItem menuItem) {
+                Log.w("BINDING", "pressed" + deleteButton + "");
+                return true;
+            }
+
         }
 
     }
+
+
+    //Override #####################################################################################
+
 
     //##############################################################################################
 
@@ -575,18 +694,18 @@ public class MapFragment
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             boolean enabled = newAmount > 2;
 
-            tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
-            tbSaveButton.setEnabled(enabled);
+//            tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
+//            tbSaveButton.setEnabled(enabled);
             mBottomSheetBehavior.allowUserSwipe(enabled);
 
             if (enabled && !animationShown) {
-                mBottomSheetContainer
-                        .animate()
-                        .setInterpolator(new AccelerateInterpolator())
-                        .translationY(-100);
-                new Handler().postDelayed(() -> mBottomSheetContainer.animate().setInterpolator(new AccelerateInterpolator())
-                        .translationY(-0), 300);
-                animationShown = !animationShown;
+//                mBottomSheetContainer
+//                        .animate()
+//                        .setInterpolator(new AccelerateInterpolator())
+//                        .translationY(-100);
+//                new Handler().postDelayed(() -> mBottomSheetContainer.animate().setInterpolator(new AccelerateInterpolator())
+//                        .translationY(-0), 300);
+//                animationShown = !animationShown;
             }
         }
 
