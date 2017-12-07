@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,7 +61,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Bottom
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
@@ -251,14 +254,20 @@ public class MapFragment
 
         damageCaseHandler.getLiveData().observe(getActivity(), this::updateDamageCase);
 
-        getLifecycle().addObserver(bottomSheetListAdapter);
-
         return mRootView;
     }
 
+    @SuppressLint("SetTextI18n")
     @Subscribe
     void onVertexCreated(VertexCreated event){
-        mBSTextViewAreaValue.setText("" + sopraMap.getArea()); // TODO! Update area
+        if(sopraMap == null) mBSTextViewAreaValue.setText("0");
+        else mBSTextViewAreaValue.setText("" + sopraMap.getArea());
+        mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+    }
+
+    @Subscribe
+    void onVertexSelected(VertexSelected event){
+        mBSRecyclerView.smoothScrollToPosition(event.vertexNumber);
     }
 
     private void updateDamageCase(DamageCase damageCase){
@@ -470,8 +479,11 @@ public class MapFragment
         // lock hide mode
         mBottomSheetBehavior.setHideable(false);
 
+        if(bottomSheetListAdapter != null)
+            getLifecycle().removeObserver(bottomSheetListAdapter);
         // set new adapter
         bottomSheetListAdapter = new BottomSheetListAdapter(0);
+        getLifecycle().addObserver(bottomSheetListAdapter);
         bottomSheetListAdapter.notifyDataSetChanged();
         mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
 
@@ -494,6 +506,7 @@ public class MapFragment
     private void closeBottomSheet(){
         mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        EventBus.getDefault().post(new CloseBottomSheetEvent());
     }
 
     private void showAlert(AlertType alertType) {
@@ -631,13 +644,6 @@ public class MapFragment
 
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             openNewDamageCase();
-
-        } else {
-            // add next point
-            bottomSheetListAdapter.add();
-
-            // scroll to last added item
-            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
         }
     }
 

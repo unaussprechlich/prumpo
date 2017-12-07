@@ -18,7 +18,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
 
 
@@ -66,7 +65,6 @@ public class DamageCaseHandler implements LifecycleOwner{
         }
 
         set(new DamageCaseBuilder().setNameDamageCase("Unbenannter Schadensfall").create());
-        EventBus.getDefault().post(new DamageCaseEvent.Created(getLiveData()));
     }
 
     /**
@@ -113,7 +111,6 @@ public class DamageCaseHandler implements LifecycleOwner{
 
         this.damageCaseDB = damageCaseRepository.getById(id);
         damageCaseDB.observe(this, this::set);
-        EventBus.getDefault().post(new DamageCaseEvent.Saved(getLiveData()));
     }
 }
 
