@@ -52,7 +52,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolyg
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
-public class SopraMap {
+public class SopraMap{
 
     @Inject Vibrator vibrator;
 

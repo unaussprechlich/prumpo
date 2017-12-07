@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 
@@ -18,6 +19,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseEvent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
 
 
 public class DamageCaseHandler implements LifecycleOwner{
@@ -37,6 +39,7 @@ public class DamageCaseHandler implements LifecycleOwner{
 
     public DamageCaseHandler(SopraApp sopraApp) {
         SopraApp.getAppComponent().inject(this);
+        EventBus.getDefault().register(this);
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         damageCase.postValue(null);
     }
@@ -44,6 +47,13 @@ public class DamageCaseHandler implements LifecycleOwner{
     private void set(DamageCase damageCase){
         this.damageCase.postValue(damageCase);
     }
+
+    @Subscribe
+    void onDamageCaseSelected(DamageCaseSelected event){
+        loadFromDatabase(event.uniqueId);
+    }
+
+    //##############################################################################################
 
     /**
      * Does create a temporary DamageCase.
@@ -57,6 +67,14 @@ public class DamageCaseHandler implements LifecycleOwner{
 
         set(new DamageCaseBuilder().create());
         EventBus.getDefault().post(new DamageCaseEvent.Created(getLiveData()));
+    }
+
+    /**
+     * Checks if there is a current value
+     * @return if the value is null
+     */
+    public boolean hasValue(){
+        return getValue() != null;
     }
 
     /**
