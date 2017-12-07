@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
@@ -56,7 +57,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Bottom
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
@@ -226,8 +226,6 @@ public class MapFragment
     private BottomSheetExpandHandler bottomSheetExpandHandler;
 
     private SopraMap sopraMap;
-
-    private boolean waitingForResponse;
     private boolean isGpsServiceBound;
 
     /**
@@ -266,7 +264,11 @@ public class MapFragment
     }
 
     private void updateDamageCase(DamageCase damageCase){
-        if(damageCase == null) return;
+        if(damageCase == null){
+            closeBottomSheet();
+            return;
+        }
+
         openDamageCase();
 
         mBSEditTextInputTitle.setText(damageCase.getNameDamageCase());
@@ -296,7 +298,7 @@ public class MapFragment
         mMapView.getMapAsync(googleMap -> {
             sopraMap = new SopraMap(googleMap, getContext());
 
-//            sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
+            //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
@@ -310,8 +312,7 @@ public class MapFragment
             @Override
             public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
 
-                MainActivity activity = (MainActivity) getActivity();
-                activity.setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
+                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
 
                 if (newState == BottomSheetBehavior.STATE_HIDDEN)
                     onBottomSheetIsHidden(bottomSheetContainer);
@@ -391,14 +392,11 @@ public class MapFragment
         return true;
     }
 
-    @SuppressWarnings("unused")
     private boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem) {
         showAlert(AlertType.DELETE);
-        // Delete Action will be handled in alert method
         return true;
     }
 
-    @SuppressWarnings("unused")
     private void onBottomSheetIsHidden(View bottomSheetContainer) {
 
         mBSRecyclerView.setAdapter(null);
@@ -482,6 +480,11 @@ public class MapFragment
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+    private void closeBottomSheet(){
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
     private void showAlert(AlertType alertType) {
 
         String title = "";
@@ -493,8 +496,7 @@ public class MapFragment
             title = strBSDialogCloseTitle;
             hint = strBSDialogCloseText;
             positiveAction = (dialog, id) -> {
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                closeBottomSheet();
             };
             negativeAction = (dialog, id) -> {
 
@@ -509,7 +511,7 @@ public class MapFragment
                 mBottomSheetBehavior.setHideable(true);
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                // TODO damageCaseRepository.delete(damageCase);
+                damageCaseHandler.deleteCurrent();
             };
             negativeAction = (dialog, id) -> {
                 Toast.makeText(getContext(), "NOTDEL", Toast.LENGTH_SHORT).show();
@@ -687,10 +689,6 @@ public class MapFragment
 
     private enum AlertType {
         CLOSE, DELETE
-    }
-
-    private enum InteractionType {
-        NEW, EDIT
     }
 
     private class BottomSheetExpandHandler {

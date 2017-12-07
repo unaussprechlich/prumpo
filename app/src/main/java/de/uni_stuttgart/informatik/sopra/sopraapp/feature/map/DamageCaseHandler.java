@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -37,6 +38,11 @@ public class DamageCaseHandler implements LifecycleOwner{
     public DamageCaseHandler(SopraApp sopraApp) {
         SopraApp.getAppComponent().inject(this);
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
+        damageCase.postValue(null);
+    }
+
+    private void set(DamageCase damageCase){
+        this.damageCase.postValue(damageCase);
     }
 
     /**
@@ -53,11 +59,11 @@ public class DamageCaseHandler implements LifecycleOwner{
         EventBus.getDefault().post(new DamageCaseEvent.Created(getLiveData()));
     }
 
-
     /**
      * Get the DamageCase as Value.
      * @return DamageCase
      */
+    @Nullable
     public DamageCase getValue(){
         return damageCase.getValue();
     }
@@ -70,8 +76,14 @@ public class DamageCaseHandler implements LifecycleOwner{
         return damageCase;
     }
 
-    private void set(DamageCase damageCase){
-        this.damageCase.postValue(damageCase);
+    /**
+     * Deletes the current DamageCase and post a null to all the observers listening
+     * to the LiveData.
+     */
+    public void deleteCurrent(){
+        if(damageCaseDB != null && damageCaseDB.getValue() != null)
+            damageCaseRepository.delete(damageCaseDB.getValue());
+        damageCase.postValue(null);
     }
 
     /**
