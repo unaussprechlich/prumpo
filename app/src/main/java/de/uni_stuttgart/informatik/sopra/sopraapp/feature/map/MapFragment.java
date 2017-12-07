@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -431,9 +432,18 @@ public class MapFragment
         return text;
     }
 
+    private AtomicBoolean callbackDone = new AtomicBoolean(true);
+
+    private void mMapFabPlusAction() {
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+
+        if (callbackDone.get()) {
+            callbackDone.set(false);
+            gpsService.singleLocationCallback(lcl, 10000);
+        }
+    }
+
     private void openNewDamageCase() {
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext());
-        gpsService.singleLocationCallback(lcl, 10);
 
         try {
             damageCaseHandler.createNewDamageCase();
@@ -614,6 +624,8 @@ public class MapFragment
             return;
         }
 
+        mMapFabPlusAction();
+
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             openNewDamageCase();
 
@@ -625,8 +637,6 @@ public class MapFragment
             mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
         }
     }
-
-
 
     @OnClick(R.id.map_fab_locate)
     void handelAnctionButtonLocateClick(FloatingActionButton floatingActionButton) {

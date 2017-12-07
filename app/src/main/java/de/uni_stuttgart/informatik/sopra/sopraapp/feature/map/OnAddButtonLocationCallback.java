@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
@@ -14,18 +16,24 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreat
 public class OnAddButtonLocationCallback implements LocationCallbackListener {
 
     private Context context;
+    private AtomicBoolean callbackDone;
 
-    public OnAddButtonLocationCallback(Context context) {
+    public OnAddButtonLocationCallback(Context context, AtomicBoolean callbackDone) {
         this.context = context;
+        this.callbackDone = callbackDone;
     }
 
     @Override
     public void onLocationFound(Location location) {
+        callbackDone.set(true);
+
         EventBus.getDefault().post(new VertexCreated(Helper.latLngOf(location)));
     }
 
     @Override
     public void onLocationNotFound() {
+        callbackDone.set(true);
+
         Toast toast = Toast.makeText(
                 context,
                 "Es konnte keine gültige Position ermittelt werden.",
