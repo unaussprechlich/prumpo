@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,6 +31,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.OpenMapFragmentEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
@@ -90,10 +92,33 @@ public class MainActivity extends BaseEventBusActivity implements
         drawerToggle.setDrawerSlideAnimationEnabled(true);
         drawerToggle.syncState();
 
-        displayFragment(R.id.nav_map);
+        displayMapFragment(false);
         navigationView.setCheckedItem(R.id.nav_map);
 
         checkPermissions();
+    }
+
+    @Subscribe
+    public void onOpenMapFragmentEvent(OpenMapFragmentEvent openMapFragmentEvent){
+        displayMapFragment(true);
+    }
+
+    private void displayMapFragment(boolean withBackpress){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_main_frame, mapFragment);
+        if(withBackpress) transaction.addToBackStack(null);
+        transaction.commit();
+
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+    private void displayDamageCaseListFragment(boolean withBackpress){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_main_frame, damageCaseListFragment);
+        if(withBackpress) transaction.addToBackStack(null);
+        transaction.commit();
+
+        drawer.closeDrawer(GravityCompat.START);
     }
 
 
@@ -131,36 +156,17 @@ public class MainActivity extends BaseEventBusActivity implements
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        displayFragment(item.getItemId());
-        return true;
-    }
-
-    /**
-     * Changes the current screen to a fragment in this activity.
-     *
-     * @param itemId The id of the fragment to display
-     */
-    public void displayFragment(int itemId) {
-        Fragment fragment;
-
-        switch (itemId) {
+        switch (item.getItemId()) {
 
             case R.id.nav_damageCases:
-                fragment = damageCaseListFragment;
+                displayDamageCaseListFragment(false);
                 break;
 
             default:
-                fragment = mapFragment;
+                displayMapFragment(false);
                 break;
         }
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_main_frame, fragment)
-                .commit();
-
-        drawer.closeDrawer(GravityCompat.START);
-
+        return true;
     }
 
     /**

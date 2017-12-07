@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.OpenMapFragmentEvent;
 
 
 public class DamageCaseListAdapter
@@ -30,6 +34,9 @@ public class DamageCaseListAdapter
      */
     @Inject
     DamageCaseRepository damageCaseRepository;
+
+    @Inject
+    DamageCaseHandler damageCaseHandler;
 
     private Holder dataHolder = new Holder();
 
@@ -107,6 +114,9 @@ public class DamageCaseListAdapter
      */
     public void onCardViewPressed(View view, int position) {
         DamageCase damageCase = dataHolder.damageCaseList.get(position);
+
+        damageCaseHandler.loadFromDatabase(damageCase.getID());
+        EventBus.getDefault().post(new OpenMapFragmentEvent());
 
         Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
     }

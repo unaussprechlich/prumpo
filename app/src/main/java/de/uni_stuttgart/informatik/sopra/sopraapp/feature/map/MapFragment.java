@@ -29,13 +29,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -59,7 +57,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Bottom
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
@@ -216,7 +213,7 @@ public class MapFragment
     @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
     Drawable currentLocationUnknownDrawable;
 
-    Calendar myCalendar = Calendar.getInstance();
+    DateTime mBSEditDate = DateTime.now();
 
     /**
      * The adapter for the horizontal recycler view
@@ -229,8 +226,6 @@ public class MapFragment
     private BottomSheetExpandHandler bottomSheetExpandHandler;
 
     private SopraMap sopraMap;
-
-    private boolean waitingForResponse;
     private boolean isGpsServiceBound;
 
     /**
@@ -238,6 +233,7 @@ public class MapFragment
      */
     private LockableBottomSheetBehaviour mBottomSheetBehavior;
     private DateTime damageCaseDate = DateTime.now();
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -262,7 +258,29 @@ public class MapFragment
 
         onResume();
 
+        damageCaseHandler.getLiveData().observe(getActivity(), this::updateDamageCase);
+
         return mRootView;
+    }
+
+    private void updateDamageCase(DamageCase damageCase){
+        if(damageCase == null){
+            closeBottomSheet();
+            return;
+        }
+
+        openDamageCase();
+
+        mBSEditTextInputTitle.setText(damageCase.getNameDamageCase());
+        mBSEditTextInputLocation.setText(damageCase.getAreaCode());
+        mBSEditTextInputPolicyholder.setText(damageCase.getNamePolicyholder());
+        mBSEditTextInputExpert.setText(damageCase.getNameExpert());
+        mBSEditTextInputDate.setText(damageCase.getDate().toString(simpleDateFormatPattern));
+        mBSEditDate = damageCase.getDate();
+
+        for (LatLng latLng : damageCase.getCoordinates()) {
+            bottomSheetListAdapter.add();
+        }
     }
 
     private void initMapView(Bundle savedInstanceState) {
@@ -280,7 +298,7 @@ public class MapFragment
         mMapView.getMapAsync(googleMap -> {
             sopraMap = new SopraMap(googleMap, getContext());
 
-//            sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
+            //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
@@ -294,8 +312,7 @@ public class MapFragment
             @Override
             public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
 
-                MainActivity activity = (MainActivity) getActivity();
-                activity.setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
+                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
 
                 if (newState == BottomSheetBehavior.STATE_HIDDEN)
                     onBottomSheetIsHidden(bottomSheetContainer);
@@ -328,7 +345,7 @@ public class MapFragment
     }
 
     @SuppressWarnings("unused")
-    private void onBottomSheetSaveButtonPressed(View view) {
+    void onBottomSheetSaveButtonPressed(View view) {
         ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
 
         try {
@@ -342,12 +359,12 @@ public class MapFragment
                     .setCoordinates(sopraMap.getActivePoints())
                     .save();
 
+            mBottomSheetBehavior.setHideable(true);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
             damageCaseHandler.loadFromDatabase(id);
 
             Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
-
-            mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
@@ -362,7 +379,7 @@ public class MapFragment
     private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
         boolean isImportantChanged = true;
 
-        if (isImportantChanged) {
+        if (damageCaseHandler.getValue().isChanged()) {
             showAlert(AlertType.CLOSE);
             // Close Action will be handled in alert method
 
@@ -375,14 +392,11 @@ public class MapFragment
         return true;
     }
 
-    @SuppressWarnings("unused")
     private boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem) {
         showAlert(AlertType.DELETE);
-        // Delete Action will be handled in alert method
         return true;
     }
 
-    @SuppressWarnings("unused")
     private void onBottomSheetIsHidden(View bottomSheetContainer) {
 
         mBSRecyclerView.setAdapter(null);
@@ -421,51 +435,54 @@ public class MapFragment
         return text;
     }
 
-    private void onDamageCaseInteraction(InteractionType interactionType, DamageCase damageCase) {
+    private void openNewDamageCase() {
 
-        if (interactionType == InteractionType.NEW) {
-            if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
-
-                mBSContainer.setNestedScrollingEnabled(false);
-
-                // set state 1st time
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-                // lock hide mode
-                mBottomSheetBehavior.setHideable(false);
-
-                // set new adapter
-                bottomSheetListAdapter = new BottomSheetListAdapter(1);
-                bottomSheetListAdapter.notifyDataSetChanged();
-                mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
-
-                // Add listener to recycler view: disable button if less than 3 elements are there
-                bottomSheetListAdapter.setOnItemCountChanged(newItemCount ->
-                        bottomSheetExpandHandler.handleNewAmount(newItemCount)
-                );
-
-                // measure height of toolbar and recycler view
-                mBSToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                mBSRecyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                mBottomSheetBehavior.setPeekHeight(mBSToolbar.getMeasuredHeight() + mBSRecyclerView.getMeasuredHeight());
-
-                bottomSheetExpandHandler = new BottomSheetExpandHandler();
-
-                // set state 2nd time
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            } else {
-
-                // add next point
-                bottomSheetListAdapter.add();
-
-                // scroll to last added item
-                mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
-            }
-
-        } else if (interactionType == InteractionType.EDIT) {
-
+        try {
+            damageCaseHandler.createNewDamageCase();
+        } catch (UserManager.NoUserException e) {
+            e.printStackTrace();
         }
 
+        mBSEditDate = DateTime.now();
+        mBSEditTextInputDate.setText(mBSEditDate.toString(simpleDateFormatPattern));
+        openDamageCase();
+
+    }
+
+    private void openDamageCase() {
+        /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
+        mBSContainer.setNestedScrollingEnabled(false);
+
+        // set state 1st time
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        // lock hide mode
+        mBottomSheetBehavior.setHideable(false);
+
+        // set new adapter
+        bottomSheetListAdapter = new BottomSheetListAdapter(1);
+        bottomSheetListAdapter.notifyDataSetChanged();
+        mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
+
+        // Add listener to recycler view: disable button if less than 3 elements are there
+        bottomSheetListAdapter.setOnItemCountChanged(newItemCount ->
+                bottomSheetExpandHandler.handleNewAmount(newItemCount)
+        );
+
+        // measure height of toolbar and recycler view
+        mBSToolbar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        mBSRecyclerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        mBottomSheetBehavior.setPeekHeight(mBSToolbar.getMeasuredHeight() + mBSRecyclerView.getMeasuredHeight());
+
+        bottomSheetExpandHandler = new BottomSheetExpandHandler();
+
+        // set state 2nd time
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void closeBottomSheet(){
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void showAlert(AlertType alertType) {
@@ -479,8 +496,7 @@ public class MapFragment
             title = strBSDialogCloseTitle;
             hint = strBSDialogCloseText;
             positiveAction = (dialog, id) -> {
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                closeBottomSheet();
             };
             negativeAction = (dialog, id) -> {
 
@@ -495,7 +511,7 @@ public class MapFragment
                 mBottomSheetBehavior.setHideable(true);
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-                // TODO damageCaseRepository.delete(damageCase);
+                damageCaseHandler.deleteCurrent();
             };
             negativeAction = (dialog, id) -> {
                 Toast.makeText(getContext(), "NOTDEL", Toast.LENGTH_SHORT).show();
@@ -523,19 +539,12 @@ public class MapFragment
             new DatePickerDialog(
                     getContext(),
                     (view, year, monthOfYear, dayOfMonth) -> {
-                        myCalendar.set(Calendar.YEAR, year);
-                        myCalendar.set(Calendar.MONTH, monthOfYear);
-                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                        mBSEditTextInputDate.setText(new SimpleDateFormat(simpleDateFormatPattern, Locale.GERMANY)
-                                .format(myCalendar.getTime()));
-
-                        damageCaseDate = new DateTime(myCalendar.getTime());
-
+                        mBSEditDate = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
+                        mBSEditTextInputDate.setText(mBSEditDate.toString(simpleDateFormatPattern));
                     },
-                    myCalendar.get(Calendar.YEAR),
-                    myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH))
+                    mBSEditDate.getYear(),
+                    mBSEditDate.getMonthOfYear(),
+                    mBSEditDate.getDayOfMonth())
                     .show();
             return;
         }
@@ -552,16 +561,31 @@ public class MapFragment
                 mBSTextViewTitle.setVisibility(View.VISIBLE);
                 mBSTextViewTitleValue.setVisibility(View.VISIBLE);
                 mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
+
+                damageCaseHandler.getValue().setNameDamageCase(mBSTextViewTitle.getText().toString());
             };
         } else if (editText.equals(mBSEditTextInputLocation)) {
             title = strBSDialogDCLocation;
             hint = strBSDialogDCLocationHint;
+
+            positiveAction = (dialogInterface, i) -> {
+                damageCaseHandler.getValue().setAreaCode(mBSEditTextInputLocation.getText().toString());
+            };
         } else if (editText.equals(mBSEditTextInputPolicyholder)) {
             title = strBSDialogDCPolicyholder;
             hint = strBSDialogDCPolicyholderHint;
+
+            positiveAction = (dialogInterface, i) -> {
+
+                damageCaseHandler.getValue().setNamePolicyholder(mBSEditTextInputPolicyholder.getText().toString());
+            };
         } else if (editText.equals(mBSEditTextInputExpert)) {
             title = strBSDialogDCExpert;
             hint = strBSDialogDCExpertHint;
+
+            positiveAction = (dialogInterface, i) -> {
+                damageCaseHandler.getValue().setNameExpert(mBSEditTextInputExpert.getText().toString());
+            };
         }
 
         InputRetriever.of(editText)
@@ -572,38 +596,44 @@ public class MapFragment
                 .onClick(editText);
     }
 
-    @OnClick({R.id.map_fab_plus,
-            R.id.map_fab_locate})
-    void onClickFloatingActionButtons(FloatingActionButton floatingActionButton) {
+    @OnClick(R.id.map_fab_plus)
+    void handelActionButtonPlusClick(FloatingActionButton floatingActionButton){
+        /* GPS/Map-related section */
 
-        if (floatingActionButton.equals(mMapFabPlus)) {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+            openNewDamageCase();
+        } else {
+            // add next point
+            bottomSheetListAdapter.add();
 
-            /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
-            onDamageCaseInteraction(InteractionType.NEW, null);
-
-            /* GPS/Map-related section */
-
-            if (gpsService.wasLocationDisabled()) {
-
-                // prompt enable location
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-
-                getActivity().runOnUiThread(() -> Toast
-                        .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
-                        .show()
-                );
-            }
-
-        } else if (floatingActionButton.equals(mMapFabLocate)) {
-            if (gpsService.wasLocationDisabled()) {
-                mMapFabLocate.setClickable(false);
-                mMapFabLocate.setImageDrawable(currentLocationUnknownDrawable);
-                return;
-            }
-            sopraMap.mapCameraMoveToUser();
+            // scroll to last added item
+            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
         }
+
+        if (gpsService.wasLocationDisabled()) {
+
+            // prompt enable location
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            getActivity().runOnUiThread(() -> Toast
+                    .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
+                    .show()
+            );
+        }
+    }
+
+
+
+    @OnClick(R.id.map_fab_locate)
+    void handelAnctionButtonLocateClick(FloatingActionButton floatingActionButton) {
+        if (gpsService.wasLocationDisabled()) {
+            mMapFabLocate.setClickable(false);
+            mMapFabLocate.setImageDrawable(currentLocationUnknownDrawable);
+            return;
+        }
+        sopraMap.mapCameraMoveToUser();
     }
 
     @Override
@@ -661,10 +691,6 @@ public class MapFragment
         CLOSE, DELETE
     }
 
-    private enum InteractionType {
-        NEW, EDIT
-    }
-
     private class BottomSheetExpandHandler {
         boolean animationShown = false;
 
@@ -680,13 +706,6 @@ public class MapFragment
             mBSTextViewAreaValue.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
             mBSTextViewAreaValue.setText(String.valueOf(newAmount)); // TODO! Update area
 
-            if(enabled) try {
-                damageCaseHandler.createNewDamageCase();
-            } catch (UserManager.NoUserException e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(), "Something went wrong ...", Toast.LENGTH_SHORT).show();
-            }
-
             if (enabled && !animationShown) {
                 mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
                         .translationY(-100);
@@ -696,6 +715,4 @@ public class MapFragment
             }
         }
     }
-
-
 }
