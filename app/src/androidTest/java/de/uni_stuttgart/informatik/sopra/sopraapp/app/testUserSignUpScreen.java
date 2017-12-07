@@ -14,6 +14,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.SignUpA
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -42,12 +43,13 @@ public class testUserSignUpScreen {
                 .perform(replaceText("abcd"));
 
         onView(withId(R.id.su_password_confirm))
-                .perform(replaceText("abcd"));
+                .perform(replaceText("abcd"), closeSoftKeyboard());
 
         onView(withId(R.id.su_signup_button)).perform(click());
 
         onView((withId(R.id.sign_up_button)))
                 .check(matches(isDisplayed()));
+
 
     }
 }
