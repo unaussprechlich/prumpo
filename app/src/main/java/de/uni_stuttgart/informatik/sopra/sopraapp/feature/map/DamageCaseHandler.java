@@ -7,6 +7,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -14,6 +16,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseEvent;
 
 
 public class DamageCaseHandler implements LifecycleOwner{
@@ -33,6 +36,7 @@ public class DamageCaseHandler implements LifecycleOwner{
 
     public DamageCaseHandler(SopraApp sopraApp) {
         SopraApp.getAppComponent().inject(this);
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
 
     /**
@@ -44,7 +48,9 @@ public class DamageCaseHandler implements LifecycleOwner{
             damageCaseDB.removeObservers(this);
             damageCaseDB = null;
         }
+
         set(new DamageCaseBuilder().create());
+        EventBus.getDefault().post(new DamageCaseEvent.Created(getLiveData()));
     }
 
 
@@ -65,7 +71,7 @@ public class DamageCaseHandler implements LifecycleOwner{
     }
 
     private void set(DamageCase damageCase){
-        this.damageCase.setValue(damageCase);
+        this.damageCase.postValue(damageCase);
     }
 
     /**
@@ -77,6 +83,7 @@ public class DamageCaseHandler implements LifecycleOwner{
 
         this.damageCaseDB = damageCaseRepository.getById(id);
         damageCaseDB.observe(this, this::set);
+        EventBus.getDefault().post(new DamageCaseEvent.Saved(getLiveData()));
     }
 }
 
