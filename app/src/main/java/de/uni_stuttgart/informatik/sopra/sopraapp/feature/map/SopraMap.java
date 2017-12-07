@@ -46,6 +46,9 @@ public class SopraMap{
 
     @Inject Vibrator vibrator;
 
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject DamageCaseHandler damageCaseHandler;
+
     private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
 
     private Resources resources;
@@ -119,6 +122,20 @@ public class SopraMap{
 
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
+
+        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
+            if (listOfDamageCases == null) return;
+
+            clearAllDamages();
+
+            for (DamageCase damageCase : listOfDamageCases) {
+                loadPolygonOf(
+                        damageCase.getCoordinates(),
+                        PolygonType.DAMAGE_CASE,
+                        damageCase.getID()
+                );
+            }
+        });
     }
 
     /* <----- event handling methods -----> */
@@ -208,7 +225,7 @@ public class SopraMap{
     }
 
     void mapCameraJump(LatLng target) {
-        // jumping to the location of the data
+        // jumping to the location of the target
         gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
     }
 
@@ -219,7 +236,7 @@ public class SopraMap{
     }
 
     void mapCameraMove(LatLng target) {
-        // panning to the location of the data
+        // panning to the location of the target
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
     }
 
@@ -299,6 +316,33 @@ public class SopraMap{
                         drawPolygonOf(coordinates, type, uniqueId).getTag();
 
         polygon.storedIn().put(uniqueId, polygon);
+    }
+
+    private void reloadDamageCases() {
+        clearAllDamages();
+
+        List<DamageCase> damageCases = damageCaseRepository.getAll().getValue();
+
+        if (damageCases == null) return;
+
+        for (DamageCase damageCase : damageCases) {
+            loadPolygonOf(
+                    damageCase.getCoordinates(),
+                    PolygonType.DAMAGE_CASE,
+                    damageCase.getID()
+            );
+        }
+    }
+
+    private void clearAllDamages() {
+        PolygonContainer polygon;
+
+        for (int i = 0; i < damagePolygons.size(); ++i) {
+            polygon = damagePolygons.valueAt(i);
+            polygon.mapObject.remove();
+        }
+
+        damagePolygons.clear();
     }
 
     private void removeActivePolygon() {
