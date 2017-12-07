@@ -23,6 +23,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManag
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
@@ -51,6 +52,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(DamageCaseBuilder damageCaseBuilder);
     void inject(DamageCase damageCase);
     void inject(DamageCaseHandler damageCaseHandler);
+    void inject(DamageCaseRepository damageCaseRepository);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
