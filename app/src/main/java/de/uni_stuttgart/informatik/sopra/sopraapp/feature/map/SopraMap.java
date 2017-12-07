@@ -44,7 +44,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.InsuranceCoverageSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
@@ -238,7 +238,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+    public void onAbortBottomSheet(ForceClosedBottomSheet event) {
         if (activePolygon != null && isHighlighted) {
             activePolygon.mapObject.remove();
             activePolygon.highlight();
@@ -321,23 +321,23 @@ public class SopraMap implements LifecycleObserver {
 
     void mapCameraJump(LatLng target) {
         // jumping to the location of the target
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
     }
 
     void mapCameraJump(List<LatLng> polygon) {
         // jumping to the location of the polygons centroid
         gMap.moveCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
+                .newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 18)));
     }
 
     void mapCameraMove(LatLng target) {
         // panning to the location of the target
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17)));
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
     }
 
     void mapCameraMove(List<LatLng> polygon) {
         // panning to the location of the polygons centroid
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 18)));
     }
 
     /* <----- helper section -----> */
@@ -495,13 +495,13 @@ public class SopraMap implements LifecycleObserver {
         ROOM_ACCENT_BITMAP_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    private void makeDraggable(Circle circle) {
+    private boolean makeDraggable(Circle circle) {
 
         int circleIndex = (int) circle.getTag();
 
         if (circleIndex == indexActiveVertex) {
             removeMarker();
-            return;
+            return false;
         }
 
         indexActiveVertex = circleIndex;
@@ -530,11 +530,15 @@ public class SopraMap implements LifecycleObserver {
         }
 
         dragMarker.setPosition(circle.getCenter());
+        return true;
     }
 
     private void makeDraggableAndMove(Circle circle) {
-        makeDraggable(circle);
-        mapCameraMove(circle.getCenter());
+        boolean wasSet = makeDraggable(circle);
+
+        if (wasSet) {
+            mapCameraMove(circle.getCenter());
+        }
     }
 
     private void removeMarker() {

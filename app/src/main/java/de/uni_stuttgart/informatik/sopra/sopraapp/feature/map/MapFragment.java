@@ -50,6 +50,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputR
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FieldValidation;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
@@ -138,7 +139,8 @@ public class MapFragment
 
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
-        mBottomSheetBubbleList.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+        int target = Math.max(bottomSheetListAdapter.getItemCount()-1, 0);
+        mBottomSheetBubbleList.smoothScrollToPosition(target);
     }
 
     @Subscribe
@@ -350,9 +352,13 @@ public class MapFragment
     }
 
     private void showCloseAlertIfChanged() {
-        if (damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
+        if ((damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
+                || bottomSheetListAdapter.getItemCount() > 0) {
             showCloseAlert();
-        else closeBottomSheet();
+
+        } else {
+            closeBottomSheet();
+        }
     }
 
     //Alert ########################################################################################
@@ -362,7 +368,10 @@ public class MapFragment
                 .setTitle(strBottomSheetCloseDialogHeader)
                 .setMessage(strBottomSheetCloseDialogMessage)
                 .setCancelable(false)
-                .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) -> closeBottomSheet())
+                .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) -> {
+                    EventBus.getDefault().post(new ForceClosedBottomSheet());
+                    closeBottomSheet();
+                })
                 .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
                 })
                 .create()
