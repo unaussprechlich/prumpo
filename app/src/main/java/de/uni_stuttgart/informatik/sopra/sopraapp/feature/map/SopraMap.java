@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
+import android.util.SparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,6 +29,8 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -45,6 +49,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolyg
  * Binds application specific map logic to GoogleMap instance.
  */
 public class SopraMap {
+
+    @Inject Vibrator vibrator;
 
     private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
 
@@ -64,10 +70,8 @@ public class SopraMap {
     private int indexActiveVertex = -1;
 
     private PolygonContainer activePolygon;
-    private LongSparseArray<PolygonContainer> polygonStorage = new LongSparseArray<>();
-
-    @Inject
-    Vibrator vibrator;
+    private LongSparseArray<PolygonContainer> damagePolygons = new LongSparseArray<>();
+    private LongSparseArray<PolygonContainer> insurancePolygons = new LongSparseArray<>();
 
     SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
@@ -90,11 +94,7 @@ public class SopraMap {
 
         /* bindings */
 
-        gMap.setOnPolygonClickListener(p -> {
-            PolygonContainer polygon  = polygonStorage.get((long)p.getTag());
-
-            polygon.highlight();
-        });
+        gMap.setOnPolygonClickListener(p -> ((PolygonContainer) p.getTag()).highlight());
 
         gMap.setOnCircleClickListener(circle -> {
             if (!isHighlighted) return;
@@ -127,130 +127,42 @@ public class SopraMap {
         gMap.setOnMarkerClickListener(marker -> true);
     }
 
-    /* <--- exposed section ---> */
+    /* <----- event handling methods -----> */
 
-    void createPolygon(LatLng startPoint, PolygonType type, long uniqueId) {
-        List<LatLng> points = new ArrayList<>();
-        points.add(startPoint);
-
-        drawPolygonOf(points, type, uniqueId);
-
-        highlight(uniqueId);
+    public void onVertexAdd(LatLng position) {
+        activePolygon.addAndDisplay(position);
+        activePolygon.redrawHighlightCircles();
     }
 
-    void addVertex(LatLng position) {
-        List<LatLng> points = activePolygon.data.getPoints();
-        points.add(position);
-
-        activePolygon.mapObject.setPoints(points);
-
-        activePolygon.removeHighlightCircles();
-        activePolygon.drawHighlightCircles();
+    public void onVertexSelected(int vertexNumber) {
+        makeDraggable(polygonHighlightVertex.get(vertexNumber));
     }
 
-    void removeVertex(int vertexNumber) {
-        List<LatLng> points = activePolygon.data.getPoints();
-        points.remove(vertexNumber);
+    public void onVertexDeleted(int vertexNumber) {
+        activePolygon.removeAndDisplay(vertexNumber);
+        activePolygon.redrawHighlightCircles();
+    }
 
-        activePolygon.mapObject.setPoints(points);
+   /* <----- exposed methods -----> */
 
-        activePolygon.removeHighlightCircles();
-        activePolygon.drawHighlightCircles();
+    List<LatLng> getActivePoints() {
+        return activePolygon.data.getPoints();
     }
 
     double getArea() {
         return activePolygon.data.getArea();
     }
 
-    void dragMarkerToggle(int vertexNumber) {
-        makeDraggable(polygonHighlightVertex.get(vertexNumber));
-    }
-
-    List<LatLng> getActivePoints() {
-        return activePolygon.data.getPoints();
-    }
-
-    void highlight(long uniqueId) {
-        polygonStorage.get(uniqueId).highlight();
+    void select(long uniqueId, PolygonType type) {
+        polygonFrom(uniqueId, type).highlight();
     }
 
     boolean hasActivePolygon() {
         return (activePolygon != null);
     }
 
-    String activePolygonId() {
-        return (String) activePolygon.mapObject.getTag();
-    }
-
-    void removeActivePolygon() {
-        if (activePolygon == null) return;
-
-        activePolygon.highlight();
-        polygonStorage.delete((long)activePolygon.mapObject.getTag());
-        activePolygon.mapObject.remove();
-    }
-
-    @Inject
-    DamageCaseRepository damageCaseRepository;
-
-    @Inject
-    DamageCaseHandler damageCaseHandler;
-
-
-    void load(){
-
-        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
-            if(listOfDamageCases == null) return;
-
-            //TODO update with filter shit
-
-            // delete
-
-            // insert/replace
-
-            for (DamageCase damageCase : listOfDamageCases) {
-                drawPolygonOf(damageCase.getCoordinates(), PolygonType.DAMAGE_CASE, damageCase.getID());
-            }
-        });
-    }
-
-    void drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
-
-        int strokeColor;
-        int fillColor;
-        float strokeWidth = 10;
-
-        if (type == PolygonType.DAMAGE_CASE) {
-            strokeColor = resources.getColor(R.color.orange, null);
-            fillColor = resources.getColor(R.color.orange_50percent, null);
-
-        } else {
-            strokeColor = resources.getColor(R.color.white, null);
-            fillColor = resources.getColor(R.color.white_15percent, null);
-            strokeWidth = 18;
-        }
-
-        PolygonOptions rectOptions =
-                new PolygonOptions()
-                        .addAll(coordinates)
-                        .geodesic(true)
-                        .clickable(true)
-                        .strokeJointType(JointType.ROUND)
-                        .strokeColor(strokeColor)
-                        .strokeWidth(strokeWidth)
-                        .fillColor(fillColor);
-
-        Polygon polygonMapObject = gMap.addPolygon(rectOptions);
-        polygonMapObject.setTag(uniqueId);
-
-        polygonStorage.put(
-                uniqueId,
-                new PolygonContainer(
-                        polygonMapObject,
-                        SopraPolygon.loadPolygon(coordinates),
-                        PolygonType.DAMAGE_CASE
-                )
-        );
+    long activePolygonId() {
+        return activePolygon.uniqueId;
     }
 
     void drawUserPositionIndicator(Location location) {
@@ -322,7 +234,97 @@ public class SopraMap {
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17)));
     }
 
-    /* <--- helper section ---> */
+    /* <----- helper section -----> */
+
+    /**
+     * Must only be called, when a *new* polygon with a single starting point
+     * is to be created;
+     *
+     * @param startPoint    the initial point on the Map
+     * @param type          determines color (and implies behaviour according to {@link PolygonType})
+     */
+    private void newPolygon(LatLng startPoint, PolygonType type) {
+
+        SopraPolygon sopraPolygon = new SopraPolygon();
+        sopraPolygon.addPoint(startPoint);
+
+        activePolygon =
+                new PolygonContainer(
+                        -1,
+                        drawPolygonOf(sopraPolygon.getPoints(), type, -1),
+                        sopraPolygon,
+                        type
+                );
+    }
+
+    private Polygon drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
+
+        int strokeColor;
+        int fillColor;
+        float strokeWidth = 10;
+
+        if (type == PolygonType.DAMAGE_CASE) {
+            strokeColor = resources.getColor(R.color.orange, null);
+            fillColor = resources.getColor(R.color.orange_50percent, null);
+
+        } else {
+            strokeColor = resources.getColor(R.color.white, null);
+            fillColor = resources.getColor(R.color.white_15percent, null);
+            strokeWidth = 18;
+        }
+
+        PolygonOptions rectOptions =
+                new PolygonOptions()
+                        .addAll(coordinates)
+                        .geodesic(true)
+                        .clickable(true)
+                        .strokeJointType(JointType.ROUND)
+                        .strokeColor(strokeColor)
+                        .strokeWidth(strokeWidth)
+                        .fillColor(fillColor);
+
+        Polygon polygonMapObject = gMap.addPolygon(rectOptions);
+
+        PolygonContainer polygon =
+                new PolygonContainer(
+                        uniqueId,
+                        polygonMapObject,
+                        SopraPolygon.loadPolygon(coordinates),
+                        type
+                );
+
+        polygonMapObject.setTag(polygon);
+
+        return polygonMapObject;
+    }
+
+
+    private void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
+        PolygonContainer polygon =
+                (PolygonContainer)
+                        drawPolygonOf(coordinates, type, uniqueId).getTag();
+
+        polygon.storedIn().put(uniqueId, polygon);
+    }
+
+    private void removeActivePolygon() {
+        if (activePolygon == null) return;
+
+        activePolygon.highlight();
+
+        activePolygon.storedIn().delete(activePolygon.uniqueId);
+        activePolygon.mapObject.remove();
+    }
+
+    private PolygonContainer polygonFrom(long uniqueId, PolygonType type) {
+
+        if (type == PolygonType.DAMAGE_CASE) {
+            return damagePolygons.get(uniqueId);
+
+        } else {
+            return insurancePolygons.get(uniqueId);
+        }
+    }
 
     @TypeConverter
     private LatLng latLngOf(Location position) {
@@ -432,18 +434,12 @@ public class SopraMap {
         // TODO: this should be an assertion
         if (indexActiveVertex < 0) return;
 
-        LatLng markerPosition = marker.getPosition();
-
-        activePolygon.data.movePoint(indexActiveVertex, markerPosition);
-        List<LatLng> points = activePolygon.data.getPoints();
-
-        activePolygon.mapObject.setPoints(points);
+        activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition());
 
         previewPolyline.remove();
         previewPolyline = null;
 
-        activePolygon.removeHighlightCircles();
-        activePolygon.drawHighlightCircles();
+        activePolygon.redrawHighlightCircles();
     }
 
     /**
@@ -452,23 +448,52 @@ public class SopraMap {
      */
     private class PolygonContainer {
 
+        long uniqueId;
         PolygonType type;
 
         Polygon mapObject;
         SopraPolygon data;
 
-        PolygonContainer(Polygon polygonMapObject, SopraPolygon polygonData, PolygonType type) {
+        PolygonContainer(long uniqueId, Polygon polygonMapObject, SopraPolygon polygonData, PolygonType type) {
+            this.uniqueId = uniqueId;
+
             this.mapObject = polygonMapObject;
             this.data = polygonData;
 
             this.type = type;
         }
 
-        PolygonContainer(Polygon polygonVisible, PolygonType type) {
-            this(polygonVisible, new SopraPolygon(), type);
+        LongSparseArray<PolygonContainer> storedIn() {
+            if (type == PolygonType.DAMAGE_CASE) {
+                return damagePolygons;
+
+            } else {
+                return insurancePolygons;
+            }
         }
 
-        private void highlight() {
+        boolean addAndDisplay(LatLng point) {
+             if (!data.addPoint(point)) return false;
+
+            mapObject.setPoints(data.getPoints());
+            return true;
+        }
+
+        boolean moveAndDisplay(int index, LatLng point) {
+            if (!data.movePoint(index, point)) return false;
+
+            mapObject.setPoints(data.getPoints());
+            return true;
+        }
+
+        boolean removeAndDisplay(int index) {
+            if (!data.removePoint(index)) return false;
+
+            mapObject.setPoints(data.getPoints());
+            return true;
+        }
+
+        void highlight() {
             if (isHighlighted) {
                 indexActiveVertex = -1;
 
@@ -488,7 +513,12 @@ public class SopraMap {
             this.drawHighlightCircles();
         }
 
-        private void removeHighlightCircles() {
+        void redrawHighlightCircles() {
+            removeHighlightCircles();
+            drawHighlightCircles();
+        }
+
+        void removeHighlightCircles() {
             for (Circle vertex : polygonHighlightVertex) {
                 vertex.remove();
             }
@@ -497,7 +527,7 @@ public class SopraMap {
             removeMarker();
         }
 
-        private void drawHighlightCircles() {
+        void drawHighlightCircles() {
 
             List<LatLng> points = data.getPoints();
             CircleOptions options =
@@ -523,7 +553,7 @@ public class SopraMap {
                 polygonHighlightVertex.add(circle);
                 circle.setTag(i);
             }
-
         }
+
     }
 }

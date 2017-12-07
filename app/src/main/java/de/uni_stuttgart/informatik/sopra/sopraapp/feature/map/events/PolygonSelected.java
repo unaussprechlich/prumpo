@@ -1,6 +1,9 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events;
 
-public class PolygonSelected {
-    long uniqueId;
-    int vertexCount;
+public abstract class PolygonSelected {
+    public long uniqueId;
+
+    public PolygonSelected(long uniqueId) {
+        this.uniqueId = uniqueId;
+    }
 }

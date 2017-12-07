@@ -31,12 +31,7 @@ public class SopraPolygon {
     }
 
     public boolean movePoint(int index, LatLng target) {
-
-        int lastIndex = vertices.size()-1;
-        boolean isFirstOrLast = (index == 0) || (index == lastIndex);
-
         LatLng oldPoint = vertices.get(index);
-
         vertices.set(index, target);
 
         if (isValidPolygon()) return true;
@@ -44,7 +39,18 @@ public class SopraPolygon {
         /* polygon was invalid; reverting changes! */
 
         vertices.set(index, oldPoint);
+        return false;
+    }
 
+    public boolean removePoint(int index) {
+        LatLng oldPoint = vertices.get(index);
+        vertices.remove(index);
+
+        if (isValidPolygon()) return true;
+
+        /* polygon was invalid; reverting changes! */
+
+        vertices.add(index, oldPoint);
         return false;
     }
 
@@ -75,7 +81,7 @@ public class SopraPolygon {
 
         throw new IllegalArgumentException("" +
                 "'vertices' coordinates must form a correct polygon " +
-                "(i.e. non self-intersecting and at least triangular)!"
+                "(i.e. non self-intersecting)!"
         );
     }
 

@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
@@ -68,8 +67,8 @@ public class MapFragment
 
     @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject UserManager userManager;
     @Inject DamageCaseHandler damageCaseHandler;
+    @Inject UserManager userManager;
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
@@ -84,6 +83,7 @@ public class MapFragment
             (textView, index) -> textView.setVisibility(View.INVISIBLE);
 
     /* Knife-N'-Butter section!' */
+
     View mRootView;
     @BindView(R.id.mapView)
     MapView mMapView;
@@ -229,9 +229,6 @@ public class MapFragment
 
     private boolean waitingForResponse;
     private boolean isGpsServiceBound;
-
-    private int testPolygonPosition = 0;
-
 
     /**
      * The provided bottom sheet behaviour object
@@ -604,13 +601,12 @@ public class MapFragment
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             openNewDamageCase();
         } else {
+            // add next point
+            bottomSheetListAdapter.add();
 
-        // add next point
-        bottomSheetListAdapter.add();
-
-        // scroll to last added item
-        mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
-    }
+            // scroll to last added item
+            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
+        }
 
         if (gpsService.wasLocationDisabled()) {
 
@@ -623,17 +619,10 @@ public class MapFragment
                     .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
                     .show()
             );
-            return;
         }
-
-        if (testPolygonPosition > TEST_POLYGON_COORDINATES.size() - 1) return;
-
-        if (testPolygonPosition == 0) {
-            sopraMap.createPolygon(TEST_POLYGON_COORDINATES.get(0), PolygonType.DAMAGE_CASE, 1);
-        }
-
-        sopraMap.addVertex(TEST_POLYGON_COORDINATES.get(testPolygonPosition++));
     }
+
+
 
     @OnClick(R.id.map_fab_locate)
     void handelAnctionButtonLocateClick(FloatingActionButton floatingActionButton) {
