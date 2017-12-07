@@ -251,7 +251,7 @@ public class SopraMap implements LifecycleObserver {
         return activePolygon.data.getPoints();
     }
 
-    LiveData<Double> areaLiveData() {
+    public LiveData<Double> areaLiveData() {
         return currentArea;
     }
 

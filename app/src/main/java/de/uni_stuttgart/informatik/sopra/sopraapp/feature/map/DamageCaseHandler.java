@@ -107,7 +107,11 @@ public class DamageCaseHandler implements LifecycleOwner{
      * @param id the ID of the DamageCase
      */
     public void loadFromDatabase(long id){
-        if(damageCaseDB != null)damageCaseDB.removeObservers(this);
+        if(damageCaseDB != null)
+            if(damageCaseDB.getValue() != null && damageCaseDB.getValue().getID() == id)
+                return;
+            else
+                damageCaseDB.removeObservers(this);
 
         this.damageCaseDB = damageCaseRepository.getById(id);
         damageCaseDB.observe(this, this::set);

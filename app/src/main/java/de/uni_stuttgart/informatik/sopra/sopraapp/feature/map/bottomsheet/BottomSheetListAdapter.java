@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -84,8 +83,6 @@ public class BottomSheetListAdapter
     }
 
     //##############################################################################################
-
-
 
     /**
      * Creates the view of a recycler view list item.
@@ -164,13 +161,8 @@ public class BottomSheetListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-
         EventBus.getDefault().post(new VertexSelected(position));
-
-        // set new selected item
         updateSelectedViewIndex(position);
-
-        Toast.makeText(view.getContext(), "Pressed position " + position, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -182,14 +174,10 @@ public class BottomSheetListAdapter
      * @return true if this adapter handled the click, false else
      */
     public boolean onLongClick(View view, int position) {
-
         if (bubbleHolder.bubbleList.size() > 1){
             EventBus.getDefault().post(new VertexDeleted(position));
             remove(position);
         }
-
-        Toast.makeText(view.getContext(), " " + position + " Long pressed!", Toast.LENGTH_SHORT).show();
-
         return true;
     }
 
@@ -224,6 +212,7 @@ public class BottomSheetListAdapter
         else
             selectedViewIndex = position;
         notifyDataSetChanged();
+        itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
     }
 
     public interface ItemCountListener {

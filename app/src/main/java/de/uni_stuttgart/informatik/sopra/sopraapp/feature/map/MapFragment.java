@@ -2,9 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +23,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -36,19 +30,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
-import butterknife.BindDrawable;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
@@ -68,8 +56,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPr
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.TEST_POLYGON_COORDINATES;
 
+@SuppressLint("SetTextI18n")
 public class MapFragment
-        extends DaggerFragment
+        extends MapBindFragment
         implements FragmentBackPressed, LocationCallbackListener {
 
     @Inject GpsService gpsService;
@@ -92,120 +81,7 @@ public class MapFragment
     /* Knife-N'-Butter section!' */
 
     View mRootView;
-    @BindView(R.id.mapView)
-    MapView mMapView;
 
-    @BindView(R.id.map_fab_plus)
-    FloatingActionButton mMapFabPlus;
-
-    @BindView(R.id.map_fab_locate)
-    FloatingActionButton mMapFabLocate;
-
-    @BindView(R.id.bottom_sheet_container)
-    NestedScrollView mBSContainer;
-
-    @BindView(R.id.bottom_sheet_toolbar)
-    Toolbar mBSToolbar;
-
-    @BindView(R.id.bottom_sheet_recyclerview)
-    RecyclerView mBSRecyclerView;
-
-    @BindView(R.id.bottom_sheet_input_title)
-    EditText mBSEditTextInputTitle;
-
-    @BindView(R.id.bottom_sheet_input_location)
-    EditText mBSEditTextInputLocation;
-
-    @BindView(R.id.bottom_sheet_input_policyholder)
-    EditText mBSEditTextInputPolicyholder;
-
-    @BindView(R.id.bottom_sheet_input_expert)
-    EditText mBSEditTextInputExpert;
-
-    @BindView(R.id.bottom_sheet_input_date)
-    EditText mBSEditTextInputDate;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
-    TextView mBSTextViewTitleValue;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
-    TextView mBSTextViewAreaValue;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
-    TextView mBSTextViewDateValue;
-
-    @BindViews({R.id.bottom_sheet_input_title,
-            R.id.bottom_sheet_input_location,
-            R.id.bottom_sheet_input_policyholder,
-            R.id.bottom_sheet_input_expert,
-            R.id.bottom_sheet_input_date})
-    List<EditText> damageCaseBottomSheetInputFields;
-
-    @BindString(R.string.map)
-    String strAppbarTitle;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_name)
-    String strBSDialogName;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_name_hint)
-    String strBSDialogNameHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_location)
-    String strBSDialogDCLocation;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_location_hint)
-    String strBSDialogDCLocationHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_policyholder)
-    String strBSDialogDCPolicyholder;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_policyholder_hint)
-    String strBSDialogDCPolicyholderHint;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_expert)
-    String strBSDialogDCExpert;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_expert_hint)
-    String strBSDialogDCExpertHint;
-
-    @BindString(R.string.map_frag_botsheet_alert_close_title)
-    String strBSDialogCloseTitle;
-
-    @BindString(R.string.map_frag_botsheet_alert_close_text)
-    String strBSDialogCloseText;
-
-    @BindString(R.string.map_frag_botsheet_alert_delete_title)
-    String strBSDialogDeleteTitle;
-
-    @BindString(R.string.map_frag_botsheet_alert_delete_text)
-    String strBSDialogDeleteText;
-
-    @BindString(R.string.prompt_enable_localization)
-    String strPromptEnableLocation;
-
-    @BindString(R.string.map_frag_botsheet_alert_yes)
-    String strBSDialogCloseOk;
-
-    @BindString(R.string.map_frag_botsheet_alert_no)
-    String strBSDialogCloseCancel;
-
-    @BindString(R.string.map_fab_no_gps)
-    String sirNoPositionDatesFound;
-
-    @BindString(R.string.map_fab_messages_latitude)
-    String strLatitude;
-
-    @BindString(R.string.map_fab_messages_longitude)
-    String strLongitude;
-
-    @BindString(R.string.map_frag_botsheet_dialog_dc_date_pattern)
-    String simpleDateFormatPattern;
-
-    @BindDrawable(R.drawable.ic_my_location_black_24dp)
-    Drawable currentLocationKnownDrawable;
-
-    @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
-    Drawable currentLocationUnknownDrawable;
 
     DateTime mBSEditDate = DateTime.now();
 
@@ -257,11 +133,9 @@ public class MapFragment
         return mRootView;
     }
 
-    @SuppressLint("SetTextI18n")
+    // Subscribe ###################################################################################
     @Subscribe
     void onVertexCreated(VertexCreated event){
-        if(sopraMap == null) mBSTextViewAreaValue.setText("0");
-        else mBSTextViewAreaValue.setText("" + sopraMap.getArea());
         mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
     }
 
@@ -276,6 +150,8 @@ public class MapFragment
 
         gpsService.stopCallback();
     }
+
+    //##############################################################################################
 
     private void updateDamageCase(DamageCase damageCase){
         if(damageCase == null){
@@ -293,7 +169,7 @@ public class MapFragment
 
 
     private void setTextFromDamageCase(DamageCase damageCase){
-        mBSTextViewAreaValue.setText("0");
+        mBSTextViewAreaValue.setText(damageCase.getAreaSize() + "");
         mBSEditTextInputTitle.setText(damageCase.getNameDamageCase());
         mBSTextViewTitleValue.setText(damageCase.getNameDamageCase());
         mBSEditTextInputLocation.setText(damageCase.getAreaCode());
@@ -320,6 +196,11 @@ public class MapFragment
             sopraMap = new SopraMap(googleMap, getContext());
             getLifecycle().addObserver(sopraMap);
 
+            sopraMap.areaLiveData().observe(this, area ->
+                    mBSTextViewAreaValue.setText("" + (double)Math.round(area * 100d) / 100d)
+            );
+
+            //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });
@@ -335,10 +216,15 @@ public class MapFragment
 
                 ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
 
-                if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                    onBottomSheetIsHidden(bottomSheetContainer);
-                else if (newState == BottomSheetBehavior.STATE_COLLAPSED)
-                    onBottomSheetCollapsed(bottomSheetContainer);
+                if (newState == BottomSheetBehavior.STATE_HIDDEN){
+                    mBSRecyclerView.setAdapter(null);
+                    bottomSheetExpandHandler = null;
+                    tbSaveButton.setAlpha(0.25f);
+                    mBottomSheetBehavior.allowUserSwipe(false);
+
+                    ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_TEXT);
+                    ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
+                }
             }
 
             @Override
@@ -364,6 +250,8 @@ public class MapFragment
         tbDeleteButton.setOnMenuItemClickListener(this::onBottomSheetDeleteButtonPressed);
 
     }
+
+    //Button #######################################################################################
 
     @SuppressWarnings("unused")
     void onBottomSheetSaveButtonPressed(View view) {
@@ -397,53 +285,16 @@ public class MapFragment
 
     @SuppressWarnings("unused")
     private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
-        boolean isImportantChanged = true;
-
-        if (damageCaseHandler.getValue() != null &&
-                damageCaseHandler.getValue().isChanged()) {
-            showAlert(AlertType.CLOSE);
-            // Close Action will be handled in alert method
-        } else {
-            closeBottomSheet();
-        }
+        showCloseAlertIfChanged();
         return true;
     }
 
     private boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem) {
-        showAlert(AlertType.DELETE);
+        showDeleteAlert();
         return true;
     }
 
-    private void onBottomSheetIsHidden(View bottomSheetContainer) {
 
-        mBSRecyclerView.setAdapter(null);
-        bottomSheetExpandHandler = null;
-        tbSaveButton.setAlpha(0.25f);
-        mBottomSheetBehavior.allowUserSwipe(false);
-
-        ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_TEXT);
-        ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
-    }
-
-    @SuppressWarnings("unused")
-    private void onBottomSheetCollapsed(View bottomSheetContainer) {
-
-    }
-
-    @Override
-    public BackButtonProceedPolicy onBackPressed() {
-
-        if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-            showAlert(AlertType.CLOSE);
-            return BackButtonProceedPolicy.SKIP_ACTIVITY;
-        }
-
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
-    }
-
-    /**
-     * Copyright Alexander Keck
-     */
     private String getFieldValueIfNotEmpty(EditText editText) throws EditFieldValueIsEmptyException {
         String text = editText.getText().toString();
         if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
@@ -515,132 +366,123 @@ public class MapFragment
         EventBus.getDefault().post(new CloseBottomSheetEvent());
     }
 
-    private void showAlert(AlertType alertType) {
+    //Alert ########################################################################################
 
-        String title = "";
-        String hint = "";
-        DialogInterface.OnClickListener positiveAction = null;
-        DialogInterface.OnClickListener negativeAction = null;
+    private void showCloseAlertIfChanged(){
+        if (damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
+            showCloseAlert();
+        else closeBottomSheet();
+    }
 
-        if (alertType == AlertType.CLOSE) {
-            title = strBSDialogCloseTitle;
-            hint = strBSDialogCloseText;
-            positiveAction = (dialog, id) -> {
-                closeBottomSheet();
-            };
-            negativeAction = (dialog, id) -> {
-
-            };
-
-
-        } else if (alertType == AlertType.DELETE) {
-            title = strBSDialogDeleteTitle;
-            hint = strBSDialogDeleteText;
-            positiveAction = (dialog, id) -> {
-                Toast.makeText(getContext(), "DEL", Toast.LENGTH_SHORT).show();
-                mBottomSheetBehavior.setHideable(true);
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-                damageCaseHandler.deleteCurrent();
-            };
-            negativeAction = (dialog, id) -> {
-                Toast.makeText(getContext(), "NOTDEL", Toast.LENGTH_SHORT).show();
-            };
-        }
-
+    private void showCloseAlert(){
         new FixedDialog(getContext())
-                .setTitle(title)
-                .setMessage(hint)
+                .setTitle(strBSDialogCloseTitle)
+                .setMessage(strBSDialogCloseText)
                 .setCancelable(false)
-                .setPositiveButton(strBSDialogCloseOk, positiveAction)
-                .setNegativeButton(strBSDialogCloseCancel, negativeAction)
+                .setPositiveButton(strBSDialogCloseOk, (dialog, id) -> closeBottomSheet())
+                .setNegativeButton(strBSDialogCloseCancel, (dialog, id) -> {})
                 .create()
                 .show();
     }
 
+    private void showDeleteAlert(){
+        new FixedDialog(getContext())
+                .setTitle(strBSDialogDeleteTitle)
+                .setMessage(strBSDialogDeleteText)
+                .setCancelable(false)
+                .setPositiveButton(strBSDialogCloseOk, (dialog, id) -> damageCaseHandler.deleteCurrent())
+                .setNegativeButton(strBSDialogCloseCancel, (dialog, id) -> {})
+                .create()
+                .show();
+    }
+
+    //Handle Input Retriever #######################################################################
+
+    @OnClick(R.id.bottom_sheet_input_date)
+    void onClickBottomSheetInputDate(EditText editText){
+        new DatePickerDialog(
+            getContext(),
+            (view, year, monthOfYear, dayOfMonth) -> {
+                mBSEditDate = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
+                mBSEditTextInputDate.setText(mBSEditDate.toString(simpleDateFormatPattern));
+                mBSTextViewDateValue.setText(mBSEditDate.toString(simpleDateFormatPattern));
+            },
+            mBSEditDate.getYear(),
+            mBSEditDate.getMonthOfYear(),
+            mBSEditDate.getDayOfMonth()
+        ).show();
+    }
+
     @SuppressWarnings("ConstantConditions")
-    @OnClick({R.id.bottom_sheet_input_title,
-            R.id.bottom_sheet_input_location,
-            R.id.bottom_sheet_input_policyholder,
-            R.id.bottom_sheet_input_expert,
-            R.id.bottom_sheet_input_date})
-    void onClickBottomSheetDamageCaseInput(EditText editText) {
-
-        if (editText.equals(mBSEditTextInputDate)) {
-            new DatePickerDialog(
-                    getContext(),
-                    (view, year, monthOfYear, dayOfMonth) -> {
-                        mBSEditDate = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
-                        mBSEditTextInputDate.setText(mBSEditDate.toString(simpleDateFormatPattern));
-                        mBSTextViewDateValue.setText(mBSEditDate.toString(simpleDateFormatPattern));
-                    },
-                    mBSEditDate.getYear(),
-                    mBSEditDate.getMonthOfYear(),
-                    mBSEditDate.getDayOfMonth())
-                    .show();
-            return;
-        }
-
-        String title = "";
-        String hint = "";
-        DialogInterface.OnClickListener positiveAction = null;
-        DialogInterface.OnClickListener negativeAction = null;
-
-        if (editText.equals(mBSEditTextInputTitle)) {
-            title = strBSDialogName;
-            hint = strBSDialogNameHint;
-            positiveAction = (dialogInterface, i) -> {
-                mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
-                if(damageCaseHandler.hasValue())
-                    damageCaseHandler.getValue().setNameDamageCase(mBSEditTextInputTitle.getText().toString());
-            };
-        } else if (editText.equals(mBSEditTextInputLocation)) {
-            title = strBSDialogDCLocation;
-            hint = strBSDialogDCLocationHint;
-
-            positiveAction = (dialogInterface, i) -> {
-                if(damageCaseHandler.hasValue())
-                    damageCaseHandler.getValue().setAreaCode(mBSEditTextInputLocation.getText().toString());
-            };
-        } else if (editText.equals(mBSEditTextInputPolicyholder)) {
-            title = strBSDialogDCPolicyholder;
-            hint = strBSDialogDCPolicyholderHint;
-
-            positiveAction = (dialogInterface, i) -> {
-                if(damageCaseHandler.hasValue())
-                    damageCaseHandler.getValue().setNamePolicyholder(mBSEditTextInputPolicyholder.getText().toString());
-            };
-        } else if (editText.equals(mBSEditTextInputExpert)) {
-            title = strBSDialogDCExpert;
-            hint = strBSDialogDCExpertHint;
-
-            positiveAction = (dialogInterface, i) -> {
-                if(damageCaseHandler.hasValue())
-                    damageCaseHandler.getValue().setNameExpert(mBSEditTextInputExpert.getText().toString());
-            };
-        }
-
+    @OnClick(R.id.bottom_sheet_input_title)
+    void onClickBottomSheetInputTitle(EditText editText) {
         InputRetriever.of(editText)
-                .withTitle(title)
-                .withHint(hint)
-                .setPositiveButtonAction(positiveAction)
-                .setNegativeButtonAction(negativeAction)
+                .withTitle(strBSDialogName)
+                .withHint(strBSDialogNameHint)
+                .setPositiveButtonAction((dialogInterface, i) -> {
+                    mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
+                    if(damageCaseHandler.hasValue())
+                        damageCaseHandler.getValue().setNameDamageCase(mBSEditTextInputTitle.getText().toString());
+                })
+                .setNegativeButtonAction(null)
                 .onClick(editText);
     }
 
+    @SuppressWarnings("ConstantConditions")
+    @OnClick(R.id.bottom_sheet_input_location)
+    void onClickBottomSheetInputLocation(EditText editText) {
+        InputRetriever.of(editText)
+                .withTitle(strBSDialogDCLocation)
+                .withHint(strBSDialogDCLocationHint)
+                .setPositiveButtonAction((dialogInterface, i) -> {
+                    if(damageCaseHandler.hasValue())
+                        damageCaseHandler.getValue().setAreaCode(mBSEditTextInputLocation.getText().toString());
+                })
+                .setNegativeButtonAction(null)
+                .onClick(editText);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @OnClick(R.id.bottom_sheet_input_policyholder)
+    void onClickBottomSheetInputPolicyHolder(EditText editText) {
+        InputRetriever.of(editText)
+                .withTitle(strBSDialogDCPolicyholder)
+                .withHint(strBSDialogDCPolicyholderHint)
+                .setPositiveButtonAction((dialogInterface, i) -> {
+                    if(damageCaseHandler.hasValue())
+                        damageCaseHandler.getValue().setNamePolicyholder(mBSEditTextInputPolicyholder.getText().toString());
+                })
+                .setNegativeButtonAction(null)
+                .onClick(editText);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @OnClick(R.id.bottom_sheet_input_expert)
+    void onClickBottomSheetInputExpert(EditText editText) {
+        InputRetriever.of(editText)
+                .withTitle(strBSDialogDCExpert)
+                .withHint(strBSDialogDCExpertHint)
+                .setPositiveButtonAction((dialogInterface, i) -> {
+                    if(damageCaseHandler.hasValue())
+                        damageCaseHandler.getValue().setNameExpert(mBSEditTextInputExpert.getText().toString());
+                })
+                .setNegativeButtonAction(null)
+                .onClick(editText);
+    }
+
+    //##############################################################################################
+
+
     @OnClick(R.id.map_fab_plus)
     void handelActionButtonPlusClick(FloatingActionButton floatingActionButton){
-
         if (gpsService.wasLocationDisabled()) {
-
             // prompt enable location
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
 
-            getActivity().runOnUiThread(() -> Toast
-                    .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
-                    .show()
+            getActivity().runOnUiThread(() ->
+                Toast.makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG).show()
             );
 
             return;
@@ -727,25 +569,34 @@ public class MapFragment
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
-    //##############################################################################################
+    //Override #####################################################################################
 
-    private enum AlertType {
-        CLOSE, DELETE
+    @Override
+    public BackButtonProceedPolicy onBackPressed() {
+        if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) {
+            showCloseAlertIfChanged();
+            return BackButtonProceedPolicy.SKIP_ACTIVITY;
+        }
+        return BackButtonProceedPolicy.WITH_ACTIVITY;
     }
+
+    //##############################################################################################
 
     private class BottomSheetExpandHandler {
         boolean animationShown = false;
 
         void handleNewAmount(int newAmount) {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            boolean enabled = newAmount > 2;
+            boolean enabled = newAmount > 0;
 
             tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
             tbSaveButton.setEnabled(enabled);
             mBottomSheetBehavior.allowUserSwipe(enabled);
 
             if (enabled && !animationShown) {
-                mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
+                mBSContainer
+                        .animate()
+                        .setInterpolator(new AccelerateInterpolator())
                         .translationY(-100);
                 new Handler().postDelayed(() -> mBSContainer.animate().setInterpolator(new AccelerateInterpolator())
                         .translationY(-0), 300);

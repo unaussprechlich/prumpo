@@ -56,6 +56,9 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
+
+        @Override
+        abstract public AppComponent build();
     }
 }
 
