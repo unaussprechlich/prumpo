@@ -201,6 +201,7 @@ public class SopraMap implements LifecycleObserver {
     public void onVertexCreated(VertexCreated event) {
         if (activePolygon == null) {
             newPolygon(event.position, PolygonType.DAMAGE_CASE);
+            return;
         }
 
         activePolygon.addAndDisplay(event.position);
