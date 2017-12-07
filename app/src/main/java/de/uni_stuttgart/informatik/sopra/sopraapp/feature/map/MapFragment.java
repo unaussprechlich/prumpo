@@ -270,6 +270,13 @@ public class MapFragment
         mBSRecyclerView.smoothScrollToPosition(event.vertexNumber);
     }
 
+    @Subscribe
+    void onCloseBottomSheet(CloseBottomSheetEvent event) {
+        if (gpsService == null) return;
+
+        gpsService.stopCallback();
+    }
+
     private void updateDamageCase(DamageCase damageCase){
         if(damageCase == null){
             closeBottomSheet();
@@ -313,7 +320,6 @@ public class MapFragment
             sopraMap = new SopraMap(googleMap, getContext());
             getLifecycle().addObserver(sopraMap);
 
-            //sopraMap.drawPolygonOf(TEST_POLYGON_COORDINATES, PolygonType.INSURANCE_COVERAGE, "1");
             sopraMap.mapCameraJump(TEST_POLYGON_COORDINATES);
 
         });

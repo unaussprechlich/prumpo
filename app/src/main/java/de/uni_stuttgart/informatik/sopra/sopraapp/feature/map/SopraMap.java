@@ -43,6 +43,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.InsuranceCoverageSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
@@ -161,7 +162,7 @@ public class SopraMap implements LifecycleObserver{
         });
     }
 
-    //LifecycleObserver ############################################################################
+    // LifecycleObserver ###########################################################################
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void onStart() {
@@ -218,6 +219,15 @@ public class SopraMap implements LifecycleObserver{
     @Subscribe
     public void onInsuranceCoverageSelected(InsuranceCoverageSelected event) {
         polygonFrom(event.uniqueId, PolygonType.INSURANCE_COVERAGE).highlight();
+    }
+
+    @Subscribe
+    public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+        if (activePolygon != null && isHighlighted) {
+            activePolygon.highlight();
+        }
+
+        clearAllDamages();
     }
 
    /* <----- exposed methods -----> */
