@@ -1,6 +1,9 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,27 +11,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexDeleted;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
-        implements RecyclerViewOperation {
+        implements RecyclerViewOperation, LifecycleObserver {
 
     // TODO! Remove "MapPoint" Implement DamageCase
 
     private ItemCountListener itemCountListener;
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
-
-    /**
-     * The damage case whose coordinates will be collected.
-     */
-    private DamageCase damageCase;
 
     /**
      * Save the selected view position.
@@ -41,6 +44,48 @@ public class BottomSheetListAdapter
         for (int i = 0; i < amountBubbles; i++)
             add();
     }
+
+    //LifecycleObserver ############################################################################
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    void onStart() {
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    void onResume() {
+        if(!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    void onStop() {
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    void onPause() {
+        if(EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+    }
+
+    //EventBus #####################################################################################
+
+    @Subscribe
+    public void onVertexSelected(VertexSelected event){
+        updateSelectedViewIndex(event.vertexNumber);
+    }
+
+    @Subscribe
+    public void onVertexCreated(VertexCreated event){
+        add();
+    }
+
+    //##############################################################################################
+
+
 
     /**
      * Creates the view of a recycler view list item.
@@ -120,6 +165,8 @@ public class BottomSheetListAdapter
      */
     public void onClick(View view, int position) {
 
+        EventBus.getDefault().post(new VertexSelected(position));
+
         // set new selected item
         updateSelectedViewIndex(position);
 
@@ -136,8 +183,10 @@ public class BottomSheetListAdapter
      */
     public boolean onLongClick(View view, int position) {
 
-        if (bubbleHolder.bubbleList.size() > 1)
+        if (bubbleHolder.bubbleList.size() > 1){
+            EventBus.getDefault().post(new VertexDeleted(position));
             remove(position);
+        }
 
         Toast.makeText(view.getContext(), " " + position + " Long pressed!", Toast.LENGTH_SHORT).show();
 

@@ -10,7 +10,6 @@ import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
-import android.util.SparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,8 +28,6 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,9 +35,6 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -48,7 +42,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolyg
 /**
  * Binds application specific map logic to GoogleMap instance.
  */
-public class SopraMap {
+public class SopraMap{
 
     @Inject Vibrator vibrator;
 

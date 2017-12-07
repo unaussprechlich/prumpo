@@ -349,23 +349,22 @@ public class MapFragment
         ButterKnife.apply(damageCaseBottomSheetInputFields, REMOVE_ERRORS);
 
         try {
-            long id = damageCaseHandler.getValue()
-                    .setNameDamageCase(getFieldValueIfNotEmpty(mBSEditTextInputTitle))
-                    .setAreaCode(getFieldValueIfNotEmpty(mBSEditTextInputLocation))
-                    .setNamePolicyholder(getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder))
-                    .setNameExpert(getFieldValueIfNotEmpty(mBSEditTextInputExpert))
-                    .setDate(damageCaseDate)
-                    .setAreaSize(sopraMap.getArea())
-                    .setCoordinates(sopraMap.getActivePoints())
-                    .save();
+            if(damageCaseHandler.getValue() != null){
+                long id = damageCaseHandler.getValue()
+                        .setNameDamageCase(getFieldValueIfNotEmpty(mBSEditTextInputTitle))
+                        .setAreaCode(getFieldValueIfNotEmpty(mBSEditTextInputLocation))
+                        .setNamePolicyholder(getFieldValueIfNotEmpty(mBSEditTextInputPolicyholder))
+                        .setNameExpert(getFieldValueIfNotEmpty(mBSEditTextInputExpert))
+                        .setDate(damageCaseDate)
+                        .setAreaSize(sopraMap.getArea())
+                        .setCoordinates(sopraMap.getActivePoints())
+                        .save();
 
-            mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                closeBottomSheet();
+                damageCaseHandler.loadFromDatabase(id);
 
-            damageCaseHandler.loadFromDatabase(id);
-
-            Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
+            }
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -379,15 +378,12 @@ public class MapFragment
     private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
         boolean isImportantChanged = true;
 
-        if (damageCaseHandler.getValue().isChanged()) {
+        if (damageCaseHandler.getValue() != null &&
+                damageCaseHandler.getValue().isChanged()) {
             showAlert(AlertType.CLOSE);
             // Close Action will be handled in alert method
-
         } else {
-
-            mBottomSheetBehavior.setHideable(true);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
+            closeBottomSheet();
         }
         return true;
     }
@@ -460,7 +456,7 @@ public class MapFragment
         mBottomSheetBehavior.setHideable(false);
 
         // set new adapter
-        bottomSheetListAdapter = new BottomSheetListAdapter(1);
+        bottomSheetListAdapter = new BottomSheetListAdapter(0);
         bottomSheetListAdapter.notifyDataSetChanged();
         mBSRecyclerView.swapAdapter(bottomSheetListAdapter, false);
 
@@ -561,30 +557,32 @@ public class MapFragment
                 mBSTextViewTitle.setVisibility(View.VISIBLE);
                 mBSTextViewTitleValue.setVisibility(View.VISIBLE);
                 mBSTextViewTitleValue.setText(mBSEditTextInputTitle.getText());
-
-                damageCaseHandler.getValue().setNameDamageCase(mBSTextViewTitle.getText().toString());
+                if(damageCaseHandler.hasValue())
+                    damageCaseHandler.getValue().setNameDamageCase(mBSTextViewTitle.getText().toString());
             };
         } else if (editText.equals(mBSEditTextInputLocation)) {
             title = strBSDialogDCLocation;
             hint = strBSDialogDCLocationHint;
 
             positiveAction = (dialogInterface, i) -> {
-                damageCaseHandler.getValue().setAreaCode(mBSEditTextInputLocation.getText().toString());
+                if(damageCaseHandler.hasValue())
+                    damageCaseHandler.getValue().setAreaCode(mBSEditTextInputLocation.getText().toString());
             };
         } else if (editText.equals(mBSEditTextInputPolicyholder)) {
             title = strBSDialogDCPolicyholder;
             hint = strBSDialogDCPolicyholderHint;
 
             positiveAction = (dialogInterface, i) -> {
-
-                damageCaseHandler.getValue().setNamePolicyholder(mBSEditTextInputPolicyholder.getText().toString());
+                if(damageCaseHandler.hasValue())
+                    damageCaseHandler.getValue().setNamePolicyholder(mBSEditTextInputPolicyholder.getText().toString());
             };
         } else if (editText.equals(mBSEditTextInputExpert)) {
             title = strBSDialogDCExpert;
             hint = strBSDialogDCExpertHint;
 
             positiveAction = (dialogInterface, i) -> {
-                damageCaseHandler.getValue().setNameExpert(mBSEditTextInputExpert.getText().toString());
+                if(damageCaseHandler.hasValue())
+                    damageCaseHandler.getValue().setNameExpert(mBSEditTextInputExpert.getText().toString());
             };
         }
 
@@ -602,7 +600,9 @@ public class MapFragment
 
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             openNewDamageCase();
+
         } else {
+
             // add next point
             bottomSheetListAdapter.add();
 
@@ -659,14 +659,13 @@ public class MapFragment
     @Override
     public void onStart() {
         super.onStart();
-
         // start gps
         gpsService.startGps();
         isGpsServiceBound = true;
 
         gpsService.ongoingLocationCallback(this);
-
     }
+
 
     @Override
     public void onStop() {
@@ -679,6 +678,11 @@ public class MapFragment
         }
 
         gpsService.stopCallback();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
