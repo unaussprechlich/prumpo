@@ -436,6 +436,8 @@ public class MapFragment
     }
 
     private void openNewDamageCase() {
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext());
+        gpsService.singleLocationCallback(lcl, 10);
 
         try {
             damageCaseHandler.createNewDamageCase();
@@ -600,16 +602,6 @@ public class MapFragment
     void handelActionButtonPlusClick(FloatingActionButton floatingActionButton){
         /* GPS/Map-related section */
 
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
-            openNewDamageCase();
-        } else {
-            // add next point
-            bottomSheetListAdapter.add();
-
-            // scroll to last added item
-            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
-        }
-
         if (gpsService.wasLocationDisabled()) {
 
             // prompt enable location
@@ -621,6 +613,19 @@ public class MapFragment
                     .makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG)
                     .show()
             );
+
+            return;
+        }
+
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+            openNewDamageCase();
+
+        } else {
+            // add next point
+            bottomSheetListAdapter.add();
+
+            // scroll to last added item
+            mBSRecyclerView.smoothScrollToPosition(bottomSheetListAdapter.getItemCount() - 1);
         }
     }
 
@@ -671,6 +676,10 @@ public class MapFragment
     @Override
     public void onStop() {
         super.onStop();
+
+        if (sopraMap != null) {
+            sopraMap.unregisterEvents();
+        }
 
         // stop gps
         if (isGpsServiceBound) {

@@ -10,7 +10,6 @@ import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
-import android.util.SparseArray;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +29,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.InsuranceCoverageSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexDeleted;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
@@ -78,12 +82,17 @@ public class SopraMap {
 
     SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
+        EventBus.getDefault().register(this);
 
         this.resources = context.getResources();
         this.gMap = googleMap;
 
         initResources(context);
         initMap();
+    }
+
+    void unregisterEvents() {
+        EventBus.getDefault().unregister(this);
     }
 
     private void initMap() {
@@ -97,12 +106,21 @@ public class SopraMap {
 
         /* bindings */
 
-        gMap.setOnPolygonClickListener(p -> ((PolygonContainer) p.getTag()).highlight());
+        gMap.setOnPolygonClickListener(p -> {
+            PolygonContainer polygon = ((PolygonContainer) p.getTag());
+
+            if (polygon.type == PolygonType.DAMAGE_CASE) {
+                EventBus.getDefault().post(new DamageCaseSelected(polygon.uniqueId));
+
+            } else {
+                EventBus.getDefault().post(new InsuranceCoverageSelected(polygon.uniqueId));
+            }
+        });
 
         gMap.setOnCircleClickListener(circle -> {
             if (!isHighlighted) return;
 
-            makeDraggable(circle);
+            EventBus.getDefault().post(new VertexSelected((int) circle.getTag()));
         });
 
         gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -129,6 +147,7 @@ public class SopraMap {
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
 
+        // the database tells us what shall exist!
         damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
             if (listOfDamageCases == null) return;
 
@@ -146,18 +165,35 @@ public class SopraMap {
 
     /* <----- event handling methods -----> */
 
-    public void onVertexAdd(LatLng position) {
-        activePolygon.addAndDisplay(position);
+    @Subscribe
+    public void onVertexCreated(VertexCreated event) {
+        if (activePolygon == null) {
+            newPolygon(event.position, PolygonType.DAMAGE_CASE);
+        }
+
+        activePolygon.addAndDisplay(event.position);
         activePolygon.redrawHighlightCircles();
     }
 
-    public void onVertexSelected(int vertexNumber) {
-        makeDraggable(polygonHighlightVertex.get(vertexNumber));
+    @Subscribe
+    public void onVertexSelected(VertexSelected event) {
+        makeDraggable(polygonHighlightVertex.get(event.vertexNumber));
     }
 
-    public void onVertexDeleted(int vertexNumber) {
-        activePolygon.removeAndDisplay(vertexNumber);
+    @Subscribe
+    public void onVertexDeleted(VertexDeleted event) {
+        activePolygon.removeAndDisplay(event.vertexNumber);
         activePolygon.redrawHighlightCircles();
+    }
+
+    @Subscribe
+    public void onDamageCaseSelected(DamageCaseSelected event) {
+        polygonFrom(event.uniqueId, PolygonType.DAMAGE_CASE).highlight();
+    }
+
+    @Subscribe
+    public void onInsuranceCoverageSelected(InsuranceCoverageSelected event) {
+        polygonFrom(event.uniqueId, PolygonType.INSURANCE_COVERAGE).highlight();
     }
 
    /* <----- exposed methods -----> */
@@ -168,10 +204,6 @@ public class SopraMap {
 
     double getArea() {
         return activePolygon.data.getArea();
-    }
-
-    void select(long uniqueId, PolygonType type) {
-        polygonFrom(uniqueId, type).highlight();
     }
 
     boolean hasActivePolygon() {
