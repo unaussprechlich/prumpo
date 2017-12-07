@@ -33,7 +33,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:backgroundTint="@color/accent"
-            android:text="LOGIN" />
+            android:text="@string/action_sign_in" />
 
         <Button
             android:id="@+id/signup_button"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:text="SIGN UP" />
+            android:text="@string/action_sign_in_short" />
     </LinearLayout>
 
 </FrameLayout>

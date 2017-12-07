@@ -104,12 +104,14 @@ public class MainActivity extends BaseEventBusActivity implements
         displayMapFragment(true);
     }
 
-    private void displayMapFragment(boolean withBackpress) {
+    public void displayMapFragment(boolean withBackpress) {
         switchToFragment(mapFragment, withBackpress);
+        navigationView.setCheckedItem(R.id.nav_map);
     }
 
-    private void displayDamageCaseListFragment(boolean withBackPress) {
+    public void displayDamageCaseListFragment(boolean withBackPress) {
         switchToFragment(damageCaseListFragment, withBackPress);
+        navigationView.setCheckedItem(R.id.nav_damageCases);
     }
 
     private void switchToFragment(Fragment fragment, boolean withBackPress) {
@@ -122,8 +124,8 @@ public class MainActivity extends BaseEventBusActivity implements
 
         transaction.replace(R.id.content_main_frame, fragment);
 
-        if (withBackPress)
-            transaction.addToBackStack("Fragment" + fragmentCreatedCounter);
+//        if (withBackPress)
+//            transaction.addToBackStack("Fragment" + fragmentCreatedCounter);
 
         transaction.commit();
 

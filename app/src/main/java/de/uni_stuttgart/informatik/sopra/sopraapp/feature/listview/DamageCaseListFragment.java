@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,6 @@ import javax.inject.Inject;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
@@ -57,8 +54,8 @@ public class DamageCaseListFragment
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;
 
-    @BindView(R.id.dc_fab_ADD)
-    FloatingActionButton testFloatingActionButton;
+//    @BindView(R.id.dc_fab_ADD)
+//    FloatingActionButton testFloatingActionButton;
 
     @BindString(R.string.dc_fragment_search_hint)
     String searchHint;
@@ -111,11 +108,11 @@ public class DamageCaseListFragment
         onResume();
     }
 
-    @OnClick(R.id.dc_fab_ADD)
-    void OnFloatingActionButtonPressed(View view) {
-        Toast.makeText(view.getContext(), "Adding new DamageCase with random", Toast.LENGTH_SHORT).show();
-
-    }
+//    @OnClick(R.id.dc_fab_ADD)
+//    void OnFloatingActionButtonPressed(View view) {
+//        Toast.makeText(view.getContext(), "Adding new DamageCase with random", Toast.LENGTH_SHORT).show();
+//
+//    }
 
     @Override
     public BackButtonProceedPolicy onBackPressed() {

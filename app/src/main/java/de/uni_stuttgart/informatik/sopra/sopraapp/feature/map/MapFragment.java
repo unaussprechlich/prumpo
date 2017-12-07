@@ -48,10 +48,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FieldValidation;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -59,7 +58,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPr
 @SuppressLint("SetTextI18n")
 public class MapFragment
         extends MapBindFragment
-        implements FragmentBackPressed, LocationCallbackListener, FieldValidation {
+        implements FragmentBackPressed, LocationCallbackListener {
 
     @Inject
     GpsService gpsService;
@@ -342,7 +341,6 @@ public class MapFragment
     private void resetBottomSheetContent() {
         mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        mBottomSheetBubbleList.setAdapter(null);
         tbSaveButton.setAlpha(0.25f);
         mBottomSheetBehavior.allowUserSwipe(false);
 
@@ -575,6 +573,14 @@ public class MapFragment
     }
 
     //Override #####################################################################################
+
+    private String getIfNotEmptyElseThrow(EditText editText) throws EditFieldValueIsEmptyException {
+        String text = editText.getText().toString();
+        if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
+        return text;
+    }
+
+    //##############################################################################################
 
     private class BottomSheetHere {
 

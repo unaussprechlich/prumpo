@@ -48,37 +48,37 @@ public class BottomSheetListAdapter
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void onStart() {
-        if(!EventBus.getDefault().isRegistered(this))
+        if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onResume() {
-        if(!EventBus.getDefault().isRegistered(this))
+        if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     void onStop() {
-        if(EventBus.getDefault().isRegistered(this))
+        if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     void onPause() {
-        if(EventBus.getDefault().isRegistered(this))
+        if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
     }
 
     //EventBus #####################################################################################
 
     @Subscribe
-    public void onVertexSelected(VertexSelected event){
+    public void onVertexSelected(VertexSelected event) {
         updateSelectedViewIndex(event.vertexNumber);
     }
 
     @Subscribe
-    public void onVertexCreated(VertexCreated event){
+    public void onVertexCreated(VertexCreated event) {
         add();
     }
 
@@ -175,7 +175,7 @@ public class BottomSheetListAdapter
      * @return true if this adapter handled the click, false else
      */
     public boolean onLongClick(View view, int position) {
-        if (bubbleHolder.bubbleList.size() > 1){
+        if (bubbleHolder.bubbleList.size() > 1) {
             EventBus.getDefault().post(new VertexDeleted(position));
             remove(position);
         }
@@ -191,6 +191,7 @@ public class BottomSheetListAdapter
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         recyclerView.getRecycledViewPool().clear();
+        itemCountListener = null;
     }
 
     public ItemCountListener getItemCountListener() {
@@ -213,7 +214,8 @@ public class BottomSheetListAdapter
         else
             selectedViewIndex = position;
         notifyDataSetChanged();
-        itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
+        if (itemCountListener != null)
+            itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
     }
 
     public interface ItemCountListener {
