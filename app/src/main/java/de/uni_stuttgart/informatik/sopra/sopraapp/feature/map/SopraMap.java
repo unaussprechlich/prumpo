@@ -721,8 +721,8 @@ public class SopraMap implements LifecycleObserver {
 
                 Circle circle = gMap.addCircle(options);
 
-                polygonHighlightVertex.add(circle);
                 circle.setTag(i);
+                polygonHighlightVertex.add(circle);
             }
         }
 
