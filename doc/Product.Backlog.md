@@ -6,58 +6,47 @@
 
 In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Benutzer** von der App zu sehen bekommt.
 
-### Feature 1.1 *Design/Branding*
-
-> Als **Benutzer** möchte ich *eine schöne Programmoberfläche*, um *beim Arbeiten mit der App angenehm zu gestalten.*
-
-- Aufwandsschätzung: <span style="color:orange">[L]</span>
-- Akzeptanztests:
-    - [ ] *Das Design soll den* **Benutzer** *ansprechen.*
-    - [ ] *Die Farben sollen einen angenehmen Eindruck vermitteln.*
-    - [ ] *Der Wiedererkennungwert soll hoch sein.*
-
-### Feature 1.2 *Login-Ansicht*
+### Feature 1.1 *Login-Ansicht*
 
 > Als **Benutzer** möchte ich *mich einloggen*, um *die App sinngemäß zu nutzen.*
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ] *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
-    - [ ] *Nach erfolgreichem Einloggen soll die Hauptansicht aufgerufen werden.*
+    - [x] *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
+    - [x] *Nach erfolgreichem Einloggen soll die Hauptansicht aufgerufen werden.*
 
-### Feature 1.3 *Hauptansicht (Karte)*
+### Feature 1.2 *Hauptansicht (Karte)*
 
 > Als **Benutzer** möchte ich *eine übersichtliche Karte*, um *positionsabhängige Aufgaben zu erledigen.*
 
 - Aufwandsschätzung: <span style="color:red">[XL]</span>
 - Akzeptanztests:
-    - [ ] *Die Kartenansicht enthält Eingabemöglichkeiten, um Positionsmarker/Polygone setzen zu können.*
-    - [ ] *Auf der Karte platzierte Elemente können für weitere Informationen angetippt werden.*
-    - [ ] *Schadensfälle können während der Erfassung/Bearbeitung in der Kartenansicht dargestellt werden.*
-    - [ ] *Alle markierten Flächen/Punkte der Karte werden offline angezeigt.*
-    - [ ] *Die Kartenansicht des Schadens zeigt den Schaden als Polygon/Fläche innerhalb der versicherten Objekte.*
-    - [ ] *Die Kartenansicht des Schadens zeigt Polygone der versicherten Objekte.*
-    - [ ] *Die Kartenansicht soll nicht mehr als 3 zusätzliche Schaltflächen/Buttons außerhalb der Kartenfunktionen enthalten.*
+    - [x] *Die Kartenansicht enthält Eingabemöglichkeiten, um Positionsmarker/Polygone setzen zu können.*
+    - [x] *Auf der Karte platzierte Elemente können für weitere Informationen angetippt werden.*
+    - [x] *Schadensfälle können während der Erfassung/Bearbeitung in der Kartenansicht dargestellt werden.*
+    - [x] *Alle markierten Flächen/Punkte der Karte werden offline angezeigt.*
+    - [x] *Die Kartenansicht des Schadens zeigt den Schaden als Polygon/Fläche innerhalb der versicherten Objekte.*
+    - [x] *Die Kartenansicht des Schadens zeigt Polygone der versicherten Objekte.*
+    - [x] *Die Kartenansicht soll nicht mehr als 3 zusätzliche Schaltflächen/Buttons außerhalb der Kartenfunktionen enthalten.*
 
-### Feature 1.4 *Kontrollzentrum*
+### Feature 1.3 *Kontrollzentrum*
 
 > Als **Benutzer** möchte ich *die Kontrolle über für mich relevante Anwendungsdaten/-optionen haben und diese in der "Offline Funktion" ändern können.*
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
     - [ ] *Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
-    - [ ] *Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.*
     - [ ] *Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
     - [ ] *Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
-    - [ ] *Der* **Benutzer** *muss sich ausloggen können.*
+    - [x] *Der* **Benutzer** *muss sich ausloggen können.*
 
-### Feature 1.5 *Detail-Ansichten*
+### Feature 1.4 *Detail-Ansichten*
 
 > Als **Benutzer** möchte ich *Details zu einem Element (Vertrag, Schadensfall, etc.) einsehen/eingeben können.*
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ] *Die Detailansichten sind jederzeit über den Zurück-Button zu beenden.*
+    - [x] *Die Detailansichten sind jederzeit über den Zurück-Button zu beenden.*
     - [ ] *Nach dem Schließen einer Detailansicht wird der Zustand wiederhergestellt, der vor dem Öffnen der Detailansicht vorhanden war.*
     
 ## Epic 2 *Hintergrundprozesse*
@@ -72,7 +61,7 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 
 - Aufwandsschätzung: <span style="color:red">[XL]</span>
 - Akzeptanztests:
-    - [ ] *Flächeninhalte von Polygonen werden automatisch berechnet.*
+    - [x] *Flächeninhalte von Polygonen werden automatisch berechnet.*
     - [ ] *Vorgeladene/bereits betrachtete Areale der Karte können offline gespeichert werden.*
 
 ### Feature 2.2 *Lokalisierungs-Schnittstelle*
@@ -81,9 +70,9 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ] *Die Lokalisierung muss ohne Mobilfunk funktionieren.*
-    - [ ] *Berechtigungen für Lokalisierungsdienste/GPS müssen vom Nutzer eingeholt werden.*
-    - [ ] *Aktivierung der Lokalisierungsdienste (Google-Services/)Mobilfunk/GPS muss abgefragt werden, falls diese deaktiviert sind.*
+    - [x] *Die Lokalisierung muss ohne Mobilfunk funktionieren.*
+    - [x] *Berechtigungen für Lokalisierungsdienste/GPS müssen vom Nutzer eingeholt werden.*
+    - [x] *Aktivierung der Lokalisierungsdienste (Google-Services/)Mobilfunk/GPS muss abgefragt werden, falls diese deaktiviert sind.*
 
 ### Feature 2.3 *Benutzerverwaltung*
 
@@ -93,7 +82,7 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 
 - Aufwandsschätzung: <span style="color:green">[M]</span>
 - Akzeptanztests:
-    - [ ] *Es gibt die Rollen* **Admin**, **Gutachter** *und* **Kunde**.
+    - [x] *Es gibt die Rollen* **Admin**, **Gutachter** *und* **Kunde**.
     - [ ] *Alle Rollen können stets nur die Rechte ausüben, die ihnen zustehen.*
 
 ### Feature 2.4 *Verwaltung von Versicherungsverträgen*
@@ -123,11 +112,11 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ] *Das Dokumentieren von Schäden ist möglich.*
-    - [ ] *Die Verwaltung ist ohne Internetverbindung möglich.*
-    - [ ] *Schadensfälle können nach Name des Versicherungsnehmers gesucht werden.*
-    - [ ] *Die Erfassung von Schadensfällen/-Koordinaten verwendet tatsächliche Sensorwerte eines Positionssensors im Gerät.*
-    - [ ] *Schadensfälle können mit der Angabe des Versicherungsobjekts (Name des Versicherungsnehmers, Fläche und Koordinaten des Objekts, Region (mind. Landkreis)), Schadensinformationen (Schadensfläche, Schadensposition, Schadens-Koordinaten/-Polygon, Datum) und Name des* **Gutachters** *erfasst werden.*
+    - [x] *Das Dokumentieren von Schäden ist möglich.*
+    - [x] *Die Verwaltung ist ohne Internetverbindung möglich.*
+    - [x] *Schadensfälle können nach Name des Versicherungsnehmers gesucht werden.*
+    - [x] *Die Erfassung von Schadensfällen/-Koordinaten verwendet tatsächliche Sensorwerte eines Positionssensors im Gerät.*
+    - [x] *Schadensfälle können mit der Angabe des Versicherungsobjekts (Name des Versicherungsnehmers, Fläche und Koordinaten des Objekts, Region (mind. Landkreis)), Schadensinformationen (Schadensfläche, Schadensposition, Schadens-Koordinaten/-Polygon, Datum) und Name des* **Gutachters** *erfasst werden.*
 
 ### Feature 2.7 Datenverschlüsselung
 
