@@ -6,17 +6,7 @@
 
 In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Benutzer** von der App zu sehen bekommt.
 
-### Feature 1.1 *Design/Branding*
-
-> Als **Benutzer** möchte ich *eine schöne Programmoberfläche*, um *beim Arbeiten mit der App angenehm zu gestalten.*
-
-- Aufwandsschätzung: <span style="color:orange">[L]</span>
-- Akzeptanztests:
-    - [ ] *Das Design soll den* **Benutzer** *ansprechen.*
-    - [ ] *Die Farben sollen einen angenehmen Eindruck vermitteln.*
-    - [ ] *Der Wiedererkennungwert soll hoch sein.*
-
-### Feature 1.2 *Login-Ansicht*
+### Feature 1.1 *Login-Ansicht*
 
 > Als **Benutzer** möchte ich *mich einloggen*, um *die App sinngemäß zu nutzen.*
 
@@ -25,7 +15,7 @@ In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Ben
     - [ ] *Wenn der Login fehlschlägt, soll ein Hinweis ausgegeben werden.*
     - [ ] *Nach erfolgreichem Einloggen soll die Hauptansicht aufgerufen werden.*
 
-### Feature 1.3 *Hauptansicht (Karte)*
+### Feature 1.2 *Hauptansicht (Karte)*
 
 > Als **Benutzer** möchte ich *eine übersichtliche Karte*, um *positionsabhängige Aufgaben zu erledigen.*
 
@@ -39,19 +29,18 @@ In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Ben
     - [ ] *Die Kartenansicht des Schadens zeigt Polygone der versicherten Objekte.*
     - [ ] *Die Kartenansicht soll nicht mehr als 3 zusätzliche Schaltflächen/Buttons außerhalb der Kartenfunktionen enthalten.*
 
-### Feature 1.4 *Kontrollzentrum*
+### Feature 1.3 *Kontrollzentrum*
 
 > Als **Benutzer** möchte ich *die Kontrolle über für mich relevante Anwendungsdaten/-optionen haben und diese in der "Offline Funktion" ändern können.*
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
     - [ ] *Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
-    - [ ] *Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.*
     - [ ] *Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
     - [ ] *Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
     - [ ] *Der* **Benutzer** *muss sich ausloggen können.*
 
-### Feature 1.5 *Detail-Ansichten*
+### Feature 1.4 *Detail-Ansichten*
 
 > Als **Benutzer** möchte ich *Details zu einem Element (Vertrag, Schadensfall, etc.) einsehen/eingeben können.*
 
