@@ -45,6 +45,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.excepti
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
@@ -83,9 +84,13 @@ public class MapFragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i("OnCreateView", "init");
-        mRootView = inflater.inflate(R.layout.activity_main_fragment_mapview,
-                container,
-                false);
+
+        if (mRootView == null) {
+            mRootView = inflater.inflate(R.layout.activity_main_fragment_mapview,
+                    container,
+                    false);
+        }
+
         ButterKnife.bind(this, mRootView);
 
         bottomSheetMapBehaviour = new BottomSheetMapBehaviour(LockableBottomSheetBehaviour.from(mBottomSheetContainer));
@@ -96,15 +101,13 @@ public class MapFragment
         };
 
         // if (!createdOnce)
-            initMapView(savedInstanceState);
+        initMapView(savedInstanceState);
 
         onResume();
         damageCaseHandler.getLiveData()
                 .observe(getActivity(), damaageCaseObserver);
 
-
         createdOnce = true;
-
 
         return mRootView;
     }
@@ -202,12 +205,14 @@ public class MapFragment
 
     private void addVertexToActivePolygon() {
         Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//
+//        if (callbackDone.get()) {
+//            callbackDone.set(false);
+//            gpsService.singleLocationCallback(lcl, 10000);
+//        }
 
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
+        EventBus.getDefault().post(new VertexCreated(Helper.getRandomLatLng()));
     }
 
 

@@ -42,6 +42,7 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
@@ -155,34 +156,15 @@ public class SopraMap implements LifecycleObserver {
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
 
-        // the database tells us what shall exist!
-        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
-            if (listOfDamageCases == null) return;
-
-            clearAllDamages();
-
-            for (DamageCase damageCase : listOfDamageCases) {
-                loadPolygonOf(
-                        damageCase.getCoordinates(),
-                        PolygonType.DAMAGE_CASE,
-                        damageCase.getID()
-                );
-            }
-        });
-
-        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
-            if (damageCase == null) return;
-
-            selectDamageCase(damageCase.getID());
-        });
     }
 
     // LifecycleObserver ###########################################################################
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void onStart() {
-        if(!EventBus.getDefault().isRegistered(this))
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -204,6 +186,37 @@ public class SopraMap implements LifecycleObserver {
     }
 
     /* <----- event handling methods -----> */
+
+    @Subscribe(sticky = true)
+    public void onLogin(AuthenticationEvents.Login event) {
+        // bind which polygon is selected to database
+        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
+            if (damageCase == null) return;
+
+            System.out.println("SELECTED");
+
+            selectDamageCase(damageCase.getID());
+        });
+
+        // the database dictates what we shall see!
+        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
+            if (listOfDamageCases == null) return;
+            if (activePolygon != null) return;
+
+            System.out.println("NEW DAMAGE CASES RECEIVED");
+
+            clearAllDamages();
+
+            for (DamageCase damageCase : listOfDamageCases) {
+
+                loadPolygonOf(
+                        damageCase.getCoordinates(),
+                        PolygonType.DAMAGE_CASE,
+                        damageCase.getID()
+                );
+            }
+        });
+    }
 
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
@@ -414,7 +427,10 @@ public class SopraMap implements LifecycleObserver {
 
     private void selectDamageCase(long uniqueId) {
         PolygonContainer polygon = polygonFrom(uniqueId, PolygonType.DAMAGE_CASE);
-        if (polygon == null) return;
+        if (polygon == null) {
+            System.out.println("SELECTED POLYGON ID NOT FOUND");
+            return;
+        }
 
         polygon.highlight();
 
@@ -436,10 +452,7 @@ public class SopraMap implements LifecycleObserver {
         clearAllDamages();
 
         List<DamageCase> damageCases = damageCaseRepository.getAll().getValue();
-
-        if (damageCases == null) {
-            return;
-        }
+        if (damageCases == null) return;
 
         for (DamageCase damageCase : damageCases) {
             loadPolygonOf(
@@ -495,6 +508,8 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void refreshAreaLivedata() {
+        if (activePolygon == null) return;
+
         currentArea.postValue(activePolygon.data.getArea());
     }
 

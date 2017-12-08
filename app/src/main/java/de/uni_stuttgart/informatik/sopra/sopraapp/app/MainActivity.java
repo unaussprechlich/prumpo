@@ -135,6 +135,9 @@ public class MainActivity extends BaseEventBusActivity implements
 
     @Subscribe(sticky = true)
     public void handleLogin(AuthenticationEvents.Login event) {
+        if (findViewById(R.id.user_role_text) == null) return;
+        // TODO: fix null binding
+
         ((TextView) findViewById(R.id.user_role_text)).setText(event.user.role.toString());
         ((TextView) findViewById(R.id.user_name_text)).setText(event.user.name);
     }
