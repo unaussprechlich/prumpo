@@ -45,6 +45,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.InsuranceCoverageSelected;
@@ -90,6 +91,8 @@ public class SopraMap implements LifecycleObserver {
     private LongSparseArray<PolygonContainer> damagePolygons = new LongSparseArray<>();
     private LongSparseArray<PolygonContainer> insurancePolygons = new LongSparseArray<>();
 
+    private List<DamageCase> cachedDamageCases;
+
     SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
 
@@ -119,7 +122,9 @@ public class SopraMap implements LifecycleObserver {
             if (polygon == null) return;
 
             if (polygon.type == PolygonType.DAMAGE_CASE) {
+                System.out.println(polygon.uniqueId);
                 EventBus.getDefault().post(new DamageCaseSelected(polygon.uniqueId));
+//                selectDamageCase(polygon.uniqueId);
 
             } else {
                 EventBus.getDefault().post(new InsuranceCoverageSelected(polygon.uniqueId));
@@ -162,9 +167,8 @@ public class SopraMap implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void onStart() {
-        if (!EventBus.getDefault().isRegistered(this)) {
+        if(!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -189,23 +193,13 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe(sticky = true)
     public void onLogin(AuthenticationEvents.Login event) {
-        // bind which polygon is selected to database
-        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
-            if (damageCase == null) return;
-
-            System.out.println("SELECTED");
-
-            selectDamageCase(damageCase.getID());
-        });
-
-        // the database dictates what we shall see!
+        // the database tells us what shall exist!
         damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
             if (listOfDamageCases == null) return;
-            if (activePolygon != null) return;
 
-            System.out.println("NEW DAMAGE CASES RECEIVED");
-
-            clearAllDamages();
+            if (damagePolygons.size() > 0) {
+                clearAllDamages();
+            }
 
             for (DamageCase damageCase : listOfDamageCases) {
 
@@ -215,6 +209,22 @@ public class SopraMap implements LifecycleObserver {
                         damageCase.getID()
                 );
             }
+        });
+
+        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
+            if (damageCase == null) return;
+
+            if (activePolygon != null) {
+                // avoid deselecting the polygon again, when called twice in a row
+                if (damageCase.getID() == activePolygon.uniqueId) return;
+            }
+
+            selectDamageCase(damageCase.getID());
+        });
+
+        // always cache latest damage cases from database
+        damageCaseRepository.getAll().observe(damageCaseHandler, newDamageCases -> {
+            cachedDamageCases = newDamageCases;
         });
     }
 
@@ -245,24 +255,14 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onDamageCaseSelected(DamageCaseSelected event) {
-        selectDamageCase(event.uniqueId);
-    }
-
-    @Subscribe
-    public void onInsuranceCoverageSelected(InsuranceCoverageSelected event) {
-        polygonFrom(event.uniqueId, PolygonType.INSURANCE_COVERAGE).highlight();
-
-        refreshAreaLivedata();
-    }
-
-    @Subscribe
     public void onAbortBottomSheet(ForceClosedBottomSheet event) {
-        if (activePolygon != null && isHighlighted) {
-            activePolygon.mapObject.remove();
-            activePolygon.highlight();
-        }
+        removeActivePolygon();
+        reloadDamageCases();
+    }
 
+    @Subscribe
+    public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+        removeActivePolygon();
         reloadDamageCases();
     }
 
@@ -340,23 +340,23 @@ public class SopraMap implements LifecycleObserver {
 
     void mapCameraJump(LatLng target) {
         // jumping to the location of the target
-        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+        gMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17.5f)));
     }
 
     void mapCameraJump(List<LatLng> polygon) {
         // jumping to the location of the polygons centroid
         gMap.moveCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 18)));
+                .newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17.5f)));
     }
 
     void mapCameraMove(LatLng target) {
         // panning to the location of the target
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 18)));
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(target, 17.5f)));
     }
 
     void mapCameraMove(List<LatLng> polygon) {
         // panning to the location of the polygons centroid
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 18)));
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosOf(Helper.centroidOfPolygon(polygon), 17.5f)));
     }
 
     /* <----- helper section -----> */
@@ -381,6 +381,7 @@ public class SopraMap implements LifecycleObserver {
                         type
                 );
 
+        System.out.println("NEW POLYGON?!");
         activePolygon.highlight();
     }
 
@@ -427,10 +428,7 @@ public class SopraMap implements LifecycleObserver {
 
     private void selectDamageCase(long uniqueId) {
         PolygonContainer polygon = polygonFrom(uniqueId, PolygonType.DAMAGE_CASE);
-        if (polygon == null) {
-            System.out.println("SELECTED POLYGON ID NOT FOUND");
-            return;
-        }
+        if (polygon == null) return;
 
         polygon.highlight();
 
@@ -449,12 +447,13 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void reloadDamageCases() {
+        if (cachedDamageCases == null) {
+            return;
+        }
+
         clearAllDamages();
 
-        List<DamageCase> damageCases = damageCaseRepository.getAll().getValue();
-        if (damageCases == null) return;
-
-        for (DamageCase damageCase : damageCases) {
+        for (DamageCase damageCase : cachedDamageCases) {
             loadPolygonOf(
                     damageCase.getCoordinates(),
                     PolygonType.DAMAGE_CASE,
@@ -465,11 +464,7 @@ public class SopraMap implements LifecycleObserver {
 
     private void clearAllDamages() {
 
-        if (activePolygon != null) {
-            activePolygon.removeHighlightCircles();
-            activePolygon.mapObject.remove();
-            activePolygon = null;
-        }
+        removeActivePolygon();
 
         PolygonContainer polygon;
 
@@ -477,19 +472,23 @@ public class SopraMap implements LifecycleObserver {
             long key = damagePolygons.keyAt(i);
 
             polygon = damagePolygons.get(key);
-            polygon.mapObject.remove();
+            polygon.removeMapObject();
         }
 
         damagePolygons.clear();
     }
 
     private void removeActivePolygon() {
-        if (activePolygon == null) return;
+        if (activePolygon == null || !isHighlighted) return;
 
+        // -1 == temporary polygon, which isn't stored yet anyways, so no need to delete it
+        if (activePolygon.uniqueId != -1) {
+            activePolygon.storedIn().delete(activePolygon.uniqueId);
+        }
+
+        activePolygon.removeMapObject();
         activePolygon.highlight();
-
-        activePolygon.storedIn().delete(activePolygon.uniqueId);
-        activePolygon.mapObject.remove();
+        activePolygon = null;
     }
 
     private PolygonContainer polygonFrom(long uniqueId, PolygonType type) {
@@ -502,7 +501,7 @@ public class SopraMap implements LifecycleObserver {
         }
     }
 
-    private CameraPosition cameraPosOf(LatLng target, int zoom) {
+    private CameraPosition cameraPosOf(LatLng target, float zoom) {
         return new CameraPosition.Builder()
                 .target(target).zoom(zoom).build();
     }
@@ -679,22 +678,28 @@ public class SopraMap implements LifecycleObserver {
             return true;
         }
 
+        void removeMapObject() {
+            if (mapObject == null) return;
+            mapObject.remove();
+        }
+
         void highlight() {
             if (isHighlighted) {
                 indexActiveVertex = -1;
 
-                this.removeHighlightCircles();
+                activePolygon.removeHighlightCircles();
 
                 // deselect (and unhighlight) polygon if clicked twice in a row
                 if (this == activePolygon) {
+                    System.out.println("ABORT EQUALS");
                     activePolygon = null;
                     isHighlighted = false;
                     return;
                 }
             }
 
+            System.out.println("NOW ACTIVE POLYGON");
             activePolygon = this;
-
             isHighlighted = true;
             this.drawHighlightCircles();
         }
@@ -736,8 +741,8 @@ public class SopraMap implements LifecycleObserver {
 
                 Circle circle = gMap.addCircle(options);
 
-                circle.setTag(i);
                 polygonHighlightVertex.add(circle);
+                circle.setTag(i);
             }
         }
 

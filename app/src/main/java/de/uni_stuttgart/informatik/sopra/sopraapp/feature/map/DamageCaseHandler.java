@@ -48,7 +48,8 @@ public class DamageCaseHandler implements LifecycleOwner{
 
     @Subscribe
     public void onDamageCaseSelected(DamageCaseSelected event) {
-        loadFromDatabase(event.uniqueId);
+//        System.out.println("EVENT DAMAGE SELECTED RECEIVED");
+//        loadFromDatabase(event.uniqueId);
     }
 
     //##############################################################################################

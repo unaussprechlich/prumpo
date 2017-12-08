@@ -139,6 +139,8 @@ public class MapFragment
 
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
+        if (bottomSheetListAdapter == null) return;
+
         int target = Math.max(bottomSheetListAdapter.getItemCount()-1, 0);
         mBottomSheetBubbleList.smoothScrollToPosition(target);
     }
@@ -223,8 +225,8 @@ public class MapFragment
             public void onSlide(@NonNull View bottomSheetContainer, float slideOffset) {
 
             }
-
         });
+
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         mBottomSheetToolbar.inflateMenu(R.menu.bottom_sheet);
@@ -260,8 +262,6 @@ public class MapFragment
 
                 closeBottomSheet();
 
-                Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
-
             }
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
@@ -283,14 +283,16 @@ public class MapFragment
     }
 
     private void addVertexToActivePolygon() {
-//        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
-//
-//        if (callbackDone.get()) {
-//            callbackDone.set(false);
-//            gpsService.singleLocationCallback(lcl, 10000);
-//        }
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
 
-        EventBus.getDefault().post(new VertexCreated(Helper.getRandomLatLng()));
+        if (callbackDone.get()) {
+            callbackDone.set(false);
+            gpsService.singleLocationCallback(lcl, 10000);
+        }
+
+        // mock locations
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> EventBus.getDefault().post(new VertexCreated(Helper.randomLatLng())), 500);
     }
 
     private void openNewDamageCase() {
@@ -353,8 +355,7 @@ public class MapFragment
     }
 
     private void showCloseAlertIfChanged() {
-        if ((damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
-                || (bottomSheetListAdapter != null && bottomSheetListAdapter.getItemCount() > 0)) {
+        if ((damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())) {
             showCloseAlert();
 
         } else {
