@@ -71,7 +71,7 @@ public class Converters {
         if(value == null) return "";
         ArrayList<String> asString = new ArrayList<>();
         for(LatLng latLng : value){
-            asString.add(latLng.latitude + "-" + latLng.latitude);
+            asString.add(latLng.latitude + "-" + latLng.longitude);
         }
         return gson.toJson(asString);
     }
