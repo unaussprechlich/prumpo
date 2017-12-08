@@ -115,6 +115,8 @@ public class SopraMap implements LifecycleObserver {
 
             PolygonContainer polygon = ((PolygonContainer) p.getTag());
 
+            if (polygon == null) return;
+
             if (polygon.type == PolygonType.DAMAGE_CASE) {
                 EventBus.getDefault().post(new DamageCaseSelected(polygon.uniqueId));
 
@@ -166,6 +168,12 @@ public class SopraMap implements LifecycleObserver {
                         damageCase.getID()
                 );
             }
+        });
+
+        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
+            if (damageCase == null) return;
+
+            selectDamageCase(damageCase.getID());
         });
     }
 
@@ -225,9 +233,7 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onDamageCaseSelected(DamageCaseSelected event) {
-        polygonFrom(event.uniqueId, PolygonType.DAMAGE_CASE).highlight();
-
-        refreshAreaLivedata();
+        selectDamageCase(event.uniqueId);
     }
 
     @Subscribe
@@ -406,6 +412,16 @@ public class SopraMap implements LifecycleObserver {
         return polygonMapObject;
     }
 
+    private void selectDamageCase(long uniqueId) {
+        PolygonContainer polygon = polygonFrom(uniqueId, PolygonType.DAMAGE_CASE);
+        if (polygon == null) return;
+
+        polygon.highlight();
+
+        mapCameraMove(polygon.data.getCentroid());
+
+        refreshAreaLivedata();
+    }
 
     void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
         PolygonContainer polygon =
@@ -421,7 +437,9 @@ public class SopraMap implements LifecycleObserver {
 
         List<DamageCase> damageCases = damageCaseRepository.getAll().getValue();
 
-        if (damageCases == null) return;
+        if (damageCases == null) {
+            return;
+        }
 
         for (DamageCase damageCase : damageCases) {
             loadPolygonOf(
@@ -435,6 +453,7 @@ public class SopraMap implements LifecycleObserver {
     private void clearAllDamages() {
 
         if (activePolygon != null) {
+            activePolygon.removeHighlightCircles();
             activePolygon.mapObject.remove();
             activePolygon = null;
         }

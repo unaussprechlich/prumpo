@@ -258,9 +258,9 @@ public class MapFragment
                         .save();
 
                 closeBottomSheet();
-                damageCaseHandler.loadFromDatabase(id);
 
                 Toast.makeText(getContext(), "Saved with ID:" + id, Toast.LENGTH_SHORT).show();
+
             }
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
@@ -281,7 +281,7 @@ public class MapFragment
         return true;
     }
 
-    private void mMapFabPlusAction() {
+    private void addVertexToActivePolygon() {
         LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
 
         if (callbackDone.get()) {
@@ -478,7 +478,7 @@ public class MapFragment
             return;
         }
 
-        mMapFabPlusAction();
+        addVertexToActivePolygon();
 
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             openNewDamageCase();
