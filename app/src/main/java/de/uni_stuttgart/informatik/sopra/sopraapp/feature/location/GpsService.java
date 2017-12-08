@@ -51,8 +51,8 @@ public class GpsService {
      * Call this method after receiving a {@code GpsService} instance,
      * to start receiving location data.
      *
-     * @return  {@code false} if {@code ACCESS_FINE_LOCATION} permissions were missing,
-     *          (i.e. the starting attempt failed), {@code true} otherwise.
+     * @return {@code false} if {@code ACCESS_FINE_LOCATION} permissions were missing,
+     * (i.e. the starting attempt failed), {@code true} otherwise.
      */
     public boolean startGps() {
         // in case the settings changed since the last stop
@@ -80,14 +80,15 @@ public class GpsService {
      * This method must be called in either
      * {@link Activity#onDestroy} or {@link Activity#onStop()}.
      * <p>
-     *      This guarantees graceful listener-bindings of this service and avoids service-leaks.
+     * This guarantees graceful listener-bindings of this service and avoids service-leaks.
      */
     public void stopGps() {
         // clear for accuracy reasons
         lastLocation = null;
 
         // unbinding callback reduces battery-usage dramatically
-        locationManager.removeUpdates(locationListener);
+        if (locationListener != null)
+            locationManager.removeUpdates(locationListener);
 
         // orphan object to disable callback ASAP
         locationListener = null;
@@ -120,7 +121,7 @@ public class GpsService {
     /**
      * Indicates that location services of the device need to be enabled.
      *
-     * @return  <src>true</src> if the last refresh of GpsService found missing location services.
+     * @return <src>true</src> if the last refresh of GpsService found missing location services.
      */
     public boolean wasLocationDisabled() {
         return locationWasDisabled;
@@ -141,7 +142,6 @@ public class GpsService {
      * if a certain time limit is reached. The callbacks are mutually exclusive.
      *
      * @param callback  {@code LocationCallbackListener} that encapsulates what to do on callback
-     *
      * @param failAfter the time in milliseconds allowed to pass, before
      *                  {@link LocationCallbackListener#onLocationNotFound()} is called.
      */
@@ -182,9 +182,11 @@ public class GpsService {
                     @Override
                     public void onStatusChanged(String provider, int status, Bundle extras) {
                     }
+
                     @Override
                     public void onProviderEnabled(String provider) {
                     }
+
                     @Override
                     public void onProviderDisabled(String provider) {
                     }

@@ -351,7 +351,7 @@ public class MapFragment
 
     private void showCloseAlertIfChanged() {
         if ((damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
-                || bottomSheetListAdapter.getItemCount() > 0) {
+                || (bottomSheetListAdapter != null && bottomSheetListAdapter.getItemCount() > 0)) {
             showCloseAlert();
 
         } else {
