@@ -1,7 +1,6 @@
 # App-Name
 
-![Das Interface zur Schadenerfassung](doc/images/header.png)  
-Screenshot of CyanogenMod 12 / 12.1 homescreen by Florian838, CC BY-SA 3.0
+![Das Interface zur Schadenerfassung](doc/images/header.png)
 
 Für Landwirtinnen und Landwirte, die viele Bodenflächen für den Anbau von
 Nutzpflanzen ihr Eigen nennen, sind Schäden auf den Feldern nicht nur lästig,
