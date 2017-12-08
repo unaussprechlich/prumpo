@@ -44,6 +44,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.excepti
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
@@ -282,12 +283,14 @@ public class MapFragment
     }
 
     private void addVertexToActivePolygon() {
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//
+//        if (callbackDone.get()) {
+//            callbackDone.set(false);
+//            gpsService.singleLocationCallback(lcl, 10000);
+//        }
 
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
+        EventBus.getDefault().post(new VertexCreated(Helper.getRandomLatLng()));
     }
 
     private void openNewDamageCase() {
