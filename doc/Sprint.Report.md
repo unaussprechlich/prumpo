@@ -14,3 +14,5 @@ wurde vom *Feature 1.4 Kontrollzentrum* entfernt.
 
 Die Testcoverage befindet sich im doc Ordner oder unter folgendem Link
 https://sopra.informatik.uni-stuttgart.de/sopra-ws1718/sopra-team-6/blob/m4/doc/coverage/testreport.zip
+
+Die Testabdeckung beträgt 67%.
