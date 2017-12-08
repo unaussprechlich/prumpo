@@ -141,7 +141,7 @@ public class MapFragment
     public void onVertexCreated(VertexCreated event) {
         if (bottomSheetListAdapter == null) return;
 
-        int target = Math.max(bottomSheetListAdapter.getItemCount()-1, 0);
+        int target = Math. max(bottomSheetListAdapter.getItemCount()-1, 0);
         mBottomSheetBubbleList.smoothScrollToPosition(target);
     }
 
@@ -290,9 +290,9 @@ public class MapFragment
             gpsService.singleLocationCallback(lcl, 10000);
         }
 
-        // mock locations
+        // mock locations for testing
 //        Handler handler = new Handler();
-//        handler.postDelayed(() -> EventBus.getDefault().post(new VertexCreated(Helper.randomLatLng())), 500);
+//        handler.postDelayed(() -> EventBus.getDefault().post(new VertexCreated(Helper.getRandomLatLng())), 500);
     }
 
     private void openNewDamageCase() {
@@ -321,6 +321,7 @@ public class MapFragment
 
         if (bottomSheetListAdapter != null)
             getLifecycle().removeObserver(bottomSheetListAdapter);
+
         // set new adapter
         bottomSheetListAdapter = new BottomSheetListAdapter(0);
         getLifecycle().addObserver(bottomSheetListAdapter);

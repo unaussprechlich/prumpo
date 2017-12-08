@@ -35,7 +35,9 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         return dao.getById(id, getUserId());
     }
 
-    public void update(Model model){ dao.update(model);}
+    public void update(Model model) {
+        AsyncTask.execute(() -> dao.update(model));
+    }
 
     abstract protected long getUserId();
 

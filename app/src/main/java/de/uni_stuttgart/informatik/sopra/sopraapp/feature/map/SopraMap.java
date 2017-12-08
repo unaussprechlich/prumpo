@@ -381,7 +381,6 @@ public class SopraMap implements LifecycleObserver {
                         type
                 );
 
-        System.out.println("NEW POLYGON?!");
         activePolygon.highlight();
     }
 
@@ -691,14 +690,12 @@ public class SopraMap implements LifecycleObserver {
 
                 // deselect (and unhighlight) polygon if clicked twice in a row
                 if (this == activePolygon) {
-                    System.out.println("ABORT EQUALS");
                     activePolygon = null;
                     isHighlighted = false;
                     return;
                 }
             }
 
-            System.out.println("NOW ACTIVE POLYGON");
             activePolygon = this;
             isHighlighted = true;
             this.drawHighlightCircles();
