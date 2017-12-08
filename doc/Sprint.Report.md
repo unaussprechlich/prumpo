@@ -1,11 +1,16 @@
-# Sprint Report ([1,2])
+# Sprint Report (1)
 
-In diesem Sprint wurden die bis zum [Meilenstein X](meilenstein-url) erledigten User Stories abgearbeitet.
+In diesem Sprint wurden die bis zum [Meilenstein M4](https://sopra.informatik.uni-stuttgart.de/sopra-ws1718/SoPra-Doku-Entwickler/blob/master/Meilensteine.Abgaben.und.Zielplattform.md#m4)
+erledigten User Stories abgearbeitet.
+
 
 ## Verbesserte Dokumente
 
-*TODO: Dokumente aufführen die verbessert wurden.*
+* Aus dem Product Backlog wurde *Feature 1.1 Design/Branding* entfernt.
+* Ein Akzeptanztest *Die Listen von Verträgen/Versicherungsobjekten sind erreichbar.* 
+wurde vom *Feature 1.4 Kontrollzentrum* entfernt.
 
 ## Tests/Testprotokolle/Nachweis der Testabdeckung
 
-*TODO: Testprotokolle und Abdeckung hier einfügen/verlinken*
+Die Testcoverage befindet sich im doc Ordner oder unter folgendem Link
+https://sopra.informatik.uni-stuttgart.de/sopra-ws1718/sopra-team-6/blob/m4/doc/coverage/testreport.zip
