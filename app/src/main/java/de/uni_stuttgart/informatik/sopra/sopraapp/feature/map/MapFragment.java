@@ -3,9 +3,11 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -30,6 +32,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -74,11 +77,12 @@ public class MapFragment
     private BottomSheetMapBehaviour bottomSheetMapBehaviour;
     private SopraMap sopraMap;
     private boolean isGpsServiceBound;
+    private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        Log.i("OnCreateView", "init");
         mRootView = inflater.inflate(R.layout.activity_main_fragment_mapview,
                 container,
                 false);
@@ -86,15 +90,18 @@ public class MapFragment
 
         bottomSheetMapBehaviour = new BottomSheetMapBehaviour(LockableBottomSheetBehaviour.from(mBottomSheetContainer));
 
-        damaageCaseObserver = o -> bottomSheetMapBehaviour.updateDamageCase((DamageCase) o);
+        damaageCaseObserver = o -> {
+            new Handler().postDelayed(() -> bottomSheetMapBehaviour.updateDamageCase((DamageCase) o), 300);
 
-        initMapView(savedInstanceState);
-        if (!createdOnce) {
-            onResume();
-            damageCaseHandler.getLiveData()
-                    .observe(getActivity(), damaageCaseObserver);
+        };
 
-        }
+        // if (!createdOnce)
+            initMapView(savedInstanceState);
+
+        onResume();
+        damageCaseHandler.getLiveData()
+                .observe(getActivity(), damaageCaseObserver);
+
 
         createdOnce = true;
 
@@ -104,6 +111,7 @@ public class MapFragment
 
     @Override
     public void onLocationFound(Location location) {
+        Log.i("onLocationFound", "init");
         mFabLocate.setClickable(true);
         mFabLocate.setImageDrawable(currentLocationKnownDrawable);
 
@@ -114,6 +122,7 @@ public class MapFragment
 
     @Override
     public void onLocationNotFound() {
+        Log.i("onLocationNotFound", "init");
         mFabLocate.setClickable(false);
         mFabLocate.setImageDrawable(currentLocationUnknownDrawable);
 
@@ -124,12 +133,14 @@ public class MapFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Log.i("onViewCreated", "init");
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(strAppbarTitle);
 
     }
 
     private void initMapView(Bundle savedInstanceState) {
+        Log.i("initMapView", "init");
         mMapView.onCreate(savedInstanceState);
 
         // to assure immediate display
@@ -155,20 +166,21 @@ public class MapFragment
 
     @OnClick(R.id.fab_plus)
     void handelFloatingActionButtonPlusClick(FloatingActionButton floatingActionButton) {
-//        if (gpsService.wasLocationDisabled()) {
-//            // prompt enable location
-//            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startActivity(intent);
-//
-//            getActivity().runOnUiThread(() ->
-//                    Toast.makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG).show()
-//            );
-//
-//            return;
-//        }
+        Log.i("handlefaButtonPlusClick", "init");
+        if (gpsService.wasLocationDisabled()) {
+            // prompt enable location
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
 
-        // addVertexToActivePolygon();
+            getActivity().runOnUiThread(() ->
+                    Toast.makeText(getContext(), strPromptEnableLocation, Toast.LENGTH_LONG).show()
+            );
+
+            return;
+        }
+
+         addVertexToActivePolygon();
 
         if (bottomSheetMapBehaviour.lockableBottomSheetBehaviour.getState()
                 == BottomSheetBehavior.STATE_HIDDEN) {
@@ -178,6 +190,7 @@ public class MapFragment
 
     @OnClick(R.id.fab_locate)
     void handelFloatingActionButtonLocateClick(FloatingActionButton floatingActionButton) {
+        Log.i("handlefaLocate", "init");
         if (gpsService.wasLocationDisabled()) {
             mFabLocate.setClickable(false);
             mFabLocate.setImageDrawable(currentLocationUnknownDrawable);
@@ -187,18 +200,32 @@ public class MapFragment
         sopraMap.mapCameraMoveToUser();
     }
 
+    private void addVertexToActivePolygon() {
+        Log.i("addVertexToAcPoly", "init");
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+
+        if (callbackDone.get()) {
+            callbackDone.set(false);
+            gpsService.singleLocationCallback(lcl, 10000);
+        }
+    }
+
+
     private void openNewDamageCase() {
+        Log.i("openNewDamageCase", "init");
         bottomSheetMapBehaviour.openNew();
 
     }
 
     private void openDamageCase() {
+        Log.i("openDamageCase", "init");
         bottomSheetMapBehaviour.open();
     }
 
 
     @Override
     public void onStop() {
+        Log.i("onStop", "init");
         super.onStop();
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
@@ -210,10 +237,12 @@ public class MapFragment
         }
 
         gpsService.stopAllCallbacks();
+        damageCaseHandler.getLiveData().removeObserver(damaageCaseObserver);
     }
 
     @Override
     public void onPause() {
+        Log.i("onPause", "init");
         super.onPause();
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
@@ -221,6 +250,7 @@ public class MapFragment
 
     @Override
     public void onResume() {
+        Log.i("onResume", "init");
         super.onResume();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
@@ -229,6 +259,7 @@ public class MapFragment
 
     @Override
     public BackButtonProceedPolicy onBackPressed() {
+        Log.i("onBackButtonPressed", "init");
         if (bottomSheetMapBehaviour.lockableBottomSheetBehaviour.getState() != BottomSheetBehavior.STATE_HIDDEN) {
             bottomSheetMapBehaviour.showCloseAlertIfChanged();
             return BackButtonProceedPolicy.SKIP_ACTIVITY;
@@ -239,12 +270,14 @@ public class MapFragment
 
     @Subscribe
     public void onVertexCreated(VertexCreated event) {
+        Log.i("onVertexCreated", "init");
         int target = Math.max(bottomSheetMapBehaviour.bottomSheetListAdapter.getItemCount() - 1, 0);
         mBottomSheetBubbleList.smoothScrollToPosition(target);
     }
 
     @Subscribe
     public void onVertexSelected(VertexSelected event) {
+        Log.i("onVertexSelected", "init");
         mBottomSheetBubbleList.smoothScrollToPosition(event.vertexNumber);
     }
 
@@ -252,6 +285,7 @@ public class MapFragment
 
     @Subscribe
     public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+        Log.i("onCloseButtonSheet", "init");
         if (gpsService == null) return;
 
         gpsService.stopSingleCallback();
@@ -296,6 +330,7 @@ public class MapFragment
 
     @Override
     public void onStart() {
+        Log.i("onStart", "init");
         super.onStart();
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
@@ -322,6 +357,7 @@ public class MapFragment
         }
 
         void init() {
+            Log.i("BS", "init");
             lockableBottomSheetBehaviour.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 
                 @Override
@@ -335,6 +371,8 @@ public class MapFragment
                 }
 
             });
+
+            lockableBottomSheetBehaviour.setHideable(true);
             lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
 
             mBottomSheetToolbar.getMenu().clear();
@@ -355,6 +393,7 @@ public class MapFragment
         }
 
         void onBottomSheetSaveButtonPressed(View view) {
+            Log.i("BS", "onBottomSheetSaveButtonPressed");
             ButterKnife.apply(mBottomSheetInputs, REMOVE_ERRORS);
 
             try {
@@ -365,8 +404,8 @@ public class MapFragment
                             .setNamePolicyholder(getIfNotEmptyElseThrow(mBottomSheetInputPolicyholder))
                             .setNameExpert(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
                             .setDate(damageCaseDate)
-                            //.setAreaSize(sopraMap.getArea())
-                            //.setCoordinates(sopraMap.getActivePoints())
+                            .setAreaSize(sopraMap.getArea())
+                            .setCoordinates(sopraMap.getActivePoints())
                             .save();
 
                     closeBottomSheet();
@@ -384,16 +423,19 @@ public class MapFragment
         }
 
         private boolean onBottomSheetCloseButtonPressed(MenuItem menuItem) {
+            Log.i("BS", "onBottomSheetCloseButtonPressed");
             showCloseAlertIfChanged();
             return true;
         }
 
         private boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem) {
+            Log.i("BS", "onBottomSheetDeletedButtonPressed");
             showDeleteAlert();
             return true;
         }
 
         public void open() {
+            Log.i("BS", "open");
 
             /* open bottom sheet for testing purposes, will be moved to another file? TODO <-*/
             mBottomSheetContainer.setNestedScrollingEnabled(false);
@@ -416,9 +458,6 @@ public class MapFragment
 
             // Add listener to recycler view: disable button if less than 3 elements are there
             bottomSheetListAdapter.setOnItemCountChanged(this);
-            bottomSheetListAdapter.add();
-            bottomSheetListAdapter.add();
-            bottomSheetListAdapter.add();
 
             // set state 2nd time
             lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -426,10 +465,12 @@ public class MapFragment
 
         @Override
         public void onItemCountChanged(int newItemCount) {
+            Log.i("BS", "onItemCountChanged");
             handleNewAmount(newItemCount);
         }
 
         public void openNew() {
+            Log.i("BS", "openNew");
             // mBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_delete).setEnabled(false);
 
             try {
@@ -450,6 +491,7 @@ public class MapFragment
         }
 
         private void closeBottomSheet() {
+            Log.i("BS", "closeBottomSheet");
             if (gpsService != null)
                 gpsService.stopSingleCallback();
 
@@ -457,11 +499,13 @@ public class MapFragment
         }
 
         public void hide() {
+            Log.i("BS", "hide");
             lockableBottomSheetBehaviour.setHideable(true);
             lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
 
         private void showDeleteAlert() {
+            Log.i("BS", "showDeleteAlert");
             new FixedDialog(getContext())
                     .setTitle(strBottomSheetDeleteDialogHeader)
                     .setMessage(strBottomSheetDeleteDialogMessage)
@@ -474,6 +518,7 @@ public class MapFragment
         }
 
         private void showCloseAlertIfChanged() {
+            Log.i("BS", "showCloseAlertIfChanged");
             if ((damageCaseHandler.getValue() != null && damageCaseHandler.getValue().isChanged())
                     || (bottomSheetListAdapter != null && bottomSheetListAdapter.getItemCount() > 0)) {
                 showCloseAlert();
@@ -483,6 +528,7 @@ public class MapFragment
         }
 
         private void showCloseAlert() {
+            Log.i("BS", "showCloseAlert");
             new FixedDialog(getContext())
                     .setTitle(strBottomSheetCloseDialogHeader)
                     .setMessage(strBottomSheetCloseDialogMessage)
@@ -498,12 +544,15 @@ public class MapFragment
         }
 
         public void updateDamageCase(DamageCase damageCase) {
+            Log.i("BS", "updateDamageCase");
             if (damageCase == null) {
-                closeBottomSheet();
+                // closeBottomSheet();
                 return;
             }
 
             open();
+
+            Log.e("COORD", damageCase.getCoordinates().toString());
 
             String roundedArea = String.valueOf((double) Math.round(damageCase.getAreaSize() * 100d) / 100d);
             mBottomSheetToolbarViewArea.setText(roundedArea);
@@ -522,6 +571,7 @@ public class MapFragment
         }
 
         void handleNewAmount(int newAmount) {
+            Log.i("BS", "handle new Amount");
             lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
             boolean enabled = newAmount > 2;
 
