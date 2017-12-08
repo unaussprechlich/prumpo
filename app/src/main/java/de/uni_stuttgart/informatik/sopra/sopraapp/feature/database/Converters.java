@@ -43,19 +43,19 @@ public class Converters {
     //DateTime #####################################################################################
 
     @TypeConverter
-    public String converteLocalDateTime(DateTime date){
+    public String converteLocalDateTime(DateTime date) {
         return date.toString(DateTimeFormat.fullDate());
     }
 
     @TypeConverter
-    public DateTime converteLocalDateTime(String date){
+    public DateTime converteLocalDateTime(String date) {
         return DateTime.parse(date, DateTimeFormat.fullDate());
     }
 
     //List<LatLng> #################################################################################
 
     @TypeConverter
-    public List<LatLng> convertArrayList(String value){
+    public List<LatLng> convertArrayList(String value) {
         if (value.equals("")) return new ArrayList<>();
         ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<LatLng> points = new ArrayList<>();
@@ -67,7 +67,7 @@ public class Converters {
     }
 
     @TypeConverter
-    public String convertArrayList(List<LatLng> value){
+    public String convertArrayList(List<LatLng> value) {
         if(value == null) return "";
         ArrayList<String> asString = new ArrayList<>();
         for(LatLng latLng : value){
