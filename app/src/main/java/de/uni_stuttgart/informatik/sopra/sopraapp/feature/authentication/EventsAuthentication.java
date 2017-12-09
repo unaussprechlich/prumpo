@@ -3,9 +3,13 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
 
-public class AuthenticationEvents {
+public class EventsAuthentication {
 
-    public static class Login{
+    private EventsAuthentication() {
+        // no need to instantiate outer event
+    }
+
+    public static class Login {
         public final User user;
 
         public Login(User user) {
@@ -13,7 +17,7 @@ public class AuthenticationEvents {
         }
     }
 
-    public static class Logout{
+    public static class Logout {
         public final User user;
 
         public Logout(User user) {

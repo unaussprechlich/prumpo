@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 
 public class OnAddButtonLocationCallback implements LocationCallbackListener {
 
@@ -27,7 +27,7 @@ public class OnAddButtonLocationCallback implements LocationCallbackListener {
     public void onLocationFound(Location location) {
         callbackDone.set(true);
 
-        EventBus.getDefault().post(new VertexCreated(Helper.latLngOf(location)));
+        EventBus.getDefault().post(new EventsVertex.Created(Helper.latLngOf(location)));
     }
 
     @Override

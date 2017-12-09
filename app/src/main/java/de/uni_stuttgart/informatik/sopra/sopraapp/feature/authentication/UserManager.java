@@ -34,12 +34,12 @@ public class UserManager {
     public void login(@NonNull LiveData<User> currentUser){
         this.currentUser = currentUser;
         EventBus.getDefault().removeAllStickyEvents();
-        EventBus.getDefault().postSticky(new AuthenticationEvents.Login(currentUser.getValue()));
+        EventBus.getDefault().postSticky(new EventsAuthentication.Login(currentUser.getValue()));
     }
 
     public void logout(){
         EventBus.getDefault().removeAllStickyEvents();
-        EventBus.getDefault().postSticky(new AuthenticationEvents.Logout(currentUser.getValue()));
+        EventBus.getDefault().postSticky(new EventsAuthentication.Logout(currentUser.getValue()));
         this.currentUser = null;
 
         //TODO testing only ########################################################################

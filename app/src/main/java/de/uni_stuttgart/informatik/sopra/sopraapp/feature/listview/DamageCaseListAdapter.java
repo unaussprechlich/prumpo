@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -22,7 +21,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.OpenMapFragmentEvent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 
 
 public class DamageCaseListAdapter
@@ -116,9 +115,9 @@ public class DamageCaseListAdapter
         DamageCase damageCase = dataHolder.damageCaseList.get(position);
 
         damageCaseHandler.loadFromDatabase(damageCase.getID());
-        EventBus.getDefault().post(new OpenMapFragmentEvent());
+        EventBus.getDefault().post(new EventOpenMapFragment());
 
-        Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(view.getContext(), damageCase.getNamePolicyholder(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

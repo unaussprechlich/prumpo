@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseEventBusActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
 
@@ -29,7 +29,7 @@ public class ProfileActivity extends BaseEventBusActivity {
     }
 
     @Subscribe(sticky = true)
-    public void handleLogin(AuthenticationEvents.Login event){
+    public void handleLogin(EventsAuthentication.Login event){
         ((TextView)findViewById(R.id.user_name_text)).setText(event.user.name);
         ((TextView)findViewById(R.id.user_role_text)).setText(event.user.role.toString());
     }

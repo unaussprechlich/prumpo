@@ -49,10 +49,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Bottom
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 @SuppressLint("SetTextI18n")
@@ -137,7 +135,7 @@ public class MapFragment
     }
 
     @Subscribe
-    public void onVertexCreated(VertexCreated event) {
+    public void onVertexCreated(EventsVertex.Created event) {
         if (bottomSheetListAdapter == null) return;
 
         int target = Math. max(bottomSheetListAdapter.getItemCount()-1, 0);
@@ -145,14 +143,14 @@ public class MapFragment
     }
 
     @Subscribe
-    public void onVertexSelected(VertexSelected event) {
+    public void onVertexSelected(EventsVertex.Selected event) {
         mBottomSheetBubbleList.smoothScrollToPosition(event.vertexNumber);
     }
 
     //##############################################################################################
 
     @Subscribe
-    public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+    public void onCloseBottomSheet(EventsBottomSheet.Close event) {
         if (gpsService == null) return;
 
         gpsService.stopSingleCallback();
@@ -340,7 +338,7 @@ public class MapFragment
         if (gpsService != null)
             gpsService.stopSingleCallback();
 
-        EventBus.getDefault().post(new CloseBottomSheetEvent());
+        EventBus.getDefault().post(new EventsBottomSheet.Close());
     }
 
     private void resetBottomSheetContent() {
@@ -371,7 +369,7 @@ public class MapFragment
                 .setMessage(strBottomSheetCloseDialogMessage)
                 .setCancelable(false)
                 .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) -> {
-                    EventBus.getDefault().post(new ForceClosedBottomSheet());
+                    EventBus.getDefault().post(new EventsBottomSheet.ForceClose());
                     closeBottomSheet();
                 })
                 .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {

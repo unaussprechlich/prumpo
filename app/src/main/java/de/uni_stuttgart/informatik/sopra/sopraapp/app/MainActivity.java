@@ -28,10 +28,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.OpenMapFragmentEvent;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
@@ -100,7 +100,7 @@ public class MainActivity extends BaseEventBusActivity implements
     }
 
     @Subscribe
-    public void onOpenMapFragmentEvent(OpenMapFragmentEvent openMapFragmentEvent){
+    public void onOpenMapFragmentEvent(EventOpenMapFragment openMapFragmentEvent){
         displayMapFragment(true);
     }
 
@@ -134,7 +134,7 @@ public class MainActivity extends BaseEventBusActivity implements
     }
 
     @Subscribe(sticky = true)
-    public void handleLogin(AuthenticationEvents.Login event) {
+    public void handleLogin(EventsAuthentication.Login event) {
         if (findViewById(R.id.user_role_text) == null) return;
         // TODO: fix null binding
 

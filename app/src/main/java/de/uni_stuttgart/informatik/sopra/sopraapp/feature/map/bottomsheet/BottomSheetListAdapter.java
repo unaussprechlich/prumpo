@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexDeleted;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
@@ -73,12 +71,12 @@ public class BottomSheetListAdapter
     //EventBus #####################################################################################
 
     @Subscribe
-    public void onVertexSelected(VertexSelected event) {
+    public void onVertexSelected(EventsVertex.Selected event) {
         updateSelectedViewIndex(event.vertexNumber);
     }
 
     @Subscribe
-    public void onVertexCreated(VertexCreated event) {
+    public void onVertexCreated(EventsVertex.Created event) {
         add();
     }
 
@@ -163,7 +161,7 @@ public class BottomSheetListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-        EventBus.getDefault().post(new VertexSelected(position));
+        EventBus.getDefault().post(new EventsVertex.Selected(position));
     }
 
     /**
@@ -176,7 +174,7 @@ public class BottomSheetListAdapter
      */
     public boolean onLongClick(View view, int position) {
         if (bubbleHolder.bubbleList.size() > 1) {
-            EventBus.getDefault().post(new VertexDeleted(position));
+            EventBus.getDefault().post(new EventsVertex.Deleted(position));
             remove(position);
         }
         return true;

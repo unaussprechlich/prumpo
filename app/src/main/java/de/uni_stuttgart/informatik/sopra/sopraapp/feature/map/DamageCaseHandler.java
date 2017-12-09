@@ -18,7 +18,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
 
 public class DamageCaseHandler implements LifecycleOwner{
@@ -47,7 +47,7 @@ public class DamageCaseHandler implements LifecycleOwner{
     }
 
     @Subscribe
-    public void onDamageCaseSelected(DamageCaseSelected event) {
+    public void onDamageCaseSelected(EventsPolygonSelected.DamageCase event) {
         loadFromDatabase(event.uniqueId);
     }
 
@@ -107,10 +107,11 @@ public class DamageCaseHandler implements LifecycleOwner{
      */
     public void loadFromDatabase(long id){
         if(damageCaseDB != null)
-            if(damageCaseDB.getValue() != null && damageCaseDB.getValue().getID() == id)
-                return;
-            else
+//            if(damageCaseDB.getValue() != null && damageCaseDB.getValue().getID() == id) {
+//                return;
+//            } else {
                 damageCaseDB.removeObservers(this);
+//            }
 
         this.damageCaseDB = damageCaseRepository.getById(id);
         damageCaseDB.observe(this, this::set);

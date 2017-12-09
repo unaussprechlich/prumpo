@@ -36,22 +36,20 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.CloseBottomSheetEvent;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.ForceClosedBottomSheet;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.DamageCaseSelected;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.InsuranceCoverageSelected;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexDeleted;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -63,14 +61,16 @@ import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper
  */
 public class SopraMap implements LifecycleObserver {
 
-    @Inject Vibrator vibrator;
+    // TODO: pls refactor me, senpai!
 
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
 
+    @Inject Vibrator vibrator;
+
     private MutableLiveData<Double> currentArea = new MutableLiveData<>();
 
-    private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
+    private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR; // TODO: extract
 
     private Resources resources;
     private GoogleMap gMap;
@@ -122,19 +122,19 @@ public class SopraMap implements LifecycleObserver {
             if (polygon == null) return;
 
             if (polygon.type == PolygonType.DAMAGE_CASE) {
-                System.out.println(polygon.uniqueId);
-                EventBus.getDefault().post(new DamageCaseSelected(polygon.uniqueId));
-//                selectDamageCase(polygon.uniqueId);
+                EventBus.getDefault()
+                        .post(new EventsPolygonSelected.DamageCase(polygon.uniqueId));
 
             } else {
-                EventBus.getDefault().post(new InsuranceCoverageSelected(polygon.uniqueId));
+                EventBus.getDefault()
+                        .post(new EventsPolygonSelected.InsuranceCoverage(polygon.uniqueId));
             }
         });
 
         gMap.setOnCircleClickListener(circle -> {
             if (!isHighlighted) return;
 
-            EventBus.getDefault().post(new VertexSelected((int) circle.getTag()));
+            EventBus.getDefault().post(new EventsVertex.Selected((int) circle.getTag()));
         });
 
         gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -163,7 +163,7 @@ public class SopraMap implements LifecycleObserver {
 
     }
 
-    // LifecycleObserver ###########################################################################
+    /* <----- lifecycle events -----> */
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void onStart() {
@@ -189,30 +189,20 @@ public class SopraMap implements LifecycleObserver {
             EventBus.getDefault().unregister(this);
     }
 
-    /* <----- event handling methods -----> */
+    /* <----- EventBus event handling methods -----> */
 
     @Subscribe(sticky = true)
-    public void onLogin(AuthenticationEvents.Login event) {
+    public void onLogin(EventsAuthentication.Login event) {
         // the database tells us what shall exist!
-        damageCaseRepository.getAll().observe(damageCaseHandler, listOfDamageCases -> {
-            if (listOfDamageCases == null) return;
+        damageCaseRepository.getAll().observe(damageCaseHandler, damageCases -> {
+            if (damageCases == null) return;
 
-            if (damagePolygons.size() > 0) {
-                clearAllDamages();
-            }
-
-            for (DamageCase damageCase : listOfDamageCases) {
-
-                loadPolygonOf(
-                        damageCase.getCoordinates(),
-                        PolygonType.DAMAGE_CASE,
-                        damageCase.getID()
-                );
-            }
+            synchronizeDamages(damageCases);
         });
 
         damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
             if (damageCase == null) return;
+
 
             if (activePolygon != null) {
                 // avoid deselecting the polygon again, when called twice in a row
@@ -229,7 +219,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onVertexCreated(VertexCreated event) {
+    public void onVertexCreated(EventsVertex.Created event) {
         if (activePolygon == null) {
             newPolygon(event.position, PolygonType.DAMAGE_CASE);
             return;
@@ -242,12 +232,12 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onVertexSelected(VertexSelected event) {
+    public void onVertexSelected(EventsVertex.Selected event) {
         makeDraggableAndMove(polygonHighlightVertex.get(event.vertexNumber));
     }
 
     @Subscribe
-    public void onVertexDeleted(VertexDeleted event) {
+    public void onVertexDeleted(EventsVertex.Deleted event) {
         activePolygon.removeAndDisplay(event.vertexNumber);
         activePolygon.redrawHighlightCircles();
 
@@ -255,13 +245,13 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onAbortBottomSheet(ForceClosedBottomSheet event) {
+    public void onAbortBottomSheet(EventsBottomSheet.ForceClose event) {
         removeActivePolygon();
         reloadDamageCases();
     }
 
     @Subscribe
-    public void onCloseBottomSheet(CloseBottomSheetEvent event) {
+    public void onCloseBottomSheet(EventsBottomSheet.Close event) {
         removeActivePolygon();
         reloadDamageCases();
     }
@@ -381,7 +371,7 @@ public class SopraMap implements LifecycleObserver {
                         type
                 );
 
-        activePolygon.highlight();
+        activePolygon.toggleHighlight();
     }
 
     private Polygon drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
@@ -429,7 +419,7 @@ public class SopraMap implements LifecycleObserver {
         PolygonContainer polygon = polygonFrom(uniqueId, PolygonType.DAMAGE_CASE);
         if (polygon == null) return;
 
-        polygon.highlight();
+        polygon.toggleHighlight();
 
         mapCameraMove(polygon.data.getCentroid());
 
@@ -486,7 +476,7 @@ public class SopraMap implements LifecycleObserver {
         }
 
         activePolygon.removeMapObject();
-        activePolygon.highlight();
+        activePolygon.toggleHighlight();
         activePolygon = null;
     }
 
@@ -626,6 +616,61 @@ public class SopraMap implements LifecycleObserver {
         refreshAreaLivedata();
     }
 
+    private void synchronizeDamages(List<DamageCase> damageCases) {
+        Set<Long> caseIds = new HashSet<>();
+
+        PolygonContainer polygon;
+
+        for (DamageCase damageCase : damageCases) {
+            long damageCaseID = damageCase.getID();
+            caseIds.add(damageCaseID);
+
+            polygon = damagePolygons.get(damageCaseID);
+
+            // polygon not displayed on the map yet, so that must change!
+            if (polygon == null) {
+                loadPolygonOf(
+                        damageCase.getCoordinates(),
+                        PolygonType.DAMAGE_CASE,
+                        damageCaseID
+                );
+
+                continue;
+            }
+
+            // assert damageCaseID == polygon.uniqueId
+
+            /* polygon exists on the map, we update points */
+            polygon.removeMapObject();
+            polygon.mapObject =
+                    drawPolygonOf(
+                            damageCase.getCoordinates(),
+                            PolygonType.DAMAGE_CASE,
+                            damageCaseID
+                    );
+
+            // and redraw highlights in case it was currently selected
+            if (polygon == activePolygon) {
+                activePolygon.redrawHighlightCircles();
+            }
+        }
+
+        // ultimately, remove all remaining map-objects that weren't in the DB
+        for (int i = 0; i < damagePolygons.size(); ++i) {
+            long key = damagePolygons.keyAt(i);
+            polygon = damagePolygons.get(key);
+
+            if (!caseIds.contains(polygon.uniqueId)) {
+                polygon.removeMapObject();
+                damagePolygons.remove(key);
+
+                if (polygon == activePolygon) {
+                    polygon.toggleHighlight();
+                }
+            }
+        }
+    }
+
     /**
      * Combines SopraPolygon's validation/data logic
      * with polygon objects on the google map
@@ -682,7 +727,7 @@ public class SopraMap implements LifecycleObserver {
             mapObject.remove();
         }
 
-        void highlight() {
+        void toggleHighlight() {
             if (isHighlighted) {
                 indexActiveVertex = -1;
 
@@ -712,6 +757,8 @@ public class SopraMap implements LifecycleObserver {
             }
 
             polygonHighlightVertex.clear();
+
+            // TODO: separate from this method and check for side effects
             removeMarker();
         }
 
