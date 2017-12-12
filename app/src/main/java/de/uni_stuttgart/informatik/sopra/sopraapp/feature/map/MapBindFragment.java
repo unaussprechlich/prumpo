@@ -6,6 +6,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.MapView;
@@ -34,34 +35,7 @@ public abstract class MapBindFragment extends DaggerFragment {
     FloatingActionButton mFabPlus;
     @BindView(R.id.fab_locate)
     FloatingActionButton mFabLocate;
-    @BindView(R.id.bottom_sheet_container)
-    NestedScrollView mBottomSheetContainer;
-    @BindView(R.id.bottom_sheet_toolbar)
-    Toolbar mBottomSheetToolbar;
-    @BindView(R.id.bottom_sheet_bubblelist)
-    RecyclerView mBottomSheetBubbleList;
-    @BindView(R.id.bottom_sheet_input_title)
-    EditText mBottomSheetInputTitle;
-    @BindView(R.id.bottom_sheet_input_location)
-    EditText mBottomSheetInputLocation;
-    @BindView(R.id.bottom_sheet_input_policyholder)
-    EditText mBottomSheetInputPolicyholder;
-    @BindView(R.id.bottom_sheet_input_expert)
-    EditText mBottomSheetInputExpert;
-    @BindView(R.id.bottom_sheet_input_date)
-    EditText mBottomSheetInputDate;
-    @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
-    TextView mBottomSheetToolbarViewTitle;
-    @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
-    TextView mBottomSheetToolbarViewArea;
-    @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
-    TextView mBottomSheetToolbarViewDate;
-    @BindViews({R.id.bottom_sheet_input_title,
-            R.id.bottom_sheet_input_location,
-            R.id.bottom_sheet_input_policyholder,
-            R.id.bottom_sheet_input_expert,
-            R.id.bottom_sheet_input_date})
-    List<EditText> mBottomSheetInputs;
+
     @BindString(R.string.appbar_title_map)
     String strAppbarTitle;
     @BindString(R.string.map_frag_bottomsheet_inp_dialog_dc_title_header)
@@ -110,4 +84,10 @@ public abstract class MapBindFragment extends DaggerFragment {
     int dimenBottomSheetBubbleListHeight;
     @BindDimen(R.dimen.bottomsheet_toolbar_height)
     int dimenBottomSheetToolbarHeight;
+
+    @BindDimen(R.dimen.bottomsheet_peek_height)
+    int dimenBottomSheetPeekHeight;
+
+    @BindDimen(R.dimen.bottomsheet_height)
+    int dimenBottomSheetHeight;
 }

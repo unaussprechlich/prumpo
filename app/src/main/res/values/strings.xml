@@ -48,6 +48,9 @@
     <string name="map_frag_botsheet_dialog_yes">Ja</string>
     <string name="map_frag_botsheet_dialog_no">Nein</string>
 
+    <string name="map_frag_botsheet_toolbar_title">Unbenannter Schadensfall</string>
+
+
     <string name="map_frag_botsheet_menu_close">Schließen</string>
     <string name="map_frag_botsheet_menu_save_enabled_apha">1</string>
     <string name="map_frag_botsheet_menu_save_disabled_apha">0.25</string>
