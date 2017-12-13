@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
@@ -38,6 +39,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,8 +108,10 @@ public class MapFragment
     private void updateDamageCase(DamageCase damageCase) {
         Log.e("LOG", "dc");
 
-        if (damageCase == null || currentBottomSheet != null)
+        if (damageCase == null){
+
             return;
+        }
 
         //noinspection ConstantConditions
         currentBottomSheet = new BottomSheetDamageCase(damageCase);
@@ -215,7 +219,8 @@ public class MapFragment
     @Subscribe
     public void onVertexSelected(EventsVertex.Selected event) {
         Log.e("SUBS", "vertexSelected" + event.vertexNumber);
-        if (currentBottomSheet == null || (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
+        if (currentBottomSheet == null
+                || (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
             return;
 
 
@@ -283,13 +288,19 @@ public class MapFragment
     }
 
     private void addVertexToActivePolygon() {
-        Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//        Log.i("addVertexToAcPoly", "init");
+//        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+//
+//        if (callbackDone.get()) {
+//            callbackDone.set(false);
+//            gpsService.singleLocationCallback(lcl, 10000);
+//        }
+//
+//
 
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
+        Handler handler = new Handler();
+        handler.postDelayed(() -> EventBus.getDefault().post(new EventsVertex.Created(Helper.getRandomLatLng())), 500);
+
     }
 
     @Override
@@ -308,7 +319,6 @@ public class MapFragment
                 .observe(getActivity(), damageCaseObserver);
     }
 
-
     @Override
     public void onStop() {
         Log.i("onStop", "init");
@@ -324,6 +334,7 @@ public class MapFragment
 
         gpsService.stopAllCallbacks();
         damageCaseHandler.getLiveData().removeObserver(damageCaseObserver);
+        currentBottomSheet = null;
     }
 
     @Override
@@ -357,7 +368,6 @@ public class MapFragment
         TYPE getType();
 
     }
-
 
     class BottomSheetNewDamageCase implements BottomSheet {
 
@@ -435,8 +445,6 @@ public class MapFragment
             getLifecycle().addObserver(bottomSheetListAdapter);
             bottomSheetListAdapter.notifyDataSetChanged();
 
-            mBottomSheetInputDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
-            mBottomSheetToolbarViewDate.setText(mBottomSheetDate.toString(strSimpleDateFormatPattern));
             mBottomSheetToolbarViewTitle.setText(strToolbarBottomSheetTitle);
 
         }
@@ -503,8 +511,7 @@ public class MapFragment
                     .setTitle(strBottomSheetDeleteDialogHeader)
                     .setMessage(strBottomSheetDeleteDialogMessage)
                     .setCancelable(false)
-                    .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) ->
-                    {
+                    .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) -> {
                         damageCaseHandler.deleteCurrent();
                         fireCloseEvent();
                     })
@@ -594,7 +601,6 @@ public class MapFragment
                     })
                     .setNegativeButtonAction(null)
                     .show();
-
         }
 
         @SuppressWarnings("ConstantConditions")
