@@ -18,6 +18,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
 
@@ -43,12 +44,25 @@ public class DamageCaseHandler implements LifecycleOwner{
     }
 
     private void set(DamageCase damageCase){
+        if(damageCase == null){
+            if(damageCaseDB != null){
+                damageCaseDB.removeObservers(this);
+                damageCaseDB = null;
+            }
+        }
+
         this.damageCase.postValue(damageCase);
     }
 
     @Subscribe
     public void onDamageCaseSelected(EventsPolygonSelected.DamageCase event) {
         loadFromDatabase(event.uniqueId);
+    }
+
+    @Subscribe
+    public void onDamageCaseClosed(EventsBottomSheet.Close e){
+
+        set(null);
     }
 
     //##############################################################################################
@@ -107,6 +121,7 @@ public class DamageCaseHandler implements LifecycleOwner{
      */
     public void loadFromDatabase(long id){
         if(damageCaseDB != null)
+            //TODO
 //            if(damageCaseDB.getValue() != null && damageCaseDB.getValue().getID() == id) {
 //                return;
 //            } else {
