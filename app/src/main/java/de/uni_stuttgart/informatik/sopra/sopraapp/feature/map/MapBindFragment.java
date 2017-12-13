@@ -31,8 +31,6 @@ public abstract class MapBindFragment extends DaggerFragment {
             (editText, index) -> editText.setText("");
     @BindView(R.id.mapView)
     MapView mMapView;
-    @BindView(R.id.fab_plus)
-    FloatingActionButton mFabPlus;
     @BindView(R.id.fab_locate)
     FloatingActionButton mFabLocate;
 

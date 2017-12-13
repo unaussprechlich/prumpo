@@ -4,21 +4,27 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
@@ -30,16 +36,26 @@ public class BottomSheetListAdapter
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
 
+    @Inject
+    GpsService gpsService;
+
     /**
      * Save the selected view position.
      */
     private int selectedViewIndex = -1;
 
+    private static final int TYPE_ELEMENT = 0;
+    private static final int TYPE_BUTTON = 1;
+
+    private AtomicBoolean callbackDone = new AtomicBoolean(true);
+
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
+        SopraApp.getAppComponent().inject(this);
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
+        add(false);
         for (int i = 0; i < amountBubbles; i++)
-            add();
+            add(true);
     }
 
     //LifecycleObserver ############################################################################
@@ -68,6 +84,17 @@ public class BottomSheetListAdapter
             EventBus.getDefault().unregister(this);
     }
 
+    private void addVertexToActivePolygon(Context context) {
+        Log.i("addVertexToAcPoly", "init");
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
+
+        if (callbackDone.get()) {
+            callbackDone.set(false);
+            gpsService.singleLocationCallback(lcl, 10000);
+        }
+
+    }
+
     //EventBus #####################################################################################
 
     @Subscribe
@@ -77,7 +104,7 @@ public class BottomSheetListAdapter
 
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {
-        add();
+        add(true);
     }
 
     //##############################################################################################
@@ -91,11 +118,21 @@ public class BottomSheetListAdapter
      */
     @Override
     public BottomSheetItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
-                        parent,
-                        false);
+
+        View view;
+
+        if (viewType == TYPE_ELEMENT) {
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
+                            parent,
+                            false);
+        } else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_button_item,
+                            parent,
+                            false);
+        }
 
         return new BottomSheetItemViewHolder(view);
     }
@@ -111,7 +148,10 @@ public class BottomSheetListAdapter
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
 
         // set bindings
-        holder.label.setText(String.valueOf(bubbleHolder.bubbleList.get(position).position + 1));
+        if (position == bubbleHolder.bubbleList.size() - 1)
+            holder.label.setText("+");
+        else
+            holder.label.setText(String.valueOf(bubbleHolder.bubbleList.get(position).position + 1));
 
         // set click listener
         holder.label.setOnClickListener(v -> onClick(v, position));
@@ -134,9 +174,9 @@ public class BottomSheetListAdapter
     }
 
     @Override
-    public void add() {
-        bubbleHolder.bubbleList.add(new Bubble(counter.getAndIncrement()));
-        if (itemCountListener != null)
+    public void add(boolean notify) {
+        bubbleHolder.bubbleList.add(bubbleHolder.bubbleList.size(), new Bubble(counter.getAndIncrement()));
+        if (itemCountListener != null && notify)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
         notifyDataSetChanged();
     }
@@ -161,7 +201,10 @@ public class BottomSheetListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-        EventBus.getDefault().post(new EventsVertex.Selected(position));
+        if (position == bubbleHolder.bubbleList.size() - 1)
+            addVertexToActivePolygon(view.getContext());
+        else
+            EventBus.getDefault().post(new EventsVertex.Selected(position));
     }
 
     /**
@@ -173,7 +216,11 @@ public class BottomSheetListAdapter
      * @return true if this adapter handled the click, false else
      */
     public boolean onLongClick(View view, int position) {
-        if (bubbleHolder.bubbleList.size() > 1) {
+
+        if (position == bubbleHolder.bubbleList.size() - 1)
+            return true;
+
+        if (bubbleHolder.bubbleList.size() > 2) {
             EventBus.getDefault().post(new EventsVertex.Deleted(position));
             remove(position);
         }
@@ -246,10 +293,17 @@ public class BottomSheetListAdapter
     }
 
     class Bubble {
-        int position = -1;
+        int position;
 
         Bubble(int position) {
             this.position = position;
         }
     }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == bubbleHolder.bubbleList.size() - 1) ? TYPE_BUTTON : TYPE_ELEMENT;
+    }
+
 }

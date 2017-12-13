@@ -5,7 +5,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
  */
 public interface RecyclerViewOperation {
 
-    void add();
+    void add(boolean notify);
 
 
 }

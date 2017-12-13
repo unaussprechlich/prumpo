@@ -9,19 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import android.view.*;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,9 +19,16 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.Act
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * https://code.tutsplus.com/tutorials/getting-started-with-recyclerview-and-cardview-on-android--cms-23465
@@ -54,14 +49,14 @@ public class DamageCaseListFragment
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;
 
-//    @BindView(R.id.dc_fab_ADD)
-//    FloatingActionButton testFloatingActionButton;
-
     @BindString(R.string.dc_fragment_search_hint)
     String searchHint;
 
     @BindString(R.string.damageCases)
     String toolbarTitle;
+
+    @Inject
+    DamageCaseHandler damageCaseHandler;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
     private SearchView searchView;
@@ -108,12 +103,6 @@ public class DamageCaseListFragment
         onResume();
     }
 
-//    @OnClick(R.id.dc_fab_ADD)
-//    void OnFloatingActionButtonPressed(View view) {
-//        Toast.makeText(view.getContext(), "Adding new DamageCase with random", Toast.LENGTH_SHORT).show();
-//
-//    }
-
     @Override
     public BackButtonProceedPolicy onBackPressed() {
 
@@ -139,9 +128,23 @@ public class DamageCaseListFragment
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(searchHint);
 
+        MenuItem addMenuItem = menu.findItem(R.id.action_add_dc);
+        addMenuItem.setOnMenuItemClickListener(this::onAddDamageCaseMenuItemClicked);
+
         // attach navigation blocker if search menu item is opened
         NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
         searchMenuItem.setOnActionExpandListener(navMenuBlocker);
+    }
+
+    private boolean onAddDamageCaseMenuItemClicked(MenuItem menuItem) {
+        try {
+            damageCaseHandler.createNewDamageCase();
+            EventBus.getDefault().post(new EventOpenMapFragment());
+        } catch (UserManager.NoUserException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     /**

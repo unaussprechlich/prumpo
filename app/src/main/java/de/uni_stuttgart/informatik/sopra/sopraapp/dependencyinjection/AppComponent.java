@@ -30,6 +30,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseLis
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 
 @ApplicationScope
@@ -53,6 +54,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(DamageCase damageCase);
     void inject(DamageCaseHandler damageCaseHandler);
     void inject(DamageCaseRepository damageCaseRepository);
+    void inject(BottomSheetListAdapter bottomSheetListAdapter);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {

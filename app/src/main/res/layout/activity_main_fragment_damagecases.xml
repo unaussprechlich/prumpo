@@ -20,26 +20,6 @@
 
         </android.support.v7.widget.RecyclerView>
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--app:layout_anchor="@+id/dc_recycler_view"-->
-        <!--app:layout_anchorGravity="bottom|right">-->
-
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/dc_fab_ADD"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="15dp"-->
-        <!--android:layout_marginLeft="15dp"-->
-        <!--android:layout_marginRight="15dp"-->
-        <!--android:clickable="true"-->
-        <!--android:focusable="true"-->
-        <!--app:elevation="8dp"-->
-        <!--app:srcCompat="@drawable/ic_add_black_24dp"-->
-        <!--app:backgroundTint="@color/white"/>-->
-        <!--</LinearLayout>-->
     </android.support.design.widget.CoordinatorLayout>
 
 </android.support.constraint.ConstraintLayout>
