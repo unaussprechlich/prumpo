@@ -44,6 +44,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.excepti
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
@@ -287,9 +288,9 @@ public class MapFragment
             gpsService.singleLocationCallback(lcl, 10000);
         }
 
-        // mock locations for testing
+//         mock locations for testing
 //        Handler handler = new Handler();
-//        handler.postDelayed(() -> EventBus.getDefault().post(new VertexCreated(Helper.getRandomLatLng())), 500);
+//        handler.postDelayed(() -> EventBus.getDefault().post(new EventsVertex.Created(Helper.getRandomLatLng())), 500);
     }
 
     private void openNewDamageCase() {
