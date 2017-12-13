@@ -246,14 +246,15 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onAbortBottomSheet(EventsBottomSheet.ForceClose event) {
+        System.out.println("ABORT");
         removeActivePolygon();
         reloadDamageCases();
     }
 
     @Subscribe
     public void onCloseBottomSheet(EventsBottomSheet.Close event) {
-        removeActivePolygon();
-        reloadDamageCases();
+        System.out.println("CLOSE");
+        deselectActivePolygon();
     }
 
    /* <----- exposed methods -----> */
@@ -465,6 +466,12 @@ public class SopraMap implements LifecycleObserver {
         }
 
         damagePolygons.clear();
+    }
+
+    private void deselectActivePolygon() {
+        if (activePolygon == null || !isHighlighted) return;
+
+        activePolygon.toggleHighlight();
     }
 
     private void removeActivePolygon() {
