@@ -1,7 +1,9 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.arch.lifecycle.Observer;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -12,11 +14,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
+import android.widget.Button;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,17 +65,20 @@ public class MapFragment
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView mBottomSheetContainer;
 
+    private BottomSheetNewDamageCase.OnBottomSheetClose onBottomSheetClose
+            = () -> currentBottomSheet = null;
 
-    /* Knife-N'-Butter section!' */
-    private View mRootView;
-    private BottomSheet currentBottomSheet = null;
-    private LockableBottomSheetBehaviour mBottomSheetBehavior;
-    private SopraMap sopraMap;
+    private Observer damageCaseObserver
+            = damageCase -> updateDamageCase((DamageCase) damageCase);
+
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
-    private Observer damageCaseObserver = damageCase -> updateDamageCase((DamageCase) damageCase);
+
+    private LockableBottomSheetBehaviour mBottomSheetBehavior;
+    private BottomSheet currentBottomSheet = null;
+    private SopraMap sopraMap;
+    private View mRootView;
     private boolean isGpsServiceBound;
 
-    private BottomSheetNewDamageCase.OnBottomSheetClose onBottomSheetClose = () -> currentBottomSheet = null;
 
     @Nullable
     @Override
@@ -87,6 +91,7 @@ public class MapFragment
                 container,
                 false);
         ButterKnife.bind(this, mRootView);
+        setHasOptionsMenu(true);
         setUpBottomSheet();
         initMapView(savedInstanceState);
 
@@ -94,6 +99,40 @@ public class MapFragment
 
         return mRootView;
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.map_toolbar_top, menu);
+
+        MenuItem addMenuItem = menu.findItem(R.id.action_add);
+        addMenuItem.setOnMenuItemClickListener(this::onAddButtonClicked);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private boolean onAddButtonClicked(MenuItem menuItem) {
+
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.activity_main_fragment_add_dialog);
+        d.setTitle("Custom Dialog");
+        Button addDc = d.findViewById(R.id.map_frag_dialog_add_dc);
+        Button addInsurance = d.findViewById(R.id.map_frag_dialog_add_insurance);
+        Button abortButton = d.findViewById(R.id.map_frag_dialog_abort);
+
+        addDc.setOnClickListener(v -> {
+            try {
+                damageCaseHandler.createNewDamageCase();
+//            EventBus.getDefault().post(new EventOpenMapFragment());
+            } catch (UserManager.NoUserException e) {
+                e.printStackTrace();
+            }
+            d.dismiss();
+        });
+        abortButton.setOnClickListener(v -> d.dismiss());
+        d.show();
+        return true;
+    }
+
 
     private void updateDamageCase(DamageCase damageCase) {
         Log.e("LOG", "dc");
@@ -103,7 +142,7 @@ public class MapFragment
         }
 
         if (damageCase.getNamePolicyholder().isEmpty()) {
-            currentBottomSheet = new BottomSheetNewDamageCase( getContext(), mBottomSheetContainer,
+            currentBottomSheet = new BottomSheetNewDamageCase(getContext(), mBottomSheetContainer,
                     mBottomSheetBehavior,
                     damageCaseHandler,
                     getLifecycle(),
@@ -141,7 +180,6 @@ public class MapFragment
             gpsService.singleLocationCallback(lcl, 10000);
         }
     }
-
 
     private void setUpBottomSheet() {
         mBottomSheetBehavior = LockableBottomSheetBehaviour.from(mBottomSheetContainer);

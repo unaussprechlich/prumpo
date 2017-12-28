@@ -92,6 +92,10 @@
     <string name="su_name_hint">Name</string>
     <string name="su_name_last_hint">Nachname</string>
     <string name="su_name_first_hint">Vorname</string>
+    <string name="map_frag_add_dialog_title">Create new ...</string>
+    <string name="map_frag_dialog_add_dc">Damage-Case</string>
+    <string name="map_frag_dialog_add_insurance">Insurance</string>
+    <string name="map_frag_dialog_add_abort">Abort</string>
 
     <string-array name="user_groups">
         <item>ADMIN</item>

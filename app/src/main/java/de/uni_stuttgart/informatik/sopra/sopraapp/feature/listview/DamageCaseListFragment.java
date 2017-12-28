@@ -41,8 +41,10 @@ public class DamageCaseListFragment
 
     @Inject
     DamageCaseRepository damageCaseRepository;
+
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+
     @Inject
     UserManager userManager;
 
@@ -54,9 +56,6 @@ public class DamageCaseListFragment
 
     @BindString(R.string.damageCases)
     String toolbarTitle;
-
-    @Inject
-    DamageCaseHandler damageCaseHandler;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
     private SearchView searchView;
@@ -128,23 +127,10 @@ public class DamageCaseListFragment
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(searchHint);
 
-        MenuItem addMenuItem = menu.findItem(R.id.action_add_dc);
-        addMenuItem.setOnMenuItemClickListener(this::onAddDamageCaseMenuItemClicked);
 
         // attach navigation blocker if search menu item is opened
         NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
         searchMenuItem.setOnActionExpandListener(navMenuBlocker);
-    }
-
-    private boolean onAddDamageCaseMenuItemClicked(MenuItem menuItem) {
-        try {
-            damageCaseHandler.createNewDamageCase();
-            EventBus.getDefault().post(new EventOpenMapFragment());
-        } catch (UserManager.NoUserException e) {
-            e.printStackTrace();
-        }
-
-        return true;
     }
 
     /**

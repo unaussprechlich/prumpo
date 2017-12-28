@@ -300,7 +300,6 @@ public class BottomSheetListAdapter
         }
     }
 
-
     @Override
     public int getItemViewType(int position) {
         return (position == bubbleHolder.bubbleList.size() - 1) ? TYPE_BUTTON : TYPE_ELEMENT;
