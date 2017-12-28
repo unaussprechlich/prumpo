@@ -259,7 +259,7 @@ public class SopraMap implements LifecycleObserver {
 
    /* <----- exposed methods -----> */
 
-    List<LatLng> getActivePoints() {
+    public List<LatLng> getActivePoints() {
         return activePolygon.data.getPoints();
     }
 
@@ -267,7 +267,7 @@ public class SopraMap implements LifecycleObserver {
         return currentArea;
     }
 
-    double getArea() {
+    public double getArea() {
         if (activePolygon == null) return 0;
 
         return activePolygon.data.getArea();
