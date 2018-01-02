@@ -79,7 +79,6 @@ public class MapFragment
     private View mRootView;
     private boolean isGpsServiceBound;
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -267,6 +266,8 @@ public class MapFragment
             return;
 
         BottomSheetNewDamageCase bsdc = (BottomSheetNewDamageCase) currentBottomSheet;
+        String text = String.valueOf(sopraMap.areaLiveData().getValue());
+        bsdc.getmBottomSheetToolbarViewArea().setText("null".equals(text) ? "0.0" : text);
 
         int target = Math.max(bsdc.getBottomSheetListAdapter().getItemCount() - 1, 0);
         bsdc.getmBottomSheetBubbleList().smoothScrollToPosition(target);
