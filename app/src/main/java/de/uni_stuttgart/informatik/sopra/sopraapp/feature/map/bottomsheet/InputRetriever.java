@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
-
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -194,13 +193,13 @@ public class InputRetriever {
         // sets courser at the end of the input field
         Selection.setSelection(editText.getText(), editText.length());
 
-        // create the alert an show
+        // create the alert and show
         AlertDialog alertDialog = new FixedDialog(context)
                 .setView(dialogLayout)
                 .setCancelable(false)
                 .setTitle(title == null ? defaultTitle : title)
                 .setPositiveButton(dialogAccept, (dialogInterface, i) -> {
-                    pressedTextField.setText(editText.getText());
+                            pressedTextField.setText(editText.getText());
                             if (positiveAction != null)
                                 positiveAction.onClick(dialogInterface, i);
                         }

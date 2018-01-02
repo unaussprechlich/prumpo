@@ -2,7 +2,6 @@
 
 <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/bottom_sheet_container_all"
         android:layout_width="match_parent"
@@ -15,107 +14,18 @@
 
             android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/bottom_sheet_toolbar"
+        <include
+                layout="@layout/activity_main_bottom_sheet_top_bar_list"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary"
-                android:elevation="0dp"
-                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:titleTextColor="@color/white">
-
-
-        </android.support.v7.widget.Toolbar>
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:orientation="vertical">
-
-            <TextView
-                    android:id="@+id/bottom_sheet_toolbar_dc_title_value"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="start"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:visibility="visible"
-                    />
-
-            <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_area_value"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:textColor="@color/white"
-                        android:visibility="visible"
-                        tools:text="0.0"/>
-
-                <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_seperate_area_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:text=" ha  |  "
-                        android:textColor="@color/white"
-                        android:visibility="visible"/>
-
-                <TextView
-                        android:id="@+id/bottom_sheet_toolbar_dc_date_value"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:textColor="@color/white"
-                        android:visibility="visible"
-                        tools:text="Thu, 7 Dec 2017"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <android.support.v7.widget.RecyclerView
-                android:id="@+id/bottom_sheet_bubblelist"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/bottomsheet_bubblelist_height"
-                android:layout_below="@id/bottom_sheet_toolbar"
-                android:orientation="horizontal"
-                android:scrollbars="horizontal"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="0dp"
-                tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item"/>
+                android:layout_height="wrap_content"
+                android:id="@+id/bstop"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/bottom_sheet_bubblelist"
+                android:layout_below="@+id/bstop"
                 android:orientation="vertical"
                 android:padding="8dp">
-            <!--android:layout_below="@id/bottom_sheet_list"-->
-
-
-            <!--Schadensfälle können mit der Angabe des Versicherungsobjekts
-            (Name des Versicherungsnehmers,
-            Fläche und Koordinaten des Objekts,
-            Region (mind. Landkreis)),
-            Schadensinformationen
-            (Schadensfläche, Schadensposition,
-            Schadens-Koordinaten/-Polygon, Datum)
-            und Name des Gutachters erfasst werden.-->
 
             <LinearLayout
                     android:layout_width="match_parent"
@@ -134,7 +44,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                 <EditText
-                        android:id="@+id/bottom_sheet_input_title"
+                        android:id="@+id/bottom_sheet_dc_input_title"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -161,7 +71,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                 <EditText
-                        android:id="@+id/bottom_sheet_input_location"
+                        android:id="@+id/bottom_sheet_dc_input_location"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -190,7 +100,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                 <EditText
-                        android:id="@+id/bottom_sheet_input_policyholder"
+                        android:id="@+id/bottom_sheet_dc_input_policyholder"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -218,7 +128,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                 <EditText
-                        android:id="@+id/bottom_sheet_input_expert"
+                        android:id="@+id/bottom_sheet_dc_input_expert"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -245,7 +155,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                 <EditText
-                        android:id="@+id/bottom_sheet_input_date"
+                        android:id="@+id/bottom_sheet_dc_input_date"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

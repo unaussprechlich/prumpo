@@ -3,7 +3,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.arch.lifecycle.Observer;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
@@ -31,10 +29,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheet;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetNewDamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.*;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -121,12 +116,29 @@ public class MapFragment
         addDc.setOnClickListener(v -> {
             try {
                 damageCaseHandler.createNewDamageCase();
-//            EventBus.getDefault().post(new EventOpenMapFragment());
             } catch (UserManager.NoUserException e) {
                 e.printStackTrace();
             }
             d.dismiss();
         });
+
+        addInsurance.setOnClickListener(v -> {
+
+            // todo check for opened bottom sheet
+
+            currentBottomSheet = new BottomSheetNewInsurance(
+                    getContext(),
+                    mBottomSheetContainer,
+                    mBottomSheetBehavior,
+                    getLifecycle(),
+                    gpsService,
+                    sopraMap,
+                    onBottomSheetClose);
+            new Handler().postDelayed(currentBottomSheet::show, 400);
+            d.dismiss();
+
+        });
+
         abortButton.setOnClickListener(v -> d.dismiss());
         d.show();
         return true;
@@ -135,6 +147,8 @@ public class MapFragment
 
     private void updateDamageCase(DamageCase damageCase) {
         Log.e("LOG", "dc");
+
+        // todo check for opened insurance bottom sheet
 
         if (damageCase == null) {
             return;
@@ -262,7 +276,7 @@ public class MapFragment
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {
         Log.e("SUBS", "vertexCreated" + event.position);
-        if (currentBottomSheet == null && (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
+        if (currentBottomSheet == null || (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
             return;
 
         BottomSheetNewDamageCase bsdc = (BottomSheetNewDamageCase) currentBottomSheet;

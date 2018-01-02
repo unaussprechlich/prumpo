@@ -7,5 +7,4 @@ public interface RecyclerViewOperation {
 
     void add(boolean notify);
 
-
 }

@@ -53,7 +53,7 @@ public class BottomSheetListAdapter
         super();
         SopraApp.getAppComponent().inject(this);
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
-        add(false);
+        add(false); // + Button
         for (int i = 0; i < amountBubbles; i++)
             add(true);
     }
