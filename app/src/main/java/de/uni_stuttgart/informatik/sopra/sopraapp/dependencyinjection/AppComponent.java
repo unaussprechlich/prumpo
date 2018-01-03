@@ -23,6 +23,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManag
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
@@ -32,7 +33,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
@@ -62,6 +63,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(Contract contract);
 
     void inject(DamageCaseHandler damageCaseHandler);
+    void inject(ContractHandler contractHandler);
 
     void inject(DamageCaseRepository damageCaseRepository);
     void inject(ContractRepository contractRepository);

@@ -9,7 +9,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import org.greenrobot.eventbus.EventBus;
 

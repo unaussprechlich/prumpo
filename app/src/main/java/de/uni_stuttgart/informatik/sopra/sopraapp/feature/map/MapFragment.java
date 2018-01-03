@@ -41,6 +41,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -129,7 +130,7 @@ public class MapFragment
 
         addDc.setOnClickListener(v -> {
             try {
-                damageCaseHandler.createNewDamageCase();
+                damageCaseHandler.createNew();
             } catch (UserManager.NoUserException e) {
                 e.printStackTrace();
             }

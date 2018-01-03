@@ -46,6 +46,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
@@ -64,7 +65,8 @@ public class SopraMap implements LifecycleObserver {
     // TODO: pls refactor me, senpai!
 
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject DamageCaseHandler damageCaseHandler;
+    @Inject
+    DamageCaseHandler damageCaseHandler;
 
     @Inject Vibrator vibrator;
 

@@ -50,7 +50,7 @@ public final class ContractBuilder {
         return this;
     }
 
-    public Contract createContract() throws UserManager.NoUserException {
+    public Contract create() throws UserManager.NoUserException {
         long ownerID = userManager.getCurrentUser().getID();
         return new Contract(name, areaCode, areaSize, ownerID, coordinates, date, true);
     }
