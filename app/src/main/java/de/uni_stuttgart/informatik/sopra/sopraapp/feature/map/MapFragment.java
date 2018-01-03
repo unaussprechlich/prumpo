@@ -169,7 +169,8 @@ public class MapFragment
             return;
         }
 
-        if (damageCase.getNamePolicyholder().isEmpty()) {
+        //TODO make this noice ;)
+        if (damageCase.getContractHolderName().isEmpty()) {
             currentBottomSheet = new BottomSheetNewDamageCase(getContext(), mBottomSheetContainer,
                     mBottomSheetBehavior,
                     damageCaseHandler,

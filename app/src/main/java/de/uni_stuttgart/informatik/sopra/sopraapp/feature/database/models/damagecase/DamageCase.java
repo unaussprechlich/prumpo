@@ -154,6 +154,15 @@ public class DamageCase implements ModelDB {
         return userRepository.getById(expertID);
     }
 
+    @SuppressWarnings("ConstantConditions")
+    public String getContractHolderName(){
+        try{
+            return getContract().getValue().getHolder().getValue().name;
+        } catch (NullPointerException ex){
+            return null;
+        }
+    }
+
     // SETTER ######################################################################################
 
     public DamageCase setName(String name) {
