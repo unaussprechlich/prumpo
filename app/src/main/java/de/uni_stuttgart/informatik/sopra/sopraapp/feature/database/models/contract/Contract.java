@@ -22,6 +22,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 
 
 /**
@@ -36,6 +38,7 @@ public class Contract implements ModelDB {
 
     @Ignore @Inject ContractRepository contractRepository;
     @Ignore @Inject DamageCaseRepository damageCaseRepository;
+    @Ignore @Inject UserRepository userRepository;
 
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
@@ -44,6 +47,9 @@ public class Contract implements ModelDB {
 
     @ColumnInfo(index = true)
     long ownerID;
+
+    @ColumnInfo(index = true)
+    long holderID;
 
     @ColumnInfo(index = true)
     String name;
@@ -62,10 +68,11 @@ public class Contract implements ModelDB {
             String areaCode,
             double areaSize,
             long ownerID,
+            long holderID,
             List<LatLng> coordinates,
             DateTime date,
             boolean intial) {
-        this(name, areaCode, areaSize, ownerID, coordinates, date);
+        this(name, areaCode, areaSize, ownerID, holderID, coordinates, date);
         this.initial = intial;
     }
 
@@ -74,6 +81,7 @@ public class Contract implements ModelDB {
             String areaCode,
             double areaSize,
             long ownerID,
+            long holderID,
             List<LatLng> coordinates,
             DateTime date) {
         SopraApp.getAppComponent().inject(this);
@@ -81,6 +89,7 @@ public class Contract implements ModelDB {
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.ownerID = ownerID;
+        this.holderID = holderID;
         this.coordinates = coordinates;
         this.date = date;
     }
@@ -128,6 +137,10 @@ public class Contract implements ModelDB {
         return ownerID;
     }
 
+    public long getHolderID() {
+        return holderID;
+    }
+
     public void addDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
         damageCase.setContractID(this.id).save();
         this.damageCases.add(damageCase.getID());
@@ -144,6 +157,10 @@ public class Contract implements ModelDB {
 
     public List<DamageCase> getAllDamageCases(){
         return getAllLiveDataDamageCases().stream().map(LiveData::getValue).collect(Collectors.toList());
+    }
+
+    public LiveData<User> getHolder(){
+        return userRepository.getById(holderID);
     }
 
     // SETTER ######################################################################################
@@ -175,6 +192,12 @@ public class Contract implements ModelDB {
     public Contract setAreaSize(double areaSize) {
         isChanged = true;
         this.areaSize = areaSize;
+        return this;
+    }
+
+    public Contract setHolderID(long holderID) {
+        isChanged = true;
+        this.holderID = holderID;
         return this;
     }
 }

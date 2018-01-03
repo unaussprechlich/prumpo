@@ -31,7 +31,7 @@ public interface ContractDao extends IDao<Contract> {
      * @return  A {@link User} of all the users in the table.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner")
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner OR holderID = :owner")
     LiveData<List<Contract>> getAll(long owner);
 
     /**
@@ -42,7 +42,7 @@ public interface ContractDao extends IDao<Contract> {
      * @return      A {@link User} of the selected users.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :owner")
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR holderID = :owner)")
     LiveData<Contract> getById(long id, long owner);
 
 

@@ -11,11 +11,13 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 
 public final class ContractBuilder {
     private String name = "";
     private String areaCode = "";
     private double areaSize = -1;
+    private long holderID = -1;
     private List<LatLng> coordinates = new ArrayList<>();
     private DateTime date = DateTime.now();
 
@@ -50,8 +52,18 @@ public final class ContractBuilder {
         return this;
     }
 
+    public ContractBuilder setHolder(User holder) {
+        this.holderID = holder.id;
+        return this;
+    }
+
+    public ContractBuilder setHolder(long holder) {
+        this.holderID = holder;
+        return this;
+    }
+
     public Contract create() throws UserManager.NoUserException {
         long ownerID = userManager.getCurrentUser().getID();
-        return new Contract(name, areaCode, areaSize, ownerID, coordinates, date, true);
+        return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, true);
     }
 }
