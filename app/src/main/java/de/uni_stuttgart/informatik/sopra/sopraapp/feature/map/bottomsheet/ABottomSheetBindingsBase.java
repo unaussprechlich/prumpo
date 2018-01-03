@@ -13,10 +13,13 @@ abstract public class ABottomSheetBindingsBase {
 
     @BindDimen(R.dimen.bottomsheet_bubblelist_height)
     int dimenBottomSheetBubbleListHeight;
+
     @BindDimen(R.dimen.bottomsheet_toolbar_height)
     int dimenBottomSheetToolbarHeight;
+
     @BindDimen(R.dimen.bottomsheet_peek_height)
     int dimenBottomSheetPeekHeight;
+
     @BindDimen(R.dimen.bottomsheet_height)
     int dimenBottomSheetHeight;
 

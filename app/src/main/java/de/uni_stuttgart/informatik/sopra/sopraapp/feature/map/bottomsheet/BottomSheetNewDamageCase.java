@@ -149,7 +149,6 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
         return TYPE.DAMAGE_CASE_NEW;
     }
 
-
     // ### Listeners ##################################################################################################
 
     @OnClick(R.id.bottom_sheet_dc_input_date)

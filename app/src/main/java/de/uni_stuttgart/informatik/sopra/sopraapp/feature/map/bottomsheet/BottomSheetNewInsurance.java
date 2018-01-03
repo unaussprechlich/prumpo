@@ -41,6 +41,7 @@ public class BottomSheetNewInsurance extends ABottomSheetBindingsInsurance {
     }
 
     protected void showDeleteAlert() {
+
         new FixedDialog(mContext)
                 .setTitle(strBottomSheetDeleteDialogHeader)
                 .setMessage(strBottomSheetDeleteDialogMessage)
@@ -55,6 +56,7 @@ public class BottomSheetNewInsurance extends ABottomSheetBindingsInsurance {
     }
 
     protected void showCloseAlert() {
+
         new FixedDialog(mContext)
                 .setTitle(strBottomSheetCloseDialogHeader)
                 .setMessage(strBottomSheetCloseDialogMessage)

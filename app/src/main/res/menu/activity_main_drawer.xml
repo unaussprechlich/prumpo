@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_menu_map"
             android:title="@string/appbar_title_map" />
         <item
+            android:id="@+id/nav_insurances"
+            android:icon="@drawable/ic_attach_money_black_24dp"
+            android:title="@string/insurances"/>
+        <item
             android:id="@+id/nav_damageCases"
             android:icon="@drawable/ic_menu_list"
             android:title="@string/damageCases" />

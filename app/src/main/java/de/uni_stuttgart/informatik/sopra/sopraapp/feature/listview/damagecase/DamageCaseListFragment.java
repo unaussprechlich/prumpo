@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
 
 import android.arch.lifecycle.ViewModelProvider;
@@ -19,12 +19,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.Act
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ import java.util.List;
  */
 @ActivityScope
 public class DamageCaseListFragment
-        extends DaggerFragment
+        extends AbstractListFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
     @Inject
@@ -51,42 +49,10 @@ public class DamageCaseListFragment
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;
 
-    @BindString(R.string.dc_fragment_search_hint)
-    String searchHint;
-
     @BindString(R.string.damageCases)
     String toolbarTitle;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
-    private SearchView searchView;
-
-    public void setDamageCaseList(List<DamageCase> damageCaseList) {
-        this.damageCaseList = damageCaseList;
-        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseList), true);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // specify that fragment controls toolbar
-        setHasOptionsMenu(true);
-
-        View view = inflater.inflate(R.layout.activity_main_fragment_damagecases,
-                container, false);
-
-        ButterKnife.bind(this, view);
-
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        ViewModelProviders.of(this, viewModelFactory)
-                .get(DamageCaseCollectionViewModel.class)
-                .getAll()
-                .observe(this, this::setDamageCaseList);
-    }
 
 
     @Override
@@ -103,34 +69,18 @@ public class DamageCaseListFragment
     }
 
     @Override
-    public BackButtonProceedPolicy onBackPressed() {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        // if search view is open -> fragment handles back button
-        if (searchView != null && !searchView.isIconified()) {
-
-            // close search menu
-            searchView.setIconified(true);
-            return BackButtonProceedPolicy.SKIP_ACTIVITY;
-        }
-
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
+        ViewModelProviders.of(this, viewModelFactory)
+                .get(DamageCaseCollectionViewModel.class)
+                .getAll()
+                .observe(this, this::setDamageCaseList);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.damage_cases, menu);
-
-        // init search view and attach listener
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) searchMenuItem.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint(searchHint);
-
-
-        // attach navigation blocker if search menu item is opened
-        NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
-        searchMenuItem.setOnActionExpandListener(navMenuBlocker);
+    public void setDamageCaseList(List<DamageCase> damageCaseList) {
+        this.damageCaseList = damageCaseList;
+        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseList), true);
     }
 
     /**
@@ -153,22 +103,8 @@ public class DamageCaseListFragment
         return true; // true -> listener handled query already, nothing more needs to be done
     }
 
-    /**
-     * Called when search is submitted.
-     * This is actually never used because data is updated while changing query.
-     *
-     * @param query the submitted query.
-     * @return <code>false</code>
-     */
     @Override
-    public boolean onQueryTextSubmit(String query) {
-        return true; // true -> listener handled query already
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().getWindow()
-                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    public int getLayoutToInflate(){
+        return R.layout.activity_main_fragment_damagecases;
     }
 }

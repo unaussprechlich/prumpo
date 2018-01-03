@@ -101,7 +101,6 @@ public class MapFragment
 
         MenuItem addMenuItem = menu.findItem(R.id.action_add);
         addMenuItem.setOnMenuItemClickListener(this::onAddButtonClicked);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private boolean onAddButtonClicked(MenuItem menuItem) {
@@ -271,7 +270,6 @@ public class MapFragment
 
         sopraMap.removeUserPositionIndicator();
     }
-
 
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {

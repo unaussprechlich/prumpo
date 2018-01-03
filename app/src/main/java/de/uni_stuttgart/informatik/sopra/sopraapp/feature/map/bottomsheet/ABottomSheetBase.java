@@ -53,7 +53,6 @@ public abstract class ABottomSheetBase extends ABottomSheetBindingsBase implemen
 
     abstract boolean onBottomSheetDeleteButtonPressed(MenuItem menuItem);
 
-
     // ### Actual class ###############################################################################################
 
     ABottomSheetBase(Context context,
@@ -108,8 +107,6 @@ public abstract class ABottomSheetBase extends ABottomSheetBindingsBase implemen
 
     }
 
-
-
     public BottomSheetListAdapter getBottomSheetListAdapter() {
         return bottomSheetListAdapter;
     }
@@ -138,12 +135,12 @@ public abstract class ABottomSheetBase extends ABottomSheetBindingsBase implemen
         mBottomSheetBehavior.allowUserSwipe(enabled);
 
         if (enabled && !animationShown) {
-            mBottomSheetContainer
-                    .animate()
-                    .setInterpolator(new AccelerateInterpolator())
+            mBottomSheetContainer.animate().setInterpolator(new AccelerateInterpolator())
                     .translationY(-100);
+
             new Handler().postDelayed(() -> mBottomSheetContainer.animate().setInterpolator(new AccelerateInterpolator())
                     .translationY(-0), 300);
+
             animationShown = !animationShown;
         }
 
