@@ -72,7 +72,7 @@ public class DamageCaseListAdapter
         DamageCase damageCase = dataHolder.dataList.get(position);
 
         // set bindings
-        holder.damageCaseName.setText(damageCase.getNameDamageCase());
+        holder.damageCaseName.setText(damageCase.getName());
         holder.policyHolder.setText(damageCase.getNamePolicyholder());
         holder.areaCode.setText(String.valueOf(damageCase.getAreaCode()));
 

@@ -1,24 +1,12 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.VectorDrawable;
-import android.support.annotation.DrawableRes;
-import android.support.v7.widget.AppCompatDrawableManager;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 /**
  * Houses app-wide, static constants
  */
 public class Constants {
-
     /* permissions */
 
     public static final int REQUEST_LOCATION_PERMISSION = 202;

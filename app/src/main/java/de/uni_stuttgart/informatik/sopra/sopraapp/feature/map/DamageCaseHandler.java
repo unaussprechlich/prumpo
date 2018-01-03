@@ -77,7 +77,7 @@ public class DamageCaseHandler implements LifecycleOwner{
             damageCaseDB = null;
         }
 
-        set(new DamageCaseBuilder().setNameDamageCase("Unbenannter Schadensfall").create());
+        set(new DamageCaseBuilder().setName("Unbenannter Schadensfall").create());
     }
 
     /**

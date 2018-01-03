@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.ColumnInfo;
@@ -14,30 +14,28 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 
 
 /**
- * Represents one record of the DamageCase table.
+ * Represents one record of the Contract table.
  */
-@Entity(tableName = DamageCase.TABLE_NAME)
-public class DamageCase implements ModelDB {
+@Entity(tableName = Contract.TABLE_NAME)
+public class Contract implements ModelDB {
 
-    public static final String TABLE_NAME = "damagecase";
+    public static final String TABLE_NAME = "contract";
     @Ignore private boolean isChanged = false;
     @Ignore private boolean initial = false;
 
-    @Ignore @Inject DamageCaseRepository damageCaseRepository;
-    @Ignore @Inject UserRepository userRepository;
     @Ignore @Inject ContractRepository contractRepository;
+    @Ignore @Inject DamageCaseRepository damageCaseRepository;
 
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
@@ -50,35 +48,29 @@ public class DamageCase implements ModelDB {
     @ColumnInfo(index = true)
     String name;
 
-    long expertID;
-    long contractID;
+    List<Long> damageCases = new ArrayList<>();
 
     List<LatLng> coordinates = new ArrayList<>();
     String areaCode;
+    double areaSize;
 
     @ColumnInfo(index = true)
     DateTime date;
-    double areaSize;
 
-
-    public DamageCase(
+    public Contract(
             String name,
-            long expertID,
-            long contractID,
             String areaCode,
             double areaSize,
             long ownerID,
             List<LatLng> coordinates,
             DateTime date,
             boolean intial) {
-        this(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date);
+        this(name, areaCode, areaSize, ownerID, coordinates, date);
         this.initial = intial;
     }
 
-    public DamageCase(
+    public Contract(
             String name,
-            long expertID,
-            long contractID,
             String areaCode,
             double areaSize,
             long ownerID,
@@ -86,8 +78,6 @@ public class DamageCase implements ModelDB {
             DateTime date) {
         SopraApp.getAppComponent().inject(this);
         this.name = name;
-        this.expertID = expertID;
-        this.contractID = contractID;
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.ownerID = ownerID;
@@ -102,22 +92,14 @@ public class DamageCase implements ModelDB {
     //GETTER #######################################################################################
 
     public long save() throws ExecutionException, InterruptedException {
-        if(initial) return damageCaseRepository.insert(this);
-        else if(isChanged) damageCaseRepository.update(this);
+        if(initial) return contractRepository.insert(this);
+        else if(isChanged) contractRepository.update(this);
         isChanged = false;
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public long getContractID() {
-        return contractID;
-    }
-
-    public long getExpertID() {
-        return expertID;
     }
 
     public List<LatLng> getCoordinates() {
@@ -146,53 +128,51 @@ public class DamageCase implements ModelDB {
         return ownerID;
     }
 
-    public LiveData<Contract> getContract(){
-        return contractRepository.getById(contractID);
+    public void addDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
+        damageCase.setContractID(this.id).save();
+        this.damageCases.add(damageCase.getID());
     }
 
-    public LiveData<User> getExpert() {
-        return userRepository.getById(expertID);
+    public void removeDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
+        damageCase.setContractID(-1).save();
+        this.damageCases.remove(damageCase.getID());
+    }
+
+    public List<LiveData<DamageCase>> getAllLiveDataDamageCases(){
+        return damageCases.stream().map(damageCaseRepository::getById).collect(Collectors.toList());
+    }
+
+    public List<DamageCase> getAllDamageCases(){
+        return getAllLiveDataDamageCases().stream().map(LiveData::getValue).collect(Collectors.toList());
     }
 
     // SETTER ######################################################################################
 
-    public DamageCase setName(String name) {
+    public Contract setName(String name) {
         isChanged = true;
         this.name = name;
         return this;
     }
 
-    public DamageCase setContractID(long contractID) {
-        isChanged = true;
-        this.contractID = contractID;
-        return this;
-    }
-
-    public DamageCase setExpertID(long expertID) {
-        isChanged = true;
-        this.expertID = expertID;
-        return this;
-    }
-
-    public DamageCase setCoordinates(List<LatLng> coordinates) {
+    public Contract setCoordinates(List<LatLng> coordinates) {
         isChanged = true;
         this.coordinates = coordinates;
         return this;
     }
 
-    public DamageCase setAreaCode(String areaCode) {
+    public Contract setAreaCode(String areaCode) {
         isChanged = true;
         this.areaCode = areaCode;
         return this;
     }
 
-    public DamageCase setDate(DateTime date) {
+    public Contract setDate(DateTime date) {
         isChanged = true;
         this.date = date;
         return this;
     }
 
-    public DamageCase setAreaSize(double areaSize) {
+    public Contract setAreaSize(double areaSize) {
         isChanged = true;
         this.areaSize = areaSize;
         return this;

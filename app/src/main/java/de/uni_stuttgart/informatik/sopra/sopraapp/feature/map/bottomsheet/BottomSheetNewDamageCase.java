@@ -108,10 +108,10 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
 
                 Log.e("SAVEB", "not null");
                 long id = damageCaseHandler.getValue()
-                        .setNameDamageCase(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
+                        .setName(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
                         .setAreaCode(getIfNotEmptyElseThrow(mBottomSheetInputLocation))
                         .setNamePolicyholder(getIfNotEmptyElseThrow(mBottomSheetInputPolicyholder))
-                        .setNameExpert(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
+                        .setExpertID(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
                         .setDate(damageCaseDate)
                         .setAreaSize(sopraMap.getArea())
                         .setCoordinates(sopraMap.getActivePoints())
@@ -178,7 +178,7 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
                 .setPositiveButtonAction((dialogInterface, i) -> {
                     mBottomSheetToolbarViewTitle.setText(mBottomSheetInputTitle.getText());
                     if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNameDamageCase(mBottomSheetInputTitle.getText().toString());
+                        damageCaseHandler.getValue().setName(mBottomSheetInputTitle.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
@@ -222,7 +222,7 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
                 .withHint(strBottomSheetInpDialogExpertHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
                     if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNameExpert(mBottomSheetInputExpert.getText().toString());
+                        damageCaseHandler.getValue().setExpertID(mBottomSheetInputExpert.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();

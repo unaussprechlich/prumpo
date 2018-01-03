@@ -11,6 +11,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class Converters {
     //List<LatLng> #################################################################################
 
     @TypeConverter
-    public List<LatLng> convertArrayList(String value) {
+    public List<LatLng> convertListOfLatLng(String value) {
         if (value.equals("")) return new ArrayList<>();
         ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<LatLng> points = new ArrayList<>();
@@ -67,13 +68,32 @@ public class Converters {
     }
 
     @TypeConverter
-    public String convertArrayList(List<LatLng> value) {
+    public String convertListOfLatLng(List<LatLng> value) {
         if(value == null) return "";
         ArrayList<String> asString = new ArrayList<>();
         for(LatLng latLng : value){
             asString.add(latLng.latitude + "-" + latLng.longitude);
         }
         return gson.toJson(asString);
+    }
+
+    //List<Long> ###################################################################################
+
+    @TypeConverter
+    public List<Long> convertListOfLong(String value) {
+        if (value.equals("")) return new ArrayList<>();
+        ArrayList<String> asString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
+        return asString.stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+    }
+
+    @TypeConverter
+    public String convertListOfLong(List<Long> value) {
+        if(value == null) return "";
+        return gson.toJson(value.stream()
+                .map(Object::toString)
+                .toArray());
     }
 
 }

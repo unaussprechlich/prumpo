@@ -14,14 +14,29 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.LatLng;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
@@ -29,15 +44,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.*;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetNewDamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetNewInsurance;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -50,6 +64,7 @@ public class MapFragment
 
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
+
     @Inject
     DamageCaseRepository damageCaseRepository;
     @Inject

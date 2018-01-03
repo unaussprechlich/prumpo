@@ -33,11 +33,11 @@ public class BottomSheetDamageCase extends BottomSheetNewDamageCase {
 
         String roundedArea = String.valueOf((double) Math.round(damageCase.getAreaSize() * 100d) / 100d);
         mBottomSheetToolbarViewArea.setText(roundedArea);
-        mBottomSheetInputTitle.setText(damageCase.getNameDamageCase());
-        mBottomSheetToolbarViewTitle.setText(damageCase.getNameDamageCase());
+        mBottomSheetInputTitle.setText(damageCase.getName());
+        mBottomSheetToolbarViewTitle.setText(damageCase.getName());
         mBottomSheetInputLocation.setText(damageCase.getAreaCode());
         mBottomSheetInputPolicyholder.setText(damageCase.getNamePolicyholder());
-        mBottomSheetInputExpert.setText(damageCase.getNameExpert());
+        mBottomSheetInputExpert.setText(damageCase.getExpertID());
         mBottomSheetInputDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
         mBottomSheetToolbarViewDate.setText(damageCase.getDate().toString(strSimpleDateFormatPattern));
         mBottomSheetDate = damageCase.getDate();

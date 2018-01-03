@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract;
 
 
 import android.support.annotation.NonNull;
@@ -9,11 +9,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractRepository;
 
 @ApplicationScope
-public class DamageCaseRepository extends AbstractRepository<DamageCase, DamageCaseDao>{
+public class ContractRepository extends AbstractRepository<Contract, ContractDao>{
 
     @Inject
-    public DamageCaseRepository(@NonNull DamageCaseDao damageCaseDao){
-        super(damageCaseDao);
+    public ContractRepository(@NonNull ContractDao contractDao){
+        super(contractDao);
     }
 
 }

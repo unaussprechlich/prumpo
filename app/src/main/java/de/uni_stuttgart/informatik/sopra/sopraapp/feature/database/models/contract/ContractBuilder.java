@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -12,10 +12,8 @@ import javax.inject.Inject;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
-public final class DamageCaseBuilder {
+public final class ContractBuilder {
     private String name = "";
-    private long contractID = -1;
-    private long expertID = -1;
     private String areaCode = "";
     private double areaSize = -1;
     private List<LatLng> coordinates = new ArrayList<>();
@@ -23,47 +21,37 @@ public final class DamageCaseBuilder {
 
     @Inject UserManager userManager;
 
-    public DamageCaseBuilder() {
+    public ContractBuilder() {
         SopraApp.getAppComponent().inject(this);
     }
 
-    public DamageCaseBuilder setName(String name) {
+    public ContractBuilder setName(String name) {
         this.name = name;
         return this;
     }
 
-    public DamageCaseBuilder setContractID(long contractID) {
-        this.contractID = contractID;
-        return this;
-    }
-
-    public DamageCaseBuilder setExpertID(long expertID) {
-        this.expertID = expertID;
-        return this;
-    }
-
-    public DamageCaseBuilder setAreaCode(String areaCode) {
+    public ContractBuilder setAreaCode(String areaCode) {
         this.areaCode = areaCode;
         return this;
     }
 
-    public DamageCaseBuilder setAreaSize(double areaSize) {
+    public ContractBuilder setAreaSize(double areaSize) {
         this.areaSize = areaSize;
         return this;
     }
 
-    public DamageCaseBuilder setCoordinates(List<LatLng> coordinates) {
+    public ContractBuilder setCoordinates(List<LatLng> coordinates) {
         this.coordinates = coordinates;
         return this;
     }
 
-    public DamageCaseBuilder setDate(DateTime date) {
+    public ContractBuilder setDate(DateTime date) {
         this.date = date;
         return this;
     }
 
-    public DamageCase create() throws UserManager.NoUserException {
+    public Contract createContract() throws UserManager.NoUserException {
         long ownerID = userManager.getCurrentUser().getID();
-        return new DamageCase(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date, true);
+        return new Contract(name, areaCode, areaSize, ownerID, coordinates, date, true);
     }
 }

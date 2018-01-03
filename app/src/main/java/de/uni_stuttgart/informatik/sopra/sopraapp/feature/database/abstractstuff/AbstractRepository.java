@@ -39,7 +39,14 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         AsyncTask.execute(() -> dao.update(model));
     }
 
-    abstract protected long getUserId();
+    protected long getUserId() {
+        try {
+            return userManager.getCurrentUser().getID();
+        } catch (UserManager.NoUserException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     // CREATE ######################################################################################
 

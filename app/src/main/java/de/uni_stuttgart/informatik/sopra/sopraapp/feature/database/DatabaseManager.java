@@ -5,11 +5,13 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 
 /**
  * This class represents the Database. If you add a new model provide it
@@ -19,11 +21,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
  * annotation if you change any of the models.
  */
 @ApplicationScope
-@Database(entities = {User.class, DamageCase.class}, version = 9)
+@Database(entities = {User.class, DamageCase.class, Contract.class}, version = 10)
 @TypeConverters({Converters.class})
 public abstract class DatabaseManager extends RoomDatabase {
 
     public abstract UserDao userDao();
     public abstract DamageCaseDao damageCaseDao();
+    public abstract ContractDao contractDao();
 
 }
