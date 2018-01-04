@@ -24,9 +24,9 @@ import org.joda.time.DateTime;
 
 import java.util.concurrent.ExecutionException;
 
-public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
+public class BottomSheetNewDamageCase {
 
-    private DateTime damageCaseDate = DateTime.now();
+    /*private DateTime damageCaseDate = DateTime.now();
     protected DamageCaseHandler damageCaseHandler;
 
     public BottomSheetNewDamageCase(Context context,
@@ -110,8 +110,7 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
                 long id = damageCaseHandler.getValue()
                         .setName(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
                         .setAreaCode(getIfNotEmptyElseThrow(mBottomSheetInputLocation))
-                        .setNamePolicyholder(getIfNotEmptyElseThrow(mBottomSheetInputPolicyholder))
-                        .setExpertID(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
+//                        .setExpertID(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
                         .setDate(damageCaseDate)
                         .setAreaSize(sopraMap.getArea())
                         .setCoordinates(sopraMap.getActivePoints())
@@ -206,27 +205,12 @@ public class BottomSheetNewDamageCase extends ABottomSheetBindingsDamageCase {
                 .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                 .withHint(strBottomSheetInpDialogPolicyholderHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setNamePolicyholder(mBottomSheetInputPolicyholder.getText().toString());
+//                    if (damageCaseHandler.hasValue())
+//                        damageCaseHandler.getValue().setNamePolicyholder(mBottomSheetInputPolicyholder.getText().toString());
                 })
                 .setNegativeButtonAction(null)
                 .show();
 
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @OnClick(R.id.bottom_sheet_dc_input_expert)
-    void onClickBottomSheetInputExpert(EditText editText) {
-        InputRetriever.of(editText)
-                .withTitle(strBottomSheetInpDialogExpertHeader)
-                .withHint(strBottomSheetInpDialogExpertHint)
-                .setPositiveButtonAction((dialogInterface, i) -> {
-                    if (damageCaseHandler.hasValue())
-                        damageCaseHandler.getValue().setExpertID(mBottomSheetInputExpert.getText().toString());
-                })
-                .setNegativeButtonAction(null)
-                .show();
-
-    }
+    }*/
 
 }

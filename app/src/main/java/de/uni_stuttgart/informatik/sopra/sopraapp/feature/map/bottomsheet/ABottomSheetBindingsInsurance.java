@@ -10,7 +10,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-public abstract class ABottomSheetBindingsInsurance extends ABottomSheetBase {
+public abstract class ABottomSheetBindingsInsurance {
 
     @BindView(R.id.bottom_sheet_input_insurance_name)
     EditText mBottomSheetInputInsuranceName;
@@ -31,20 +31,20 @@ public abstract class ABottomSheetBindingsInsurance extends ABottomSheetBase {
     @BindString(R.string.map_frag_bottomsheet_insurance_delete_dialog_message)
     String strBottomSheetDeleteDialogMessage;
 
-    ABottomSheetBindingsInsurance(Context context,
-                                  NestedScrollView bottomSheetContainer,
-                                  LockableBottomSheetBehaviour bottomSheetBehavior,
-                                  Lifecycle lifecycle,
-                                  GpsService gpsService,
-                                  SopraMap sopraMap,
-                                  OnBottomSheetClose onBottomSheetClose) {
-
-        super(context,
-                bottomSheetContainer,
-                bottomSheetBehavior,
-                lifecycle,
-                gpsService,
-                sopraMap,
-                onBottomSheetClose);
-    }
+//    ABottomSheetBindingsInsurance(Context context,
+//                                  NestedScrollView bottomSheetContainer,
+//                                  LockableBottomSheetBehaviour bottomSheetBehavior,
+//                                  Lifecycle lifecycle,
+//                                  GpsService gpsService,
+//                                  SopraMap sopraMap,
+//                                  OnBottomSheetClose onBottomSheetClose) {
+//
+//        super(context,
+//                bottomSheetContainer,
+//                bottomSheetBehavior,
+//                lifecycle,
+//                gpsService,
+//                sopraMap,
+//                onBottomSheetClose);
+//    }
 }

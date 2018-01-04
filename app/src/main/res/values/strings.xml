@@ -109,4 +109,7 @@
         <item>GUTACHTER</item>
         <item>BAUER</item>
     </string-array>
+
+    <string name="today">Heute</string>
+
 </resources>

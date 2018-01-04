@@ -17,10 +17,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBotto
 import org.greenrobot.eventbus.EventBus;
 import org.joda.time.DateTime;
 
-public class BottomSheetNewInsurance extends ABottomSheetBindingsInsurance {
+public class BottomSheetNewInsurance  {
 
 
-    public BottomSheetNewInsurance(Context context,
+    /*public BottomSheetNewInsurance(Context context,
                                    NestedScrollView bottomSheetContainer,
                                    LockableBottomSheetBehaviour bottomSheetBehavior,
                                    Lifecycle lifecycle,
@@ -114,5 +114,5 @@ public class BottomSheetNewInsurance extends ABottomSheetBindingsInsurance {
                 .setPositiveButtonAction(null)
                 .setNegativeButtonAction(null)
                 .show();
-    }
+    }*/
 }

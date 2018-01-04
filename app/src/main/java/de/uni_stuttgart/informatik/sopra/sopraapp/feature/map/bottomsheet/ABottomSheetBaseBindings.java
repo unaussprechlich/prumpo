@@ -1,15 +1,18 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 import butterknife.BindDimen;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
-abstract public class ABottomSheetBindingsBase {
+/**
+ * Defines all Butter Knife bindings which are used in all Bottom Sheets.
+ */
+public abstract class ABottomSheetBaseBindings {
+
+    // ### Dimensions ################################################################################## Dimensions ###
 
     @BindDimen(R.dimen.bottomsheet_bubblelist_height)
     int dimenBottomSheetBubbleListHeight;
@@ -24,25 +27,16 @@ abstract public class ABottomSheetBindingsBase {
     int dimenBottomSheetHeight;
 
 
-    @BindView(R.id.bottom_sheet_container_all)
-    CoordinatorLayout mBottomSheetLayoutContainer;
+    // ### Views ############################################################################################ Views ###
 
     @BindView(R.id.bottom_sheet_toolbar)
-    Toolbar mBottomSheetToolbar;
+    Toolbar viewBottomSheetToolbar;
 
     @BindView(R.id.bottom_sheet_bubblelist)
-    RecyclerView mBottomSheetBubbleList;
+    RecyclerView viewBottomSheetBubbleList;
 
 
-    @BindView(R.id.bottom_sheet_toolbar_dc_title_value)
-    TextView mBottomSheetToolbarViewTitle;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_area_value)
-    TextView mBottomSheetToolbarViewArea;
-
-    @BindView(R.id.bottom_sheet_toolbar_dc_date_value)
-    TextView mBottomSheetToolbarViewDate;
-
+    // ### Strings ######################################################################################## Strings ###
 
     @BindString(R.string.map_frag_bottomsheet_close_dialog_header)
     String strBottomSheetCloseDialogHeader;
@@ -59,5 +53,7 @@ abstract public class ABottomSheetBindingsBase {
     @BindString(R.string.map_frag_bottomsheet_date_pattern)
     String strSimpleDateFormatPattern;
 
+    @BindString(R.string.today)
+    String strToday;
 
 }

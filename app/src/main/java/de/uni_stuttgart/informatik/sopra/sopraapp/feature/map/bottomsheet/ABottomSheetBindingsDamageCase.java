@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 
 import java.util.List;
 
-public abstract class ABottomSheetBindingsDamageCase extends ABottomSheetBase {
+public abstract class ABottomSheetBindingsDamageCase {
 
     static final ButterKnife.Action<EditText> REMOVE_ERRORS =
             (editText, index) -> editText.setError(null);
@@ -32,16 +32,12 @@ public abstract class ABottomSheetBindingsDamageCase extends ABottomSheetBase {
     @BindView(R.id.bottom_sheet_dc_input_policyholder)
     EditText mBottomSheetInputPolicyholder;
 
-    @BindView(R.id.bottom_sheet_dc_input_expert)
-    EditText mBottomSheetInputExpert;
-
     @BindView(R.id.bottom_sheet_dc_input_date)
     EditText mBottomSheetInputDate;
 
     @BindViews({R.id.bottom_sheet_dc_input_title,
             R.id.bottom_sheet_dc_input_location,
             R.id.bottom_sheet_dc_input_policyholder,
-            R.id.bottom_sheet_dc_input_expert,
             R.id.bottom_sheet_dc_input_date})
     List<EditText> mBottomSheetInputs;
 
@@ -82,20 +78,20 @@ public abstract class ABottomSheetBindingsDamageCase extends ABottomSheetBase {
     DateTime mBottomSheetDate = DateTime.now();
 
 
-    ABottomSheetBindingsDamageCase(Context context,
-                                   NestedScrollView bottomSheetContainer,
-                                   LockableBottomSheetBehaviour bottomSheetBehavior,
-                                   Lifecycle lifecycle,
-                                   GpsService gpsService,
-                                   SopraMap sopraMap,
-                                   OnBottomSheetClose onBottomSheetClose) {
-
-        super(context,
-                bottomSheetContainer,
-                bottomSheetBehavior,
-                lifecycle,
-                gpsService,
-                sopraMap,
-                onBottomSheetClose);
-    }
+//    ABottomSheetBindingsDamageCase(Context context,
+//                                   NestedScrollView bottomSheetContainer,
+//                                   LockableBottomSheetBehaviour bottomSheetBehavior,
+//                                   Lifecycle lifecycle,
+//                                   GpsService gpsService,
+//                                   SopraMap sopraMap,
+//                                   OnBottomSheetClose onBottomSheetClose) {
+//
+//        super(context,
+//                bottomSheetContainer,
+//                bottomSheetBehavior,
+//                lifecycle,
+//                gpsService,
+//                sopraMap,
+//                onBottomSheetClose);
+//    }
 }
