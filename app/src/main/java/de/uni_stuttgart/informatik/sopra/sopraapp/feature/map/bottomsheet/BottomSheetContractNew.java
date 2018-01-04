@@ -7,15 +7,17 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-public class BottomSheetContractNewFunctions extends ABottomSheetContractNewBindings {
+public class BottomSheetContractNew extends ABottomSheetContractNewBindings {
 
-    public BottomSheetContractNewFunctions(Context context,
-                                           NestedScrollView nestedScrollView,
-                                           LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
-                                           Lifecycle lifecycle,
-                                           GpsService gpsService,
-                                           SopraMap sopraMap,
-                                           OnBottomSheetClose onBottomSheetClose) {
+    // ### Constructor ################################################################################ Constructor ###
+
+    public BottomSheetContractNew(Context context,
+                                  NestedScrollView nestedScrollView,
+                                  LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
+                                  Lifecycle lifecycle,
+                                  GpsService gpsService,
+                                  SopraMap sopraMap,
+                                  OnBottomSheetClose onBottomSheetClose) {
 
         super(context,
                 nestedScrollView,
@@ -25,6 +27,8 @@ public class BottomSheetContractNewFunctions extends ABottomSheetContractNewBind
                 sopraMap,
                 onBottomSheetClose);
     }
+
+    // ### Implemented Methods ################################################################ Implemented Methods ###
 
     @Override
     int getLayoutResourceFile() {
@@ -43,6 +47,11 @@ public class BottomSheetContractNewFunctions extends ABottomSheetContractNewBind
 
     @Override
     void onToolbarCloseButtonPressed() {
+
+    }
+
+    @Override
+    void onBubbleListAddButtonPressed() {
 
     }
 

@@ -6,7 +6,14 @@ import android.support.v4.widget.NestedScrollView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-public abstract class ABottomSheetContractNewBindings extends ABottomSheetBaseFunctions{
+public abstract class ABottomSheetContractNewBindings
+        extends ABottomSheetBaseFunctions{
+
+    // ### Dimensions ################################################################################## Dimensions ###
+    // ### Views ############################################################################################ Views ###
+    // ### Strings ######################################################################################## Strings ###
+
+    // ### Constructor ################################################################################ Constructor ###
 
     public ABottomSheetContractNewBindings(Context context,
                                            NestedScrollView nestedScrollView,

@@ -29,8 +29,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheet;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecaseNewFunctions;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecaseNew;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
@@ -63,7 +64,7 @@ public class MapFragment
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView mBottomSheetContainer;
 
-    private BottomSheet.OnBottomSheetClose onBottomSheetClose
+    private IBottomSheet.OnBottomSheetClose onBottomSheetClose
             = () -> currentBottomSheet = null;
 
     private Observer damageCaseObserver
@@ -72,7 +73,7 @@ public class MapFragment
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
     private LockableBottomSheetBehaviour mBottomSheetBehavior;
-    private BottomSheet currentBottomSheet = null;
+    private IBottomSheet currentBottomSheet = null;
     private SopraMap sopraMap;
     private View mRootView;
     private boolean isGpsServiceBound;
@@ -116,26 +117,11 @@ public class MapFragment
         Button abortButton = d.findViewById(R.id.map_frag_dialog_abort);
 
         addDc.setOnClickListener(v -> {
-//            try {
-//                damageCaseHandler.createNew();
-//            } catch (UserManager.NoUserException e) {
-//                e.printStackTrace();
-//            }
-
-
-            currentBottomSheet =
-                    new BottomSheetDamagecaseNewFunctions(getContext(),
-                            mBottomSheetContainer,
-                            mBottomSheetBehavior,
-                            damageCaseHandler,
-                            getLifecycle(),
-                            gpsService,
-                            sopraMap,
-                            onBottomSheetClose);
-
-            new Handler().postDelayed(currentBottomSheet::show, 400);
-
-
+            try {
+                damageCaseHandler.createNew();
+            } catch (UserManager.NoUserException e) {
+                e.printStackTrace();
+            }
             d.dismiss();
         });
 
@@ -160,37 +146,39 @@ public class MapFragment
             return;
         }
 
+        if (damageCase.getDate() != null) {
+            BottomSheetDamagecase editDamageCase = new BottomSheetDamagecase(getContext(),
+                    mBottomSheetContainer,
+                    mBottomSheetBehavior,
+                    damageCaseHandler,
+                    getLifecycle(),
+                    gpsService,
+                    sopraMap,
+                    onBottomSheetClose, damageCase);
+            this.currentBottomSheet = editDamageCase;
+
+            damageCase.getCoordinates().forEach(__ ->
+                    editDamageCase.getBottomSheetListAdapter().add(true));
+
+
+        } else {
+            currentBottomSheet = new BottomSheetDamagecaseNew(getContext(),
+                    mBottomSheetContainer,
+                    mBottomSheetBehavior,
+                    damageCaseHandler,
+                    getLifecycle(),
+                    gpsService,
+                    sopraMap,
+                    onBottomSheetClose);
+
+
+            addVertexToActivePolygon();
+        }
+
+
 //        //TODO make this noice ;)
-//        String contractHolderName = damageCase.getContractHolderName();
-//
-//        if (contractHolderName != null && contractHolderName.isEmpty()) {
-//            currentBottomSheet = new BottomSheetNewDamageCase(getContext(), mBottomSheetContainer,
-//                    mBottomSheetBehavior,
-//                    damageCaseHandler,
-//                    getLifecycle(),
-//                    gpsService,
-//                    sopraMap,
-//                    onBottomSheetClose);
-//
-//            addVertexToActivePolygon();
-//
-//        } else {
-//            currentBottomSheet = new BottomSheetDamageCase(getContext(), mBottomSheetContainer,
-//                    mBottomSheetBehavior,
-//                    damageCaseHandler,
-//                    getLifecycle(),
-//                    gpsService,
-//                    sopraMap,
-//                    damageCase,
-//                    onBottomSheetClose);
-//            BottomSheetDamageCase bsdc = (BottomSheetDamageCase) currentBottomSheet;
-//
-//            for (LatLng latLng : damageCase.getCoordinates()) {
-//                bsdc.getBottomSheetListAdapter().add(true);
-//            }
-//        }
-//
-//        new Handler().postDelayed(currentBottomSheet::show, 400);
+
+        new Handler().postDelayed(currentBottomSheet::show, 400);
 
     }
 
@@ -240,7 +228,9 @@ public class MapFragment
             sopraMap = new SopraMap(googleMap, getContext());
             getLifecycle().addObserver(sopraMap);
 
-            sopraMap.areaLiveData().observe(this, area -> currentBottomSheet.displayCurrentAreaValue(area));
+            sopraMap.areaLiveData().observe(this, area -> {
+                currentBottomSheet.displayCurrentAreaValue(area);
+            });
 
         });
 
@@ -278,10 +268,10 @@ public class MapFragment
     public void onVertexCreated(EventsVertex.Created event) {
         Log.e("SUBS", "vertexCreated" + event.position);
         if (currentBottomSheet == null ||
-                (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
+                (currentBottomSheet.getType() != IBottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != IBottomSheet.TYPE.DAMAGE_CASE_NEW))
             return;
 
-        BottomSheetDamagecaseNewFunctions bsdc = (BottomSheetDamagecaseNewFunctions) currentBottomSheet;
+        BottomSheetDamagecaseNew bsdc = (BottomSheetDamagecaseNew) currentBottomSheet;
 
         int target = Math.max(bsdc.getBottomSheetListAdapter().getItemCount() - 1, 0);
         bsdc.getViewBottomSheetBubbleList().smoothScrollToPosition(target);
@@ -291,11 +281,11 @@ public class MapFragment
     public void onVertexSelected(EventsVertex.Selected event) {
         Log.e("SUBS", "vertexSelected" + event.vertexNumber);
         if (currentBottomSheet == null
-                || (currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != BottomSheet.TYPE.DAMAGE_CASE_NEW))
+                || (currentBottomSheet.getType() != IBottomSheet.TYPE.DAMAGE_CASE || currentBottomSheet.getType() != IBottomSheet.TYPE.DAMAGE_CASE_NEW))
             return;
 
 
-        BottomSheetDamagecaseNewFunctions bsdc = (BottomSheetDamagecaseNewFunctions) currentBottomSheet;
+        BottomSheetDamagecaseNew bsdc = (BottomSheetDamagecaseNew) currentBottomSheet;
         bsdc.getViewBottomSheetBubbleList().smoothScrollToPosition(event.vertexNumber);
     }
 

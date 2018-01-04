@@ -13,6 +13,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
 public abstract class ABottomSheetDamagecaseNewBindings extends ABottomSheetBaseFunctions {
 
+    // ### Dimensions ################################################################################## Dimensions ###
+
+
+    // ### Views ############################################################################################ Views ###
+
     @BindView(R.id.bs_dc_toolbar_title)
     TextView toolbarTitle;
 
@@ -31,12 +36,15 @@ public abstract class ABottomSheetDamagecaseNewBindings extends ABottomSheetBase
     @BindView(R.id.bs_dc_textView_inputContractName)
     TextView contentContractName;
 
+    // ### Strings ######################################################################################## Strings ###
 
     @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message)
     String strBottomSheetCloseDialogMessage;
 
     @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message)
     String strBottomSheetDeleteDialogMessage;
+
+    // ### Constructor ################################################################################ Constructor ###
 
     public ABottomSheetDamagecaseNewBindings(Context context,
                                              NestedScrollView nestedScrollView,

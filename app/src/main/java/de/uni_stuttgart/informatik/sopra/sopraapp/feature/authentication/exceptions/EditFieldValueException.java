@@ -9,7 +9,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 
 public class EditFieldValueException extends Exception {
 
-    final EditText editText;
+    private final EditText editText;
 
     @Inject
     Vibrator vibrator;

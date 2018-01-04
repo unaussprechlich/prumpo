@@ -24,35 +24,39 @@ import org.greenrobot.eventbus.EventBus;
 @SuppressWarnings("ALL")
 public abstract class ABottomSheetBaseFunctions
         extends ABottomSheetBaseBindings
-        implements BottomSheet {
+        implements IBottomSheet {
 
     // ### Constructor Variables ############################################################ Constructor Variables ###
+
     protected Context context;
     protected NestedScrollView nestedScrollView;
     protected LockableBottomSheetBehaviour lockableBottomSheetBehaviour;
     protected Lifecycle lifecycle;
     protected GpsService gpsService;
     protected SopraMap sopraMap;
-    protected BottomSheet.OnBottomSheetClose onBottomSheetClose;
+    protected IBottomSheet.OnBottomSheetClose onBottomSheetClose;
 
     // ### Toolbar Buttons ######################################################################## Toolbar Buttons ###
+
     protected ActionMenuItemView tbSaveButton;
     protected MenuItem tbCloseButton;
     protected MenuItem tbDeleteButton;
 
     // ### Class Variables ######################################################################## Class Variables ###
+
     private BottomSheetListAdapter bottomSheetListAdapter;
     private boolean animationShown = false;
     private View bottomSheetView;
 
     // ### Constructor ################################################################################ Constructor ###
+
     public ABottomSheetBaseFunctions(Context context,
                                      NestedScrollView nestedScrollView,
                                      LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
                                      Lifecycle lifecycle,
                                      GpsService gpsService,
                                      SopraMap sopraMap,
-                                     BottomSheet.OnBottomSheetClose onBottomSheetClose) {
+                                     IBottomSheet.OnBottomSheetClose onBottomSheetClose) {
         this.context = context;
         this.nestedScrollView = nestedScrollView;
         this.lockableBottomSheetBehaviour = lockableBottomSheetBehaviour;
@@ -77,6 +81,7 @@ public abstract class ABottomSheetBaseFunctions
 
         this.bottomSheetListAdapter = new BottomSheetListAdapter(0);
         this.bottomSheetListAdapter.setOnItemCountChanged(this);
+        this.bottomSheetListAdapter.setAddButtonPressed(() -> onBubbleListAddButtonPressed());
 
         viewBottomSheetBubbleList.setAdapter(bottomSheetListAdapter);
         viewBottomSheetBubbleList.setLayoutManager(new
@@ -104,6 +109,7 @@ public abstract class ABottomSheetBaseFunctions
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
+
     @Override
     public void onItemCountChanged(int newItemCount) {
         this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -151,6 +157,7 @@ public abstract class ABottomSheetBaseFunctions
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
+
     protected String getIfNotEmptyElseThrow(EditText editText) throws EditFieldValueIsEmptyException {
         String text = editText.getText().toString();
         if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
@@ -177,6 +184,7 @@ public abstract class ABottomSheetBaseFunctions
     }
 
     // ### Getter and Setter #################################################################### Getter and Setter ###
+
     public BottomSheetListAdapter getBottomSheetListAdapter() {
         return bottomSheetListAdapter;
     }
@@ -194,6 +202,7 @@ public abstract class ABottomSheetBaseFunctions
     }
 
     // ### Abstract Functions ################################################################## Abstract Functions ###
+
     /**
      * This method will return a reference to the layout resource file
      * which holds the complete layout of this Bottom Sheet.
@@ -216,4 +225,9 @@ public abstract class ABottomSheetBaseFunctions
      * This method specifies the action when the toolbar close button got pressed.
      */
     abstract void onToolbarCloseButtonPressed();
+
+    /**
+     * Method gets invoked as soon as the add bubble in the list view got pressed.
+     */
+    abstract void onBubbleListAddButtonPressed();
 }

@@ -4,14 +4,18 @@ import android.app.DatePickerDialog;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
@@ -19,22 +23,29 @@ import org.greenrobot.eventbus.EventBus;
 import org.joda.time.DateTime;
 
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 @SuppressWarnings("ALL")
-public class BottomSheetDamagecaseNewFunctions extends ABottomSheetDamagecaseNewBindings {
+public class BottomSheetDamagecaseNew extends ABottomSheetDamagecaseNewBindings {
+
+    // ### Constructor Variables ############################################################ Constructor Variables ###
 
     protected DateTime dateTime = DateTime.now();
     protected DamageCaseHandler damageCaseHandler;
+    private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-    public BottomSheetDamagecaseNewFunctions(Context context,
-                                             NestedScrollView nestedScrollView,
-                                             LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
-                                             DamageCaseHandler damageCaseHandler,
-                                             Lifecycle lifecycle,
-                                             GpsService gpsService,
-                                             SopraMap sopraMap,
-                                             OnBottomSheetClose onBottomSheetClose) {
+    // ### Constructor ################################################################################ Constructor ###
+
+    public BottomSheetDamagecaseNew(Context context,
+                                    NestedScrollView nestedScrollView,
+                                    LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
+                                    DamageCaseHandler damageCaseHandler,
+                                    Lifecycle lifecycle,
+                                    GpsService gpsService,
+                                    SopraMap sopraMap,
+                                    OnBottomSheetClose onBottomSheetClose) {
 
         super(context,
                 nestedScrollView,
@@ -47,6 +58,8 @@ public class BottomSheetDamagecaseNewFunctions extends ABottomSheetDamagecaseNew
         this.damageCaseHandler = damageCaseHandler;
     }
 
+    // ### Implemented Methods ################################################################ Implemented Methods ###
+
     @Override
     int getLayoutResourceFile() {
         return R.layout.activity_main_bs_damagecase;
@@ -54,12 +67,40 @@ public class BottomSheetDamagecaseNewFunctions extends ABottomSheetDamagecaseNew
 
     @Override
     void onToolbarSaveButtonPressed() {
+        Log.e("SAVEB", "SAVEBUTTON PRESSED" + damageCaseHandler.getValue());
+        contentInputDate.setError(null);
 
+        try {
+            if (damageCaseHandler.getValue() != null) {
+
+                if (contentInputDate.getText().toString().isEmpty())
+                    throw new EditFieldValueIsEmptyException(contentInputDate);
+
+                Log.e("SAVEB", "not null");
+                long id = damageCaseHandler.getValue()
+//                        .setName(getIfNotEmptyElseThrow(mBottomSheetInputTitle))
+                        .setAreaCode("")
+//                        .setExpertID(getIfNotEmptyElseThrow(mBottomSheetInputExpert))
+                        .setDate(dateTime)
+                        .setAreaSize(sopraMap.getArea())
+                        .setCoordinates(sopraMap.getActivePoints())
+                        .save();
+
+                fireCloseEvent();
+
+            }
+        } catch (EditFieldValueIsEmptyException e) {
+            e.showError();
+            lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED);
+        } catch (InterruptedException | ExecutionException e) {
+            Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
     void onToolbarDeleteButtonPressed() {
-
+        showDeleteAlert();
     }
 
     @Override
@@ -71,6 +112,19 @@ public class BottomSheetDamagecaseNewFunctions extends ABottomSheetDamagecaseNew
         } else {
             fireCloseEvent();
         }
+    }
+
+    @Override
+    void onBubbleListAddButtonPressed() {
+
+        Log.i("addVertexToAcPoly", "init");
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
+
+        if (callbackDone.get()) {
+            callbackDone.set(false);
+            gpsService.singleLocationCallback(lcl, 10000);
+        }
+
     }
 
     @Override
@@ -119,7 +173,7 @@ public class BottomSheetDamagecaseNewFunctions extends ABottomSheetDamagecaseNew
 
     }
 
-    // ### Functions ##################################################################################################
+    // ### Helper Functions ###################################################################### Helper Functions ###
 
     protected void showDeleteAlert() {
         new FixedDialog(context)
