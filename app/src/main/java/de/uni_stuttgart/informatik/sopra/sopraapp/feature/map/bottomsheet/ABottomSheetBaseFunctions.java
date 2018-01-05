@@ -13,11 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
-
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -27,11 +22,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
-public abstract class ABottomSheetBaseFunctions
+public abstract class ABottomSheetBaseFunctions<T>
         extends ABottomSheetBaseBindings
-        implements IBottomSheet {
+        implements BottomSheetListAdapter.ItemCountListener {
 
     // ### Constructor Variables ############################################################ Constructor Variables ###
 
@@ -41,7 +39,7 @@ public abstract class ABottomSheetBaseFunctions
     protected Lifecycle lifecycle;
     protected GpsService gpsService;
     protected SopraMap sopraMap;
-    protected IBottomSheet.OnBottomSheetClose onBottomSheetClose;
+    protected OnBottomSheetClose onBottomSheetClose;
 
     // ### Toolbar Buttons ######################################################################## Toolbar Buttons ###
 
@@ -69,7 +67,7 @@ public abstract class ABottomSheetBaseFunctions
                                      Lifecycle lifecycle,
                                      GpsService gpsService,
                                      SopraMap sopraMap,
-                                     IBottomSheet.OnBottomSheetClose onBottomSheetClose) {
+                                     OnBottomSheetClose onBottomSheetClose) {
         SopraApp.getAppComponent().inject(this);
         this.context = context;
         this.nestedScrollView = nestedScrollView;
@@ -150,7 +148,6 @@ public abstract class ABottomSheetBaseFunctions
         }
     }
 
-    @Override
     public void show() {
         this.lockableBottomSheetBehaviour.setHideable(false);
         this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -158,7 +155,6 @@ public abstract class ABottomSheetBaseFunctions
         this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    @Override
     public void close() {
         this.lifecycle.removeObserver(this.bottomSheetListAdapter);
         this.lockableBottomSheetBehaviour.setHideable(true);
@@ -168,6 +164,10 @@ public abstract class ABottomSheetBaseFunctions
 
         if (this.onBottomSheetClose != null)
             this.onBottomSheetClose.onBottomSheetClose();
+    }
+
+    public void displayCurrentAreaValue(Double area) {
+
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
@@ -223,25 +223,42 @@ public abstract class ABottomSheetBaseFunctions
      *
      * @return The main resource file layout reference of this Bottom Sheet (e.g. <code>R.id.blabla</code>)
      */
-    abstract int getLayoutResourceFile();
+    public abstract int getLayoutResourceFile();
 
     /**
      * This method specifies the action when the toolbar save button got pressed.
      */
-    abstract void onToolbarSaveButtonPressed();
+    public abstract void onToolbarSaveButtonPressed();
 
     /**
      * This method specifies the action when the toolbar delete button got pressed.
      */
-    abstract void onToolbarDeleteButtonPressed();
+    public abstract void onToolbarDeleteButtonPressed();
 
     /**
      * This method specifies the action when the toolbar close button got pressed.
      */
-    abstract void onToolbarCloseButtonPressed();
+    public abstract void onToolbarCloseButtonPressed();
 
     /**
      * Method gets invoked as soon as the add bubble in the list view got pressed.
      */
-    abstract void onBubbleListAddButtonPressed();
+    public abstract void onBubbleListAddButtonPressed();
+
+    public abstract void editThisOne(T t);
+
+    public abstract TYPE getType();
+
+    public enum TYPE {
+        DAMAGE_CASE, DAMAGE_CASE_NEW,
+        CONTRACT, CONTRACT_NEW, NONE
+    }
+
+    public interface OnBottomSheetClose {
+
+        /**
+         * Specifies the action after the Bottom Sheet got closed.
+         */
+        void onBottomSheetClose();
+    }
 }

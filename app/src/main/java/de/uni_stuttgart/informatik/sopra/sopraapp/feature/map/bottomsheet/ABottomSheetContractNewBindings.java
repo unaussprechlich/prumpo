@@ -12,8 +12,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-public abstract class ABottomSheetContractNewBindings
-        extends ABottomSheetBaseFunctions {
+public abstract class ABottomSheetContractNewBindings<T>
+        extends ABottomSheetBaseFunctions<T> {
 
     // ### Dimensions ################################################################################## Dimensions ###
 

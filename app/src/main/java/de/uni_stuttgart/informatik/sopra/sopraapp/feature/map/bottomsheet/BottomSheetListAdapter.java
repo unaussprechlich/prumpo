@@ -31,6 +31,7 @@ public class BottomSheetListAdapter
     private AddButtonPressed addButtonPressed;
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
+    private RecyclerView recyclerViewAttached;
 
     @Inject
     GpsService gpsService;
@@ -84,6 +85,7 @@ public class BottomSheetListAdapter
     @Subscribe
     public void onVertexSelected(EventsVertex.Selected event) {
         updateSelectedViewIndex(event.vertexNumber);
+        scrollToPosition(event.vertexNumber);
     }
 
     @Subscribe
@@ -163,6 +165,13 @@ public class BottomSheetListAdapter
         if (itemCountListener != null && notify)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
         notifyDataSetChanged();
+
+        scrollToPosition(Math.max(getItemCount() - 1, 0));
+    }
+
+    private void scrollToPosition(int position) {
+        if (recyclerViewAttached != null)
+            recyclerViewAttached.smoothScrollToPosition(position);
     }
 
     private void remove(int position) {
@@ -222,6 +231,13 @@ public class BottomSheetListAdapter
         super.onDetachedFromRecyclerView(recyclerView);
         recyclerView.getRecycledViewPool().clear();
         itemCountListener = null;
+        recyclerViewAttached = null;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        recyclerViewAttached = recyclerView;
     }
 
     public ItemCountListener getItemCountListener() {

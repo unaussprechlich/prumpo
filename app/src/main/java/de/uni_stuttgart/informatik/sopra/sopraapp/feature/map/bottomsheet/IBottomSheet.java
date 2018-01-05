@@ -9,28 +9,3 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-public interface IBottomSheet extends BottomSheetListAdapter.ItemCountListener {
-
-    enum TYPE {
-        DAMAGE_CASE, DAMAGE_CASE_NEW,
-        CONTRACT, CONTRACT_NEW
-    }
-
-    void show();
-
-    void close();
-
-    TYPE getType();
-
-    default void displayCurrentAreaValue(Double area) {
-    }
-
-    interface OnBottomSheetClose {
-
-        /**
-         * Specifies the action after the Bottom Sheet got closed.
-         */
-        void onBottomSheetClose();
-    }
-
-}
