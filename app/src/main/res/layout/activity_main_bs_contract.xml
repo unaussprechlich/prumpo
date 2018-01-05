@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <include
+                layout="@layout/activity_main_bs_contract_toolbar"
+                android:id="@+id/bs_dc_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        <include
+                layout="@layout/activity_main_bs_bubblelist"
+                android:id="@+id/bs_dc_bubblelist"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottomsheet_bubblelist_height"
+                android:layout_below="@id/bs_dc_toolbar"
+                />
+
+        <include
+                layout="@layout/activity_main_bs_contract_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bs_dc_bubblelist"
+                />
+    </RelativeLayout>
+
+</LinearLayout>

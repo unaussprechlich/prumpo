@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest3 {
 
-    @Rule
+    /*@Rule
     public ActivityTestRule<AuthenticationActivity> mActivityTestRule = new ActivityTestRule<>(AuthenticationActivity.class);
 
     @Test
@@ -799,5 +799,5 @@ public class MainActivityTest3 {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }
+    }*/
 }

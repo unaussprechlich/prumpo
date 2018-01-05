@@ -20,15 +20,20 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractBuilder;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
@@ -50,10 +55,19 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(Converters converters);
     void inject(InputRetriever inputRetriever);
     void inject(EditFieldValueException e);
+
     void inject(DamageCaseBuilder damageCaseBuilder);
+    void inject(ContractBuilder contractBuilder);
+
     void inject(DamageCase damageCase);
+    void inject(Contract contract);
+
     void inject(DamageCaseHandler damageCaseHandler);
+    void inject(ContractHandler contractHandler);
+
     void inject(DamageCaseRepository damageCaseRepository);
+    void inject(ContractRepository contractRepository);
+
     void inject(BottomSheetListAdapter bottomSheetListAdapter);
 
     @Component.Builder
@@ -108,6 +122,12 @@ abstract class AppModule {
     @ApplicationScope
     static DamageCaseDao provideDamageCaseDao(DatabaseManager db) {
         return db.damageCaseDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static ContractDao provideContractDao(DatabaseManager db) {
+        return db.contractDao();
     }
 
     @Provides

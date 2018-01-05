@@ -23,6 +23,7 @@
     <string name="nav_username">Benutzername</string>
     <string name="nav_role">Rolle</string>
     <string name="settings">Einstellungen</string>
+    <string name="insurances">Versicherungen</string>
     <string name="damageCases">Schadensfälle</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>
@@ -30,7 +31,8 @@
     <string name="profile_subtitle">Subtitle</string>
     <string name="profileLogoutButton">Log Out</string>
     <string name="title_activity_maps">Map</string>
-    <string name="damage_case_pre_policyholder">Versicherungsnehmer:</string>
+    <string name="damage_case_pre_policyholder">Versicherungsnehmer</string>
+    <string name="map_frag_bs_contract_input_hint_damages">Schäden</string>
 
     <string name="dc_fragment_search_hint">Suche …</string>
 
@@ -42,14 +44,16 @@
 
     <!--map fragment : bottom sheet -->
     <string name="map_frag_bottomsheet_close_dialog_header">Änderungen verwerfen?</string>
-    <string name="map_frag_bottomsheet_close_dialog_message">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
+    <string name="map_frag_bottomsheet_dc_close_dialog_message">Möchten Sie Ihre aktuelle Schadensbestandaufnahme verwerfen?</string>
+    <string name="map_frag_bottomsheet_insurance_close_dialog_message">Möchten Sie Änderungen Ihres aktuellen Versicherungsfalls verwefen?</string>
     <string name="map_frag_bottomsheet_delete_dialog_header">Löschen?</string>
-    <string name="map_frag_bottomsheet_delete_dialog_message">Möchten Sie den bestehenden Schadensfall löschen?</string>
+    <string name="map_frag_bottomsheet_dc_delete_dialog_message">Möchten Sie den bestehenden Schadensfall löschen?</string>
+    <string name="map_frag_bottomsheet_insurance_delete_dialog_message">Möchten Sie die bestehende Versicherung löschen?</string>
     <string name="map_frag_botsheet_dialog_yes">Ja</string>
     <string name="map_frag_botsheet_dialog_no">Nein</string>
 
-    <string name="map_frag_botsheet_toolbar_title">Unbenannter Schadensfall</string>
-
+    <string name="map_frag_botsheet_toolbar_title_dc">Unbenannter Schadensfall</string>
+    <string name="map_frag_botsheet_toolbar_title_insurance">Unbenannter Versicherungsfall</string>
 
     <string name="map_frag_botsheet_menu_close">Schließen</string>
     <string name="map_frag_botsheet_menu_save_enabled_apha">1</string>
@@ -68,8 +72,8 @@
     <string name="map_frag_bottomsheet_inp_dialog_dc_title_header">Bezeichnung des Schadenfalls</string>
     <string name="map_frag_bottomsheet_inp_dialog_dc_title_hint">Bezeichnung</string>
 
-    <string name="map_frag_bottomsheet_inp_dialog_dc_policyholder_header">Name des Versicherungsnehmers</string>
-    <string name="map_frag_bottomsheet_inp_dialog_dc_policyholder_hint">Versicherungsnehmer</string>
+    <string name="map_frag_bottomsheet_inp_dialog_contract_policyholder_header">Name des Versicherungsnehmers</string>
+    <string name="map_frag_bottomsheet_inp_dialog_contract_policyholder_hint">Versicherungsnehmer</string>
 
     <string name="map_frag_bottomsheet_inp_dialog_dc_expert_header">Name des Gutachters</string>
     <string name="map_frag_bottomsheet_inp_dialog_dc_expert_hint">Gutachter</string>
@@ -83,6 +87,9 @@
     <string name="map_frag_botsheet_toolbar_dc_name">Bezeichnung</string>
     <string name="map_frag_botsheet_toolbar_dc_area">Fläche</string>
 
+    <string name="map_frag_bottomsheet_inp_dialog_insurance_title_header">Name des Versicherungsfalls</string>
+    <string name="map_frag_bottomsheet_inp_dialog_insurance_title_hint">Name</string>
+
     <string name="title_activity_sign_up">Benutzerkonto anlegen</string>
 
     <string name="su_email_hint">Email</string>
@@ -92,6 +99,10 @@
     <string name="su_name_hint">Name</string>
     <string name="su_name_last_hint">Nachname</string>
     <string name="su_name_first_hint">Vorname</string>
+    <string name="map_frag_add_dialog_title">Create new ...</string>
+    <string name="map_frag_dialog_add_dc">Damage-Case</string>
+    <string name="map_frag_dialog_add_insurance">Insurance</string>
+    <string name="map_frag_dialog_add_abort">Abort</string>
 
     <string-array name="user_groups">
         <item>ADMIN</item>
@@ -99,4 +110,15 @@
         <item>GUTACHTER</item>
         <item>BAUER</item>
     </string-array>
+
+    <string name="today">Heute</string>
+
+    <string-array name="damages">
+        <item>Feuer</item>
+        <item>Sturm</item>
+        <item>Hochwasser</item>
+        <item>Schädlinge</item>
+    </string-array>
+
+
 </resources>

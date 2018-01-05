@@ -12,13 +12,12 @@ import javax.inject.Inject;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
-public class DamageCaseBuilder {
-    private String nameDamageCase = "";
-    private String namePolicyholder = "";
-    private String nameExpert = "";
+public final class DamageCaseBuilder {
+    private String name = "";
+    private long contractID = -1;
+    private long expertID = -1;
     private String areaCode = "";
-    private double areaSize = 0;
-    private long ownerID = 0;
+    private double areaSize = -1;
     private List<LatLng> coordinates = new ArrayList<>();
     private DateTime date = DateTime.now();
 
@@ -28,18 +27,18 @@ public class DamageCaseBuilder {
         SopraApp.getAppComponent().inject(this);
     }
 
-    public DamageCaseBuilder setNameDamageCase(String nameDamageCase) {
-        this.nameDamageCase = nameDamageCase;
+    public DamageCaseBuilder setName(String name) {
+        this.name = name;
         return this;
     }
 
-    public DamageCaseBuilder setNamePolicyholder(String namePolicyholder) {
-        this.namePolicyholder = namePolicyholder;
+    public DamageCaseBuilder setContractID(long contractID) {
+        this.contractID = contractID;
         return this;
     }
 
-    public DamageCaseBuilder setNameExpert(String nameExpert) {
-        this.nameExpert = nameExpert;
+    public DamageCaseBuilder setExpertID(long expertID) {
+        this.expertID = expertID;
         return this;
     }
 
@@ -50,11 +49,6 @@ public class DamageCaseBuilder {
 
     public DamageCaseBuilder setAreaSize(double areaSize) {
         this.areaSize = areaSize;
-        return this;
-    }
-
-    public DamageCaseBuilder setOwnerID(long ownerID) {
-        this.ownerID = ownerID;
         return this;
     }
 
@@ -69,7 +63,7 @@ public class DamageCaseBuilder {
     }
 
     public DamageCase create() throws UserManager.NoUserException {
-        this.ownerID = userManager.getCurrentUser().getID();
-        return new DamageCase(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date, true);
+        long ownerID = userManager.getCurrentUser().getID();
+        return new DamageCase(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date, true);
     }
 }

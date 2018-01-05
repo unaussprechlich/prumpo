@@ -6,8 +6,10 @@ import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.FragmentScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragmentModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragmentModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.InsuranceListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.InsuranceListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
 
@@ -35,6 +37,16 @@ public abstract class MainActivityModule {
     @Provides
     static MapFragment providesMainFragment(){
         return new MapFragment();
+    }
+
+    @FragmentScope
+    @ContributesAndroidInjector(modules = {InsuranceListFragmentModule.class})
+    abstract InsuranceListFragment contributeInsuranceListFragment();
+
+    @ActivityScope
+    @Provides
+    static InsuranceListFragment providesInsuranceListFragment(){
+        return new InsuranceListFragment();
     }
 
 }

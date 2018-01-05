@@ -31,7 +31,7 @@ public interface DamageCaseDao extends IDao<DamageCase> {
      * @return  A {@link User} of all the users in the table.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner")
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner OR expertID = :owner")
     LiveData<List<DamageCase>> getAll(long owner);
 
     /**
@@ -42,7 +42,7 @@ public interface DamageCaseDao extends IDao<DamageCase> {
      * @return      A {@link User} of the selected users.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :owner")
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR expertID = :owner)")
     LiveData<DamageCase> getById(long id, long owner);
 
 
@@ -54,7 +54,7 @@ public interface DamageCaseDao extends IDao<DamageCase> {
      * @return      The number of users deleted.
      *              This should always be {@code 1}.
      */
-    @Query("DELETE FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID  + " = :id AND ownerID = :owner")
+    @Query("DELETE FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID  + " = :id AND (ownerID = :owner OR expertID = :owner)")
     int deleteById(long id, long owner);
 
 }

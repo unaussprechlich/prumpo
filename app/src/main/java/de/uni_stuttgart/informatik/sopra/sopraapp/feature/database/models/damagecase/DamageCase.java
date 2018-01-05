@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
@@ -18,6 +19,10 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 
 
 /**
@@ -30,8 +35,9 @@ public class DamageCase implements ModelDB {
     @Ignore private boolean isChanged = false;
     @Ignore private boolean initial = false;
 
-    @Ignore
-    @Inject DamageCaseRepository damageCaseRepository;
+    @Ignore @Inject DamageCaseRepository damageCaseRepository;
+    @Ignore @Inject UserRepository userRepository;
+    @Ignore @Inject ContractRepository contractRepository;
 
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
@@ -42,9 +48,10 @@ public class DamageCase implements ModelDB {
     long ownerID;
 
     @ColumnInfo(index = true)
-    String nameDamageCase;
-    String namePolicyholder;
-    String nameExpert;
+    String name;
+
+    long expertID;
+    long contractID;
 
     List<LatLng> coordinates = new ArrayList<>();
     String areaCode;
@@ -55,32 +62,32 @@ public class DamageCase implements ModelDB {
 
 
     public DamageCase(
-            String nameDamageCase,
-            String namePolicyholder,
-            String nameExpert,
+            String name,
+            long expertID,
+            long contractID,
             String areaCode,
             double areaSize,
             long ownerID,
             List<LatLng> coordinates,
             DateTime date,
             boolean intial) {
-        this(nameDamageCase, namePolicyholder, nameExpert, areaCode, areaSize, ownerID, coordinates, date);
+        this(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date);
         this.initial = intial;
     }
 
     public DamageCase(
-            String nameDamageCase,
-            String namePolicyholder,
-            String nameExpert,
+            String name,
+            long expertID,
+            long contractID,
             String areaCode,
             double areaSize,
             long ownerID,
             List<LatLng> coordinates,
             DateTime date) {
         SopraApp.getAppComponent().inject(this);
-        this.nameDamageCase = nameDamageCase;
-        this.namePolicyholder = namePolicyholder;
-        this.nameExpert = nameExpert;
+        this.name = name;
+        this.expertID = expertID;
+        this.contractID = contractID;
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.ownerID = ownerID;
@@ -101,16 +108,16 @@ public class DamageCase implements ModelDB {
         return id;
     }
 
-    public String getNameDamageCase() {
-        return nameDamageCase;
+    public String getName() {
+        return name;
     }
 
-    public String getNamePolicyholder() {
-        return namePolicyholder;
+    public long getContractID() {
+        return contractID;
     }
 
-    public String getNameExpert() {
-        return nameExpert;
+    public long getExpertID() {
+        return expertID;
     }
 
     public List<LatLng> getCoordinates() {
@@ -139,23 +146,40 @@ public class DamageCase implements ModelDB {
         return ownerID;
     }
 
+    public LiveData<Contract> getContract(){
+        return contractRepository.getById(contractID);
+    }
+
+    public LiveData<User> getExpert() {
+        return userRepository.getById(expertID);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public String getContractHolderName(){
+        try{
+            return getContract().getValue().getHolder().getValue().name;
+        } catch (NullPointerException ex){
+            return null;
+        }
+    }
+
     // SETTER ######################################################################################
 
-    public DamageCase setNameDamageCase(String nameDamageCase) {
+    public DamageCase setName(String name) {
         isChanged = true;
-        this.nameDamageCase = nameDamageCase;
+        this.name = name;
         return this;
     }
 
-    public DamageCase setNamePolicyholder(String namePolicyholder) {
+    public DamageCase setContractID(long contractID) {
         isChanged = true;
-        this.namePolicyholder = namePolicyholder;
+        this.contractID = contractID;
         return this;
     }
 
-    public DamageCase setNameExpert(String nameExpert) {
+    public DamageCase setExpertID(long expertID) {
         isChanged = true;
-        this.nameExpert = nameExpert;
+        this.expertID = expertID;
         return this;
     }
 
@@ -182,6 +206,4 @@ public class DamageCase implements ModelDB {
         this.areaSize = areaSize;
         return this;
     }
-
-
 }

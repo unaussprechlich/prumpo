@@ -4,9 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import android.widget.TextView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,7 +19,6 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BottomSheetListAdapter
@@ -33,6 +28,7 @@ public class BottomSheetListAdapter
     // TODO! Remove "MapPoint" Implement DamageCase
 
     private ItemCountListener itemCountListener;
+    private AddButtonPressed addButtonPressed;
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
 
@@ -47,13 +43,12 @@ public class BottomSheetListAdapter
     private static final int TYPE_ELEMENT = 0;
     private static final int TYPE_BUTTON = 1;
 
-    private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
         SopraApp.getAppComponent().inject(this);
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
-        add(false);
+        add(false); // + Button
         for (int i = 0; i < amountBubbles; i++)
             add(true);
     }
@@ -82,17 +77,6 @@ public class BottomSheetListAdapter
     void onPause() {
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
-    }
-
-    private void addVertexToActivePolygon(Context context) {
-        Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
-
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
-
     }
 
     //EventBus #####################################################################################
@@ -201,9 +185,10 @@ public class BottomSheetListAdapter
      * @param position The current position in the visible list.
      */
     public void onClick(View view, int position) {
-        if (position == bubbleHolder.bubbleList.size() - 1)
-            addVertexToActivePolygon(view.getContext());
-        else
+        if (position == bubbleHolder.bubbleList.size() - 1) {
+            if (addButtonPressed != null)
+                addButtonPressed.onAddButtonPressed();
+        } else
             EventBus.getDefault().post(new EventsVertex.Selected(position));
     }
 
@@ -247,6 +232,14 @@ public class BottomSheetListAdapter
         this.itemCountListener = itemCountListener;
     }
 
+    public AddButtonPressed getAddButtonPressed() {
+        return addButtonPressed;
+    }
+
+    public void setAddButtonPressed(AddButtonPressed addButtonPressed) {
+        this.addButtonPressed = addButtonPressed;
+    }
+
     /**
      * Updates the selected view index.
      * Calls to refresh recycler view.
@@ -265,6 +258,10 @@ public class BottomSheetListAdapter
 
     public interface ItemCountListener {
         void onItemCountChanged(int newItemCount);
+    }
+
+    public interface AddButtonPressed {
+        void onAddButtonPressed();
     }
 
     /**
@@ -299,7 +296,6 @@ public class BottomSheetListAdapter
             this.position = position;
         }
     }
-
 
     @Override
     public int getItemViewType(int position) {

@@ -15,7 +15,7 @@ import dagger.MapKey;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseCollectionViewModel;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseCollectionViewModel;
 
 @Module
 public abstract class ViewModelModule {

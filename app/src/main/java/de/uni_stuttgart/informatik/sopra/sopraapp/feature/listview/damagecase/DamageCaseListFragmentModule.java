@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
 import dagger.Module;
 
