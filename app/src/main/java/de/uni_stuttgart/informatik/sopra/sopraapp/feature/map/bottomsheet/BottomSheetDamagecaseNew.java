@@ -137,6 +137,8 @@ public class BottomSheetDamagecaseNew extends ABottomSheetDamagecaseNewBindings 
         toolbarArea.setText(calculateAreaValue(area));
     }
 
+    // ### OnClick Methods ######################################################################## OnClick Methods ###
+
     @OnClick(R.id.bs_dc_editText_inputDate)
     public void onInputDateFieldPressed(View view) {
         DatePickerDialog datePickerDialog = new DatePickerDialog(context,
@@ -165,6 +167,8 @@ public class BottomSheetDamagecaseNew extends ABottomSheetDamagecaseNewBindings 
         Toast.makeText(context, "Pressed 2", Toast.LENGTH_SHORT).show();
     }
 
+    // ### Helper Functions ###################################################################### Helper Functions ###
+
     protected void setDate(DateTime dateTime) {
         this.dateTime = dateTime;
 
@@ -172,8 +176,6 @@ public class BottomSheetDamagecaseNew extends ABottomSheetDamagecaseNewBindings 
         Stream.of(contentInputDate, toolbarDate).forEach(v -> v.setText(dateString));
 
     }
-
-    // ### Helper Functions ###################################################################### Helper Functions ###
 
     protected void showDeleteAlert() {
         new FixedDialog(context)

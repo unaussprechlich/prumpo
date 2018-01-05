@@ -56,4 +56,12 @@ public abstract class ABottomSheetBaseBindings {
     @BindString(R.string.today)
     String strToday;
 
+    @BindString(R.string.map_frag_botsheet_dialog_positive)
+    String strBottomSheetDialogPositive;
+
+    @BindString(R.string.map_frag_botsheet_dialog_negative)
+    String strBottomSheetDialogNegative;
+
+
+
 }

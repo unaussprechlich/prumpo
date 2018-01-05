@@ -4,4 +4,32 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp">
+
+        <include layout="@layout/activity_main_bs_contract_input_customer"/>
+
+        <include layout="@layout/activity_main_bs_contract_input_damage"/>
+
+        <include layout="@layout/activity_main_bs_contract_input_contract"/>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+            <Button
+                    android:id="@+id/bs_contract_add_damagecase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="Schaden hinzufügen" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
 </LinearLayout>

@@ -13,7 +13,7 @@ public interface IBottomSheet extends BottomSheetListAdapter.ItemCountListener {
 
     enum TYPE {
         DAMAGE_CASE, DAMAGE_CASE_NEW,
-        INSURANCE, INSURANCE_NEW
+        CONTRACT, CONTRACT_NEW
     }
 
     void show();

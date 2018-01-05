@@ -30,8 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bs_dc_bubblelist"
                 />
-
-
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

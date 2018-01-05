@@ -64,7 +64,7 @@ public class InputRetriever {
      *
      * @param editText The EditText object whose input should be bound.
      */
-    private InputRetriever(EditText editText) {
+    protected InputRetriever(EditText editText) {
         SopraApp.getAppComponent().inject(this);
         editText.setClickable(true);
         this.pressedTextField = editText;
@@ -167,7 +167,7 @@ public class InputRetriever {
      * @param id the R.string id for the resource
      * @return the string found with the id
      */
-    private String getString(int id) {
+    protected String getString(int id) {
         return pressedTextField.getResources().getString(id);
     }
 
@@ -193,6 +193,11 @@ public class InputRetriever {
         // sets courser at the end of the input field
         Selection.setSelection(editText.getText(), editText.length());
 
+        showDialog(context, dialogLayout, editText);
+
+    }
+
+    protected void showDialog(Context context, View dialogLayout, EditText editText){
         // create the alert and show
         AlertDialog alertDialog = new FixedDialog(context)
                 .setView(dialogLayout)
@@ -215,6 +220,13 @@ public class InputRetriever {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         alertDialog.show();
+    }
 
+    public EditText getPressedTextField() {
+        return pressedTextField;
+    }
+
+    public String getHint() {
+        return hint;
     }
 }

@@ -29,10 +29,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheet;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecaseNew;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.*;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
@@ -127,7 +124,12 @@ public class MapFragment
 
         addInsurance.setOnClickListener(v -> {
 
+            currentBottomSheet = new BottomSheetContractNew(getContext(),
+                    mBottomSheetContainer, mBottomSheetBehavior,getLifecycle(),gpsService,sopraMap, onBottomSheetClose);
+
             d.dismiss();
+
+            new Handler().postDelayed(currentBottomSheet::show, 400);
 
         });
 

@@ -33,12 +33,15 @@ public class BottomSheetContract extends BottomSheetContractNew {
                 onBottomSheetClose);
 
         this.contract = contract;
+
+
+        //
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
     @Override
     public TYPE getType() {
-        return TYPE.INSURANCE;
+        return TYPE.CONTRACT;
     }
 }
