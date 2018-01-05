@@ -25,6 +25,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
         model.postValue(null);
     }
 
+
     @NonNull
     @Override
     public Lifecycle getLifecycle() {

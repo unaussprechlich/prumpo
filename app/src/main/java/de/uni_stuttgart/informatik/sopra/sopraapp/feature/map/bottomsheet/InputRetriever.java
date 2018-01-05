@@ -197,6 +197,10 @@ public class InputRetriever {
 
     }
 
+    protected void onPositiveAction(String text){
+
+    }
+
     protected void showDialog(Context context, View dialogLayout, EditText editText){
         // create the alert and show
         AlertDialog alertDialog = new FixedDialog(context)
@@ -205,6 +209,7 @@ public class InputRetriever {
                 .setTitle(title == null ? defaultTitle : title)
                 .setPositiveButton(dialogAccept, (dialogInterface, i) -> {
                             pressedTextField.setText(editText.getText());
+                            onPositiveAction(editText.getText().toString());
                             if (positiveAction != null)
                                 positiveAction.onClick(dialogInterface, i);
                         }

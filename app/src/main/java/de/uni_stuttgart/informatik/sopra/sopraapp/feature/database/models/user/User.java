@@ -83,6 +83,8 @@ public class User implements ModelDB {
     @Override
     public long getOwnerID() {return ownerID;}
 
-
-
+    @Override
+    public String toString() {
+        return name + " #" + id;
+    }
 }

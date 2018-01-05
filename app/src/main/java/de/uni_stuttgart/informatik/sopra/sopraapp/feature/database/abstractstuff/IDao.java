@@ -13,6 +13,7 @@ import java.util.List;
 public interface IDao<T extends ModelDB> {
 
     LiveData<List<T>> getAll(long owner);
+
     LiveData<T> getById(long id, long owner);
 
     /**

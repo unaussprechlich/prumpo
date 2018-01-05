@@ -13,13 +13,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
+
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
-import org.greenrobot.eventbus.EventBus;
 
 @SuppressWarnings("ALL")
 public abstract class ABottomSheetBaseFunctions
@@ -50,6 +57,12 @@ public abstract class ABottomSheetBaseFunctions
 
     // ### Constructor ################################################################################ Constructor ###
 
+    @Inject
+    UserRepository userRepository;
+
+    @Inject
+    DamageCaseHandler damageCaseHandler;
+
     public ABottomSheetBaseFunctions(Context context,
                                      NestedScrollView nestedScrollView,
                                      LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
@@ -57,6 +70,7 @@ public abstract class ABottomSheetBaseFunctions
                                      GpsService gpsService,
                                      SopraMap sopraMap,
                                      IBottomSheet.OnBottomSheetClose onBottomSheetClose) {
+        SopraApp.getAppComponent().inject(this);
         this.context = context;
         this.nestedScrollView = nestedScrollView;
         this.lockableBottomSheetBehaviour = lockableBottomSheetBehaviour;

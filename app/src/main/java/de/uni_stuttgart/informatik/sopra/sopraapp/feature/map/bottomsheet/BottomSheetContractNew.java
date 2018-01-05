@@ -8,19 +8,22 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
 public class BottomSheetContractNew extends ABottomSheetContractNewBindings {
 
@@ -90,11 +93,17 @@ public class BottomSheetContractNew extends ABottomSheetContractNewBindings {
 
     @OnClick(R.id.bs_contract_editText_inputPolicyholder)
     public void onInputPolicyholderPressed(EditText editText) {
-        ArrayList<String> autoComplete = new ArrayList<>();
-        // todo retrieve all policyholder from data base
 
-        InputRetrieverAutoComplete.of(editText)
-                .withAutoCompleteSuggestions(autoComplete)
+        userRepository.getAll().observe(damageCaseHandler, users -> {
+
+            userRepository.getAll().removeObservers(damageCaseHandler);
+
+            new InputRetrieverAutoComplete<User>(editText)
+                .withAutoCompleteSuggestions(users,
+                    user -> {
+                        Log.e("FUCKING JAVA", user.toString());
+                        //TODO
+                    })
                 .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                 .withHint(strBottomSheetInpDialogPolicyholderHint)
                 .setPositiveButtonAction((dialogInterface, i) -> {
@@ -102,8 +111,7 @@ public class BottomSheetContractNew extends ABottomSheetContractNewBindings {
                 })
                 .setNegativeButtonAction(null)
                 .show();
-
-
+        });
     }
 
     @OnClick(R.id.bs_contract_editText_inputDamage)

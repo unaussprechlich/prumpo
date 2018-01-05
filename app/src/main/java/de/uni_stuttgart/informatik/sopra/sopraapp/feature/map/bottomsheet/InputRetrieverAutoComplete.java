@@ -7,30 +7,41 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class InputRetrieverAutoComplete extends InputRetriever {
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
-    private Collection<String> suggestions;
+public class InputRetrieverAutoComplete<T> extends InputRetriever {
+
+    private Collection<T> suggestions;
+    private OnPositiveAutocompleteActionCallbackJavaAids<T> onPositiveAutocompleteActionCallbackJavaAids = null;
 
     /**
      * Constructor
      *
      * @param editText The EditText object whose input should be bound.
      */
-    private InputRetrieverAutoComplete(EditText editText) {
+    public InputRetrieverAutoComplete(EditText editText) {
         super(editText);
     }
 
-    public InputRetrieverAutoComplete withAutoCompleteSuggestions(Collection<String> suggestions) {
+    public InputRetrieverAutoComplete withAutoCompleteSuggestions(Collection<T> suggestions, OnPositiveAutocompleteActionCallbackJavaAids<T> callback) {
         this.suggestions = suggestions;
+        this.onPositiveAutocompleteActionCallbackJavaAids = callback;
         return this;
     }
 
-    public static InputRetrieverAutoComplete of(EditText editText){
-        return new InputRetrieverAutoComplete(editText);
+    @Override
+    protected void onPositiveAction(String text) {
+        if(onPositiveAutocompleteActionCallbackJavaAids != null)
+         onPositiveAutocompleteActionCallbackJavaAids.call(
+                 suggestions.stream()
+                         .filter(o -> o.toString().equals(text))
+                         .findFirst()
+                         .orElse(null)
+         );
     }
 
     @Override
@@ -59,9 +70,9 @@ public class InputRetrieverAutoComplete extends InputRetriever {
         autoCompleteTextView.setText(pressedTextField.getText());
 
         // sets auto complete inputs
-        String[] acSuggestions = suggestions.toArray(new String[suggestions.size()]);
+
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, acSuggestions);
+                new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, suggestions.stream().map(Object::toString).collect(Collectors.toList()));
         autoCompleteTextView.setAdapter(adapter);
 
         // sets courser at the end of the input field
@@ -70,4 +81,8 @@ public class InputRetrieverAutoComplete extends InputRetriever {
         showDialog(context, dialogLayout, autoCompleteTextView);
 
     }
+}
+
+interface OnPositiveAutocompleteActionCallbackJavaAids<T>{
+     void  call(T obj);
 }
