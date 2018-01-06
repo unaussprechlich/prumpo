@@ -26,7 +26,7 @@ public class DamageCaseHandler extends AbstractModelHandler<DamageCase, DamageCa
 
     @Override
     protected DamageCase createNewObject() throws UserManager.NoUserException  {
-        return new DamageCaseBuilder().setName("Unbenannter Schadensfall").create();
+        return new DamageCase.Builder().setName("Unbenannter Schadensfall").create();
     }
 
     @Override

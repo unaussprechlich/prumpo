@@ -1,17 +1,19 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase;
 
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 
-public abstract class ABottomSheetDamagecaseNewBindings<T> extends ABottomSheetBaseFunctions<T> {
+public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBottomSheetBase<DamageCase, DamageCaseHandler> {
 
     // ### Dimensions ################################################################################## Dimensions ###
 
@@ -45,25 +47,27 @@ public abstract class ABottomSheetDamagecaseNewBindings<T> extends ABottomSheetB
     @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message)
     String strBottomSheetCloseDialogMessage;
 
+    @Override
+    protected String getCloseMessage() {
+        return strBottomSheetCloseDialogMessage;
+    }
+
     @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message)
-    String strBottomSheetDeleteDialogMessage;
+    public String strBottomSheetDeleteDialogMessage;
+
+    @Override
+    protected String getDeleteMessage() {
+        return strBottomSheetDeleteDialogMessage;
+    }
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public ABottomSheetDamagecaseNewBindings(Context context,
-                                             NestedScrollView nestedScrollView,
-                                             LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
-                                             Lifecycle lifecycle,
-                                             GpsService gpsService,
-                                             SopraMap sopraMap,
-                                             OnBottomSheetClose onBottomSheetClose) {
+    public AbstractBottomSheetDamagecaseBindings(Context context,
+                                                 NestedScrollView nestedScrollView,
+                                                 LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
         super(context,
                 nestedScrollView,
-                lockableBottomSheetBehaviour,
-                lifecycle,
-                gpsService,
-                sopraMap,
-                onBottomSheetClose);
+                lockableBottomSheetBehaviour);
     }
 
 

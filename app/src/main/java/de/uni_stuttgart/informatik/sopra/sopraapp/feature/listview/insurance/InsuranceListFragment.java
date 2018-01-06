@@ -1,6 +1,5 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,12 +8,8 @@ import android.support.v7.widget.SearchView;
 import android.view.*;
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseCollectionViewModel;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 public class InsuranceListFragment

@@ -6,6 +6,7 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -19,17 +20,24 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.*;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.*;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.ABottomSheetBaseBindings;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.ABottomSheetBaseFunctions;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 
 @ApplicationScope
 @Component(
@@ -43,35 +51,33 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputR
 )
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
-    void inject(DamageCaseListAdapter damageCaseListAdapter);
+    void inject(DamageCaseListAdapter __);
 
-    void inject(SopraMap sopraMap);
+    void inject(SopraMap __);
 
-    void inject(Converters converters);
+    void inject(Converters __);
 
-    void inject(InputRetriever inputRetriever);
+    void inject(InputRetriever __);
 
-    void inject(EditFieldValueException e);
+    void inject(EditFieldValueException __);
 
-    void inject(DamageCaseBuilder damageCaseBuilder);
+    void inject(DamageCase.Builder __);
+    void inject(Contract.Builder __);
 
-    void inject(ContractBuilder contractBuilder);
+    void inject(DamageCase __);
+    void inject(Contract __);
+    void inject(User __);
 
-    void inject(DamageCase damageCase);
+    void inject(DamageCaseHandler __);
+    void inject(ContractHandler __);
 
-    void inject(Contract contract);
+    void inject(DamageCaseRepository __);
+    void inject(ContractRepository __);
 
-    void inject(DamageCaseHandler damageCaseHandler);
+    void inject(BottomSheetListAdapter __);
 
-    void inject(ContractHandler contractHandler);
-
-    void inject(DamageCaseRepository damageCaseRepository);
-
-    void inject(ContractRepository contractRepository);
-
-    void inject(BottomSheetListAdapter bottomSheetListAdapter);
-
-    void inject(ABottomSheetBaseBindings aBottomSheetBaseFunctions);
+    void  inject(BottomSheetContract __);
+    void  inject(BottomSheetDamagecase __);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
@@ -91,6 +97,17 @@ abstract class AppModule {
     @Provides
     public static DamageCaseHandler provideDamageCaseHandler(SopraApp app) {
         return new DamageCaseHandler(app);
+    }
+
+    @ApplicationScope //TODO move this to a lower level
+    @Provides
+    public static ContractHandler provideContractHandler(SopraApp app) {
+        return new ContractHandler(app);
+    }
+
+    @Provides
+    static BottomSheetListAdapter provides(){
+        return new BottomSheetListAdapter();
     }
 
     @Provides
@@ -147,4 +164,6 @@ abstract class AppModule {
 
     @Binds
     abstract Application application(SopraApp sopraApp);
+
+
 }

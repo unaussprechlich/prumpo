@@ -1,6 +1,5 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract;
 
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
@@ -8,45 +7,49 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class BottomSheetContract extends ABottomSheetContractNewBindings<Contract> {
+import javax.annotation.Nullable;
 
-    private AtomicBoolean callbackDone = new AtomicBoolean(true);
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+
+public class BottomSheetContract extends AbstractBottomSheetContractBindings{
+
+
     protected List<String> selectedDamages = new ArrayList<>();
 
     // ### Constructor ################################################################################ Constructor ###
 
     public BottomSheetContract(Context context,
                                NestedScrollView nestedScrollView,
-                               LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
-                               Lifecycle lifecycle,
-                               GpsService gpsService,
-                               SopraMap sopraMap,
-                               OnBottomSheetClose onBottomSheetClose) {
+                               LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
 
         super(context,
                 nestedScrollView,
-                lockableBottomSheetBehaviour,
-                lifecycle,
-                gpsService,
-                sopraMap,
-                onBottomSheetClose);
+                lockableBottomSheetBehaviour);
+        SopraApp.getAppComponent().inject(this);
+    }
+
+    @Override
+    protected Contract collectDataForSave(Contract contract) {
+        return null;
+    }
+
+    @Override
+    protected void onBottomSheetClose() {
 
     }
 
@@ -58,34 +61,8 @@ public class BottomSheetContract extends ABottomSheetContractNewBindings<Contrac
     }
 
     @Override
-    public TYPE getType() {
-        return TYPE.CONTRACT_NEW;
-    }
-
-    @Override
-    public void onToolbarSaveButtonPressed() {
-
-    }
-
-    @Override
-    public void onToolbarDeleteButtonPressed() {
-
-    }
-
-    @Override
-    public void onToolbarCloseButtonPressed() {
-        close();
-    }
-
-    @Override
-    public void onBubbleListAddButtonPressed() {
-        Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
-
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
+    public AbstractBottomSheetBase.TYPE getType() {
+        return AbstractBottomSheetBase.TYPE.CONTRACT_NEW;
     }
 
     @Override
@@ -102,9 +79,9 @@ public class BottomSheetContract extends ABottomSheetContractNewBindings<Contrac
     @OnClick(R.id.bs_contract_editText_inputPolicyholder)
     public void onInputPolicyholderPressed(EditText editText) {
 
-        userRepository.getAll().observe(damageCaseHandler, users -> {
+        getUserRepository().getAll().observe(this, users -> {
 
-            userRepository.getAll().removeObservers(damageCaseHandler);
+            getUserRepository().getAll().removeObservers(this);
 
             new InputRetrieverAutoComplete<User>(editText)
                     .withAutoCompleteSuggestions(users,

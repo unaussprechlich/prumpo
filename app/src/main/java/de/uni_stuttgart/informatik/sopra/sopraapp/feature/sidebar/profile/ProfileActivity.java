@@ -30,8 +30,8 @@ public class ProfileActivity extends BaseEventBusActivity {
 
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event){
-        ((TextView)findViewById(R.id.user_name_text)).setText(event.user.name);
-        ((TextView)findViewById(R.id.user_role_text)).setText(event.user.role.toString());
+        ((TextView)findViewById(R.id.user_name_text)).setText(event.user.getName());
+        ((TextView)findViewById(R.id.user_role_text)).setText(event.user.getRole().toString());
     }
 
 }

@@ -81,8 +81,10 @@ public class InputRetrieverAutoComplete<T> extends InputRetriever {
         showDialog(context, dialogLayout, autoCompleteTextView);
 
     }
+
+    public interface OnPositiveAutocompleteActionCallbackJavaAids<T>{
+        void  call(T obj);
+    }
 }
 
-interface OnPositiveAutocompleteActionCallbackJavaAids<T>{
-     void  call(T obj);
-}
+

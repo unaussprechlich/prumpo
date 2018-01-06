@@ -1,8 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,9 +37,6 @@ public class DamageCaseListFragment
     DamageCaseRepository damageCaseRepository;
 
     @Inject
-    ViewModelProvider.Factory viewModelFactory;
-
-    @Inject
     UserManager userManager;
 
     @BindView(R.id.dc_recycler_view)
@@ -70,10 +65,8 @@ public class DamageCaseListFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ViewModelProviders.of(this, viewModelFactory)
-                .get(DamageCaseCollectionViewModel.class)
-                .getAll()
-                .observe(this, this::setDamageCaseList);
+        damageCaseRepository.getAll().observe(this, this::setDamageCaseList);
+
     }
 
     public void setDamageCaseList(List<DamageCase> damageCaseList) {

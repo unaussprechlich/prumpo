@@ -30,7 +30,7 @@ public abstract class MainActivityModule {
     }
 
     @FragmentScope
-    @ContributesAndroidInjector(modules = {MapFragmentModule.class})
+    @ContributesAndroidInjector(modules = MapFragmentModule.class)
     abstract MapFragment contributeMainFragment();
 
     @ActivityScope
@@ -38,6 +38,7 @@ public abstract class MainActivityModule {
     static MapFragment providesMainFragment(){
         return new MapFragment();
     }
+
 
     @FragmentScope
     @ContributesAndroidInjector(modules = {InsuranceListFragmentModule.class})

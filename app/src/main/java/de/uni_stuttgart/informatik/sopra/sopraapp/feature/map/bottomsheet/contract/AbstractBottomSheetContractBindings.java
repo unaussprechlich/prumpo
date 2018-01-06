@@ -1,20 +1,22 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract;
 
-import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import butterknife.BindArray;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 
-public abstract class ABottomSheetContractNewBindings<T>
-        extends ABottomSheetBaseFunctions<T> {
+public abstract class AbstractBottomSheetContractBindings
+        extends AbstractBottomSheetBase<Contract, ContractHandler> {
 
     // ### Dimensions ################################################################################## Dimensions ###
 
@@ -64,23 +66,31 @@ public abstract class ABottomSheetContractNewBindings<T>
     @BindArray(R.array.damages)
     String[] allPossibleDamages;
 
+    @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message) //TODO
+    String strBottomSheetCloseDialogMessage;
+
+    @Override
+    protected String getCloseMessage() {
+        return strBottomSheetCloseDialogMessage;
+    }
+
+    @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message) //TODO
+    String strBottomSheetDeleteDialogMessage;
+
+    @Override
+    protected String getDeleteMessage() {
+        return strBottomSheetDeleteDialogMessage;
+    }
+
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public ABottomSheetContractNewBindings(Context context,
-                                           NestedScrollView nestedScrollView,
-                                           LockableBottomSheetBehaviour lockableBottomSheetBehaviour,
-                                           Lifecycle lifecycle,
-                                           GpsService gpsService,
-                                           SopraMap sopraMap,
-                                           OnBottomSheetClose onBottomSheetClose) {
+    public AbstractBottomSheetContractBindings(Context context,
+                                               NestedScrollView nestedScrollView,
+                                               LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
         super(context,
                 nestedScrollView,
-                lockableBottomSheetBehaviour,
-                lifecycle,
-                gpsService,
-                sopraMap,
-                onBottomSheetClose);
+                lockableBottomSheetBehaviour);
     }
 
 

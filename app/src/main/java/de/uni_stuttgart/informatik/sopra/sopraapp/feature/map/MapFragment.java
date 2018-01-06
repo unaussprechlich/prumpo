@@ -12,12 +12,27 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+
+import com.google.android.gms.maps.MapsInitializer;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
@@ -27,17 +42,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.ABottomSheetBaseFunctions;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetContract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetDamagecase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -51,12 +61,9 @@ public class MapFragment
     // TODO: cover case of lost ACCESS_FINE_LOCATION permissions during runtime
     // TODO: replace remaining onClickListeners with ButterKnife annotations
 
-    @Inject
-    DamageCaseRepository damageCaseRepository;
-    @Inject
-    DamageCaseHandler damageCaseHandler;
-    @Inject
-    UserManager userManager;
+    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject DamageCaseHandler damageCaseHandler;
+    @Inject UserManager userManager;
 
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;
@@ -126,7 +133,7 @@ public class MapFragment
         });
 
         addInsurance.setOnClickListener(v -> {
-            bottomSheetMaster.createNewContract(null);
+            bottomSheetMaster.createNewContract();
             d.dismiss();
         });
 
@@ -149,11 +156,11 @@ public class MapFragment
 
         if (damageCase.getDate() != null) {
             Log.e("BS", "DATE not null: " + damageCase.getDate());
-            bottomSheetMaster.editDamageCase(damageCase, null);
+            bottomSheetMaster.editDamageCase(damageCase);
         } else {
             Log.e("BS", "DATE null");
 
-            bottomSheetMaster.createNewDamageCase(null);
+            bottomSheetMaster.createNewDamageCase();
 
             addVertexToActivePolygon();
         }
@@ -243,9 +250,7 @@ public class MapFragment
 
     @Subscribe
     public void onCloseBottomSheet(EventsBottomSheet.Close event) {
-        if (gpsService == null) return;
-
-        gpsService.stopSingleCallback();
+        bottomSheetMaster.currentBottomSheet = null;
     }
 
     @Override
@@ -321,47 +326,40 @@ public class MapFragment
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
+    public SopraMap getSopraMap() {
+        return sopraMap;
+    }
+
     public class BottomSheetMaster {
-        private ABottomSheetBaseFunctions currentBottomSheet = null;
-        private ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose
-                = () -> currentBottomSheet = null;
+        private AbstractBottomSheetBase currentBottomSheet = null;
 
         /**
          * @param damageCase         - Damage case to edit
-         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
          */
-        void editDamageCase(DamageCase damageCase,
-                            ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
-            currentBottomSheet = createBottomSheetDamagecase(onBottomSheetClose);
+        void editDamageCase(DamageCase damageCase) {
+            currentBottomSheet = createBottomSheetDamagecase();
             currentBottomSheet.editThisOne(damageCase);
             show();
         }
 
         /**
          * @param contract           - Contract to edit
-         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
          */
-        void editContract(Contract contract,
-                          ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
-            currentBottomSheet = createBottomSheetContract(onBottomSheetClose);
+        void editContract(Contract contract) {
+            currentBottomSheet = createBottomSheetContract();
             currentBottomSheet.editThisOne(contract);
             show();
         }
 
-        /**
-         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
-         */
-        void createNewDamageCase(ABottomSheetBaseFunctions.OnBottomSheetClose
-                                         onBottomSheetClose) {
-            currentBottomSheet = createBottomSheetDamagecase(onBottomSheetClose);
+
+        void createNewDamageCase() {
+            currentBottomSheet = createBottomSheetDamagecase();
             show();
         }
 
-        /**
-         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
-         */
-        void createNewContract(ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
-            currentBottomSheet = createBottomSheetContract(onBottomSheetClose);
+
+        void createNewContract() {
+            currentBottomSheet = createBottomSheetContract();
             show();
         }
 
@@ -372,59 +370,26 @@ public class MapFragment
         public void inContractCreateNewDamageCase() {
 
 
-            currentBottomSheet.setOnBottomSheetClose(() -> {
-                currentBottomSheet = null;
-                createNewDamageCase(() -> {
-
-                    // todo pass live contract back to bottom sheet
-                    //  editContract(LiveData<Contract> , null);
-
-                    // after todo completed: delete this line and use the uper one
-                    createNewContract(null);
-                });
-            });
             currentBottomSheet.close();
         }
 
         public void inContractEditDamageCase(DamageCase damageCase) {
 
-            currentBottomSheet.setOnBottomSheetClose(() -> {
-                currentBottomSheet = null;
-                editDamageCase(damageCase, () -> {
-
-                    // todo pass live contract back to bottom sheet
-                    //  editContract(LiveData<Contract> , null);
-
-                    // after todo completed: delete this line and use the uper one
-                    createNewContract(null);
-                });
-            });
-            currentBottomSheet.close();
         }
 
-        private BottomSheetDamagecase createBottomSheetDamagecase(
-                ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+        private BottomSheetDamagecase createBottomSheetDamagecase() {
 
             return new BottomSheetDamagecase(getContext(),
                     nestedScrollView,
                     mBottomSheetBehavior,
-                    damageCaseHandler,
-                    getLifecycle(),
-                    gpsService,
-                    sopraMap,
-                    onBottomSheetClose == null ? this.onBottomSheetClose : onBottomSheetClose);
+                    sopraMap);
         }
 
-        private BottomSheetContract createBottomSheetContract(
-                ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+        private BottomSheetContract createBottomSheetContract() {
 
             return new BottomSheetContract(getContext(),
                     nestedScrollView,
-                    mBottomSheetBehavior,
-                    getLifecycle(),
-                    gpsService,
-                    sopraMap,
-                    onBottomSheetClose == null ? this.onBottomSheetClose : onBottomSheetClose);
+                    mBottomSheetBehavior);
         }
 
         private void show() {

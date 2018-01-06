@@ -2,8 +2,13 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
+
+import java.util.concurrent.ExecutionException;
+
+import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 
@@ -12,28 +17,103 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff
  * Represents one record of the User table.
  */
 @Entity(tableName = User.TABLE_NAME)
-public class User implements ModelDB {
+public final class User implements ModelDB<UserRepository> {
 
     public static final String TABLE_NAME = "user";
+
+    @Ignore @Inject UserRepository userRepository;
+    @Ignore private boolean isChanged = false;
+    @Ignore private boolean initial = false;
 
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(index = true, name = BaseColumns._ID)
-    public long id;
+    long id;
 
     // Don't change the names without updating the queries, they are used as column name!
     @ColumnInfo(index = true)
-    public String name;
+    String name;
     @ColumnInfo(index = true)
-    public String email;
-    public String password;
+    String email;
+    String password;
     public long ownerID = 0;
 
     @ColumnInfo(index = true)
-    public EnumUserRoles role;
+    EnumUserRoles role;
 
     public enum EnumUserRoles{
         ADMIN, BAUER, GUTACHTER, NULL;
+    }
+
+    @Override
+    public long getID() {
+        return id;
+    }
+
+    @Override
+    public long getOwnerID() {return ownerID;}
+
+    @Override
+    public long save() throws ExecutionException, InterruptedException {
+        if(initial) return userRepository.insert(this);
+        else if(isChanged) userRepository.update(this);
+        isChanged = false;
+        return id;
+    }
+
+    public User setName(String name) {
+        isChanged = true;
+        this.name = name;
+        return this;
+    }
+
+    public User setEmail(String email) {
+        isChanged = true;
+        this.email = email;
+        return this;
+    }
+
+    public User setPassword(String password) {
+        isChanged = true;
+        this.password = password;
+        return this;
+    }
+
+    public User setRole(EnumUserRoles role) {
+        isChanged = true;
+        this.role = role;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public EnumUserRoles getRole() {
+        return role;
+    }
+
+    @Override
+    public UserRepository getRepository() {
+        return userRepository;
+    }
+
+    @Override
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    @Override
+    public String toString() {
+        return name + " #" + id;
     }
 
     public static class Builder {
@@ -64,7 +144,7 @@ public class User implements ModelDB {
         }
 
         public User build() {
-            return new User(name, password, email, role);
+            return new User(name, password, email, role, true);
         }
     }
 
@@ -75,16 +155,11 @@ public class User implements ModelDB {
         this.role = role;
     }
 
-    @Override
-    public long getID() {
-        return id;
-    }
-
-    @Override
-    public long getOwnerID() {return ownerID;}
-
-    @Override
-    public String toString() {
-        return name + " #" + id;
+    public User(String name, String password, String email, EnumUserRoles role, boolean initial) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.initial = initial;
     }
 }

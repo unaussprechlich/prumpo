@@ -113,7 +113,7 @@ public class LoginActivity extends BaseActivity {
 
                     if (user == null) throw new EditFieldValueException(mEmailView, "User not found!");
                     else {
-                        if (user.password.equals(password)) {
+                        if (user.getPassword().equals(password)) {
                             userManager.login(liveUser);
                             gotoMainActivity();
                         } else throw new EditFieldValueException(mPasswordView, "Password Incorrect!");

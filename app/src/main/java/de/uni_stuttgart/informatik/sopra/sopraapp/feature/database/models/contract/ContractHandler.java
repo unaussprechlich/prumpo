@@ -8,9 +8,6 @@ import javax.inject.Inject;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractModelHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
@@ -26,10 +23,9 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
         EventBus.getDefault().register(this);
     }
 
-
     @Override
     protected Contract createNewObject() throws UserManager.NoUserException  {
-        return new ContractBuilder().setName("Unbenannter Vertrag").create();
+        return new Contract.Builder().setName("Unbenannter Vertrag").create();
     }
 
     @Override

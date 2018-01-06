@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
@@ -30,7 +31,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
  * Represents one record of the Contract table.
  */
 @Entity(tableName = Contract.TABLE_NAME)
-public class Contract implements ModelDB {
+public class Contract implements ModelDB<ContractRepository> {
 
     public static final String TABLE_NAME = "contract";
     @Ignore private boolean isChanged = false;
@@ -100,11 +101,17 @@ public class Contract implements ModelDB {
 
     //GETTER #######################################################################################
 
+    @Override
     public long save() throws ExecutionException, InterruptedException {
         if(initial) return contractRepository.insert(this);
         else if(isChanged) contractRepository.update(this);
         isChanged = false;
         return id;
+    }
+
+    @Override
+    public ContractRepository getRepository() {
+        return contractRepository;
     }
 
     public String getName() {
@@ -199,5 +206,60 @@ public class Contract implements ModelDB {
         isChanged = true;
         this.holderID = holderID;
         return this;
+    }
+
+    public static final class Builder {
+        private String name = "";
+        private String areaCode = "";
+        private double areaSize = -1;
+        private long holderID = -1;
+        private List<LatLng> coordinates = new ArrayList<>();
+        private DateTime date = DateTime.now();
+
+        @Inject UserManager userManager;
+
+        Builder(){
+            SopraApp.getAppComponent().inject(this);
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setAreaCode(String areaCode) {
+            this.areaCode = areaCode;
+            return this;
+        }
+
+        public Builder setAreaSize(double areaSize) {
+            this.areaSize = areaSize;
+            return this;
+        }
+
+        public Builder setCoordinates(List<LatLng> coordinates) {
+            this.coordinates = coordinates;
+            return this;
+        }
+
+        public Builder setDate(DateTime date) {
+            this.date = date;
+            return this;
+        }
+
+        public Builder setHolder(User holder) {
+            this.holderID = holder.getID();
+            return this;
+        }
+
+        public Builder setHolder(long holder) {
+            this.holderID = holder;
+            return this;
+        }
+
+        public Contract create() throws UserManager.NoUserException {
+            long ownerID = userManager.getCurrentUser().getID();
+            return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, true);
+        }
     }
 }

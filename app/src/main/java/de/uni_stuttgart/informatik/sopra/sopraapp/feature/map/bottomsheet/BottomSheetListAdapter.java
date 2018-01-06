@@ -9,17 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
@@ -33,9 +32,6 @@ public class BottomSheetListAdapter
     private AtomicInteger counter;
     private RecyclerView recyclerViewAttached;
 
-    @Inject
-    GpsService gpsService;
-
     /**
      * Save the selected view position.
      */
@@ -44,10 +40,13 @@ public class BottomSheetListAdapter
     private static final int TYPE_ELEMENT = 0;
     private static final int TYPE_BUTTON = 1;
 
+    public BottomSheetListAdapter(){
+        this(0);
+    }
+
 
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
-        SopraApp.getAppComponent().inject(this);
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
         add(false); // + Button
         for (int i = 0; i < amountBubbles; i++)
