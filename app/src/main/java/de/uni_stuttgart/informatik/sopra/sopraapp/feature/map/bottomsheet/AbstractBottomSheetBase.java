@@ -4,9 +4,9 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,17 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
@@ -37,13 +30,18 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
         Model extends ModelDB,
         ModelHandler extends AbstractModelHandler>
-    extends AbstractBottomSheetBaseBindings
-    implements BottomSheetListAdapter.ItemCountListener, LifecycleOwner {
+        extends AbstractBottomSheetBaseBindings
+        implements BottomSheetListAdapter.ItemCountListener, LifecycleOwner {
 
     // ### Constructor Variables ############################################################ Constructor Variables ###
 
@@ -64,18 +62,21 @@ public abstract class AbstractBottomSheetBase<
 
     // ### Injected ###################################################################################### Injected ###
 
-    @Inject UserRepository userRepository;
-    @Inject GpsService gpsService;
+    @Inject
+    UserRepository userRepository;
+    @Inject
+    GpsService gpsService;
     protected BottomSheetListAdapter bottomSheetListAdapter;
-    @Inject ModelHandler hanlder;
+    @Inject
+    ModelHandler handler;
 
     //You can't inject into protected fields, just add some protected getters
     protected GpsService getGpsService() {
         return gpsService;
     }
 
-    protected ModelHandler getHanlder() {
-        return hanlder;
+    protected ModelHandler getHandler() {
+        return handler;
     }
 
     protected UserRepository getUserRepository() {
@@ -134,7 +135,7 @@ public abstract class AbstractBottomSheetBase<
                 returnThisAfter(true, () -> {
                     Log.i("BS", "onBottomSheetCloseButtonPressed");
 
-                    if ((getHanlder().getValue() != null && getHanlder().getValue().isChanged())) {
+                    if ((getHandler().getValue() != null && getHandler().getValue().isChanged())) {
                         showCloseAlert();
                     } else {
                         close();
@@ -152,7 +153,7 @@ public abstract class AbstractBottomSheetBase<
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
 
-    private void onBubbleListAddButtonPressed(){
+    private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
         LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
 
@@ -174,17 +175,17 @@ public abstract class AbstractBottomSheetBase<
         this.lockableBottomSheetBehaviour.allowUserSwipe(enabled);
 
         if (enabled && !animationShown) {
-            this.nestedScrollView
-                    .animate()
-                    .setInterpolator(new AccelerateInterpolator())
-                    .translationY(-150);
+            TranslateAnimation anim = new TranslateAnimation(
+                    TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                    TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                    TranslateAnimation.RELATIVE_TO_SELF, 0f,
+                    TranslateAnimation.RELATIVE_TO_SELF, -0.2f); // this is distance of top and bottom form current positiong
 
-            new Handler().postDelayed(() ->
-                            this.nestedScrollView
-                                    .animate()
-                                    .setInterpolator(new AccelerateInterpolator())
-                                    .translationY(-0),
-                    300);
+            anim.setRepeatCount(3);
+            anim.setInterpolator(new FastOutSlowInInterpolator());
+            anim.setDuration(350);
+            anim.setRepeatMode(Animation.REVERSE);
+            nestedScrollView.startAnimation(anim);
 
             animationShown = true;
         }
@@ -245,12 +246,10 @@ public abstract class AbstractBottomSheetBase<
         return viewBottomSheetBubbleList;
     }
 
-    // ### Abstract Functions ################################################################## Abstract Functions ###
-
-    private void onSave(){
+    private void onSave() {
         try {
-            if(hanlder.hasValue())
-                collectDataForSave((Model) hanlder.getValue()).save();
+            if (handler.hasValue())
+                collectDataForSave((Model) handler.getValue()).save();
         } catch (InterruptedException | ExecutionException e) {
             Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -259,22 +258,27 @@ public abstract class AbstractBottomSheetBase<
         }
     }
 
+    // ### Abstract Functions ################################################################## Abstract Functions ###
+
     protected abstract String getDeleteMessage();
+
     protected void showDeleteAlert() {
         new FixedDialog(context)
                 .setTitle(strBottomSheetDeleteDialogHeader)
                 .setMessage(getDeleteMessage())
                 .setCancelable(false)
                 .setPositiveButton(strBottomSheetCloseDialogOk, (dialog, id) -> {
-                    hanlder.deleteCurrent();
+                    handler.deleteCurrent();
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
+                })
                 .create()
                 .show();
     }
 
     protected abstract String getCloseMessage();
+
     protected void showCloseAlert() {
         new FixedDialog(context)
                 .setTitle(strBottomSheetCloseDialogHeader)
@@ -289,7 +293,6 @@ public abstract class AbstractBottomSheetBase<
                 .create()
                 .show();
     }
-
 
 
     protected abstract Model collectDataForSave(Model model);
@@ -309,10 +312,4 @@ public abstract class AbstractBottomSheetBase<
 
     public abstract void editThisOne(Model model);
 
-    public abstract TYPE getType();
-
-    public enum TYPE {
-        DAMAGE_CASE, DAMAGE_CASE_NEW,
-        CONTRACT, CONTRACT_NEW, NONE
-    }
 }

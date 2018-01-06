@@ -8,12 +8,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -23,6 +17,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import org.joda.time.DateTime;
+
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -89,11 +87,6 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
 
         setDate(damageCase.getDate());
-    }
-
-    @Override
-    public AbstractBottomSheetBase.TYPE getType() {
-        return AbstractBottomSheetBase.TYPE.DAMAGE_CASE_NEW;
     }
 
     @Override

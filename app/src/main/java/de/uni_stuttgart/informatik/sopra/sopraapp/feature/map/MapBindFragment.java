@@ -1,24 +1,15 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.google.android.gms.maps.MapView;
-
-import java.util.List;
-
-import butterknife.BindDimen;
+import android.view.View;
 import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.BindViews;
-import butterknife.ButterKnife;
+import com.google.android.gms.maps.MapView;
 import dagger.android.support.DaggerFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 
@@ -49,5 +40,11 @@ public abstract class MapBindFragment extends DaggerFragment {
     @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
     Drawable currentLocationUnknownDrawable;
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle(strAppbarTitle);
+    }
 
 }

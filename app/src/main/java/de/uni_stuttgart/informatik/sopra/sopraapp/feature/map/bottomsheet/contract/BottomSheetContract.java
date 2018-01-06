@@ -7,14 +7,6 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -25,6 +17,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Abstra
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BottomSheetContract extends AbstractBottomSheetContractBindings{
 
@@ -61,8 +59,9 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     }
 
     @Override
-    public AbstractBottomSheetBase.TYPE getType() {
-        return AbstractBottomSheetBase.TYPE.CONTRACT_NEW;
+    public void displayCurrentAreaValue(Double area) {
+        toolbarContractArea.setText(AbstractBottomSheetBase.calculateAreaValue(area));
+
     }
 
     @Override

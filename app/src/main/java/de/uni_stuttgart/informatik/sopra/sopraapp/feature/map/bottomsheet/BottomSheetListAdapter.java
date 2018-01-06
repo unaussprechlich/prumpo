@@ -9,7 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -17,12 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
-
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
-        implements RecyclerViewOperation, LifecycleObserver {
+        implements LifecycleObserver {
 
     // TODO! Remove "MapPoint" Implement DamageCase
 
@@ -40,7 +38,7 @@ public class BottomSheetListAdapter
     private static final int TYPE_ELEMENT = 0;
     private static final int TYPE_BUTTON = 1;
 
-    public BottomSheetListAdapter(){
+    public BottomSheetListAdapter() {
         this(0);
     }
 
@@ -158,7 +156,6 @@ public class BottomSheetListAdapter
         return bubbleHolder.bubbleList.size();
     }
 
-    @Override
     public void add(boolean notify) {
         bubbleHolder.bubbleList.add(bubbleHolder.bubbleList.size(), new Bubble(counter.getAndIncrement()));
         if (itemCountListener != null && notify)
@@ -267,8 +264,6 @@ public class BottomSheetListAdapter
         else
             selectedViewIndex = position;
         notifyDataSetChanged();
-        if (itemCountListener != null)
-            itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
     }
 
     public interface ItemCountListener {

@@ -2,15 +2,24 @@
     <dimen name="fab_margin">16dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
+
     <dimen name="activity_vertical_margin">16dp</dimen>
+
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
+
     <dimen name="nav_header_height">176dp</dimen>
+
     <dimen name="bottomsheet_height">340dp</dimen>
+
     <dimen name="bottomsheet_toolbar_height">72dp</dimen> <!--//?android:attr/actionBarSize-->
+
     <dimen name="bottomsheet_bubblelist_height">64dp
     </dimen> <!-- (item height) + 2x margin height = 48  + 2 * 16 -->
+
     <dimen name="bottomsheet_peek_height">136dp
     </dimen> <!-- bottomsheet_toolbar_height + bottomsheet_bubblelist_height -->
+
+    <dimen name="bottomsheet_wave_up_height">100dp</dimen>
 
 
 </resources>
