@@ -130,9 +130,13 @@ public class BottomSheetDamagecase extends ABottomSheetDamagecaseNewBindings<Dam
 
     @Override
     public void editThisOne(DamageCase damageCase) {
+
+        // todo check whether this damage case already exists in data base
+
         tbDeleteButton.setVisible(true);
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
 
+        setDate(damageCase.getDate());
     }
 
     @Override

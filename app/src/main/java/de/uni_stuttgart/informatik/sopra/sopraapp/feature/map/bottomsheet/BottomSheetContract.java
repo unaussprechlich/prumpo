@@ -14,6 +14,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contra
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 
@@ -73,7 +74,7 @@ public class BottomSheetContract extends ABottomSheetContractNewBindings<Contrac
 
     @Override
     public void onToolbarCloseButtonPressed() {
-
+        close();
     }
 
     @Override
@@ -89,6 +90,9 @@ public class BottomSheetContract extends ABottomSheetContractNewBindings<Contrac
 
     @Override
     public void editThisOne(Contract contract) {
+
+        // todo check whether this contract already exists in data base
+
         tbDeleteButton.setVisible(true);
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
     }
@@ -156,6 +160,8 @@ public class BottomSheetContract extends ABottomSheetContractNewBindings<Contrac
     @OnClick(R.id.bs_contract_add_damagecase)
     public void onAddDamagecasePressed(Button button) {
         Toast.makeText(context, "Add Button pressed", Toast.LENGTH_SHORT).show();
+        MapFragment.BottomSheetMaster bottomSheetMaster = MapFragment.getBottomSheetMaster();
+        bottomSheetMaster.inContractCreateNewDamageCase();
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###

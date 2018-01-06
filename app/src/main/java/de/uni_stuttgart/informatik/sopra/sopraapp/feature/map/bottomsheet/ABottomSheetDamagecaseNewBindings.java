@@ -3,6 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import butterknife.BindString;

@@ -3,11 +3,9 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.arch.lifecycle.Observer;
-import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -16,7 +14,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -62,9 +59,9 @@ public class MapFragment
     UserManager userManager;
 
     @BindView(R.id.bottom_sheet_container)
-    NestedScrollView mBottomSheetContainer;
+    NestedScrollView nestedScrollView;
 
-    private BottomSheetMaster bottomSheetMaster;
+    private static BottomSheetMaster bottomSheetMaster;
 
 
     private Observer damageCaseObserver
@@ -127,7 +124,7 @@ public class MapFragment
         });
 
         addInsurance.setOnClickListener(v -> {
-            bottomSheetMaster.createNewContract();
+            bottomSheetMaster.createNewContract(null);
             d.dismiss();
         });
 
@@ -146,11 +143,15 @@ public class MapFragment
             return;
         }
 
-        if (damageCase.getDate() != null) {
-            bottomSheetMaster.createNewDamageCase(damageCase);
-        } else {
+        // todo check whether damage case is completely new or is edited
 
-            bottomSheetMaster.createNewDamageCase();
+        if (damageCase.getDate() != null) {
+            Log.e("BS", "DATE not null: " + damageCase.getDate());
+            bottomSheetMaster.editDamageCase(damageCase, null);
+        } else {
+            Log.e("BS", "DATE null");
+
+            bottomSheetMaster.createNewDamageCase(null);
 
             addVertexToActivePolygon();
         }
@@ -166,7 +167,7 @@ public class MapFragment
     }
 
     private void setUpBottomSheet() {
-        mBottomSheetBehavior = LockableBottomSheetBehaviour.from(mBottomSheetContainer);
+        mBottomSheetBehavior = LockableBottomSheetBehaviour.from(nestedScrollView);
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 
             @Override
@@ -318,56 +319,118 @@ public class MapFragment
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
-    private class BottomSheetMaster {
+    public class BottomSheetMaster {
         private ABottomSheetBaseFunctions currentBottomSheet = null;
         private ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose
                 = () -> currentBottomSheet = null;
 
-        void createNewDamageCase(DamageCase damageCase) {
-            currentBottomSheet = createBottomSheetDamagecase();
+        /**
+         * @param damageCase         - Damage case to edit
+         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
+         */
+        void editDamageCase(DamageCase damageCase,
+                            ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+            currentBottomSheet = createBottomSheetDamagecase(onBottomSheetClose);
             currentBottomSheet.editThisOne(damageCase);
             show();
         }
 
-        void createNewDamageCase() {
-            currentBottomSheet = createBottomSheetDamagecase();
-            show();
-        }
-
-        void createNewContract(Contract contract) {
-            currentBottomSheet = createBottomSheetContract();
+        /**
+         * @param contract           - Contract to edit
+         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
+         */
+        void editContract(Contract contract,
+                          ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+            currentBottomSheet = createBottomSheetContract(onBottomSheetClose);
             currentBottomSheet.editThisOne(contract);
             show();
         }
 
-        void createNewContract() {
-            currentBottomSheet = createBottomSheetContract();
+        /**
+         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
+         */
+        void createNewDamageCase(ABottomSheetBaseFunctions.OnBottomSheetClose
+                                         onBottomSheetClose) {
+            currentBottomSheet = createBottomSheetDamagecase(onBottomSheetClose);
             show();
         }
 
-        private BottomSheetDamagecase createBottomSheetDamagecase() {
+        /**
+         * @param onBottomSheetClose If null default on BottomSheetClose will be used.
+         */
+        void createNewContract(ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+            currentBottomSheet = createBottomSheetContract(onBottomSheetClose);
+            show();
+        }
+
+
+        /**
+         * When in contract bottom sheet: Create new damage case and return to this
+         */
+        public void inContractCreateNewDamageCase() {
+
+
+            currentBottomSheet.setOnBottomSheetClose(() -> {
+                currentBottomSheet = null;
+                createNewDamageCase(() -> {
+
+                    // todo pass live contract back to bottom sheet
+                    //  editContract(LiveData<Contract> , null);
+
+                    // after todo completed: delete this line and use the uper one
+                    createNewContract(null);
+                });
+            });
+            currentBottomSheet.close();
+        }
+
+        public void inContractEditDamageCase(DamageCase damageCase){
+
+            currentBottomSheet.setOnBottomSheetClose(() -> {
+                currentBottomSheet = null;
+                editDamageCase(damageCase, () -> {
+
+                    // todo pass live contract back to bottom sheet
+                    //  editContract(LiveData<Contract> , null);
+
+                    // after todo completed: delete this line and use the uper one
+                    createNewContract(null);
+                });
+            });
+            currentBottomSheet.close();
+        }
+
+        private BottomSheetDamagecase createBottomSheetDamagecase(
+                ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+
             return new BottomSheetDamagecase(getContext(),
-                    mBottomSheetContainer,
+                    nestedScrollView,
                     mBottomSheetBehavior,
                     damageCaseHandler,
                     getLifecycle(),
                     gpsService,
                     sopraMap,
-                    onBottomSheetClose);
+                    onBottomSheetClose == null ? this.onBottomSheetClose : onBottomSheetClose);
         }
 
-        private BottomSheetContract createBottomSheetContract() {
+        private BottomSheetContract createBottomSheetContract(
+                ABottomSheetBaseFunctions.OnBottomSheetClose onBottomSheetClose) {
+
             return new BottomSheetContract(getContext(),
-                    mBottomSheetContainer,
+                    nestedScrollView,
                     mBottomSheetBehavior,
                     getLifecycle(),
                     gpsService,
                     sopraMap,
-                    onBottomSheetClose);
+                    onBottomSheetClose == null ? this.onBottomSheetClose : onBottomSheetClose);
         }
 
         private void show() {
             new Handler().postDelayed(currentBottomSheet::show, 400);
         }
+    }
+
+    public static BottomSheetMaster getBottomSheetMaster() {
+        return bottomSheetMaster;
     }
 }

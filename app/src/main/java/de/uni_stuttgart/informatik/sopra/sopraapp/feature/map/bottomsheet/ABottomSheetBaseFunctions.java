@@ -53,13 +53,15 @@ public abstract class ABottomSheetBaseFunctions<T>
     private boolean animationShown = false;
     private View bottomSheetView;
 
-    // ### Constructor ################################################################################ Constructor ###
+    // ### Injected ###################################################################################### Injected ###
 
     @Inject
     UserRepository userRepository;
 
     @Inject
     DamageCaseHandler damageCaseHandler;
+
+    // ### Constructor ################################################################################ Constructor ###
 
     public ABottomSheetBaseFunctions(Context context,
                                      NestedScrollView nestedScrollView,
@@ -85,7 +87,6 @@ public abstract class ABottomSheetBaseFunctions<T>
         this.bottomSheetView = layoutInflater.inflate(this.getLayoutResourceFile(), null, false);
         ButterKnife.bind(this, this.bottomSheetView);
 
-        this.nestedScrollView.removeAllViewsInLayout();
         this.nestedScrollView.setNestedScrollingEnabled(false);
 
         this.lockableBottomSheetBehaviour.allowUserSwipe(false);
@@ -161,6 +162,7 @@ public abstract class ABottomSheetBaseFunctions<T>
         this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetListAdapter.setOnItemCountChanged(null);
         this.bottomSheetListAdapter = null;
+        this.nestedScrollView.removeView(this.bottomSheetView);
 
         if (this.onBottomSheetClose != null)
             this.onBottomSheetClose.onBottomSheetClose();
