@@ -81,6 +81,8 @@ public class MapFragment
         if (mRootView != null)
             return mRootView;
 
+        // the following is only called once
+
         mRootView = inflater.inflate(R.layout.activity_main_fragment_mapview,
                 container,
                 false);
@@ -384,7 +386,7 @@ public class MapFragment
             currentBottomSheet.close();
         }
 
-        public void inContractEditDamageCase(DamageCase damageCase){
+        public void inContractEditDamageCase(DamageCase damageCase) {
 
             currentBottomSheet.setOnBottomSheetClose(() -> {
                 currentBottomSheet = null;

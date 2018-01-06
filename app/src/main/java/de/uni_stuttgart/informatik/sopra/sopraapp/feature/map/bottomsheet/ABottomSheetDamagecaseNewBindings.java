@@ -3,7 +3,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import butterknife.BindString;
@@ -19,14 +18,18 @@ public abstract class ABottomSheetDamagecaseNewBindings<T> extends ABottomSheetB
 
     // ### Views ############################################################################################ Views ###
 
-    @BindView(R.id.bs_dc_toolbar_title)
-    TextView toolbarTitle;
+    @BindView(R.id.bs_dc_toolbar_dc_nr)
+    TextView toolbarDamagecaseNr;
+
+    @BindView(R.id.bs_dc_toolbar_name)
+    TextView toolbarDamagecaseName;
 
     @BindView(R.id.bs_dc_toolbar_area)
-    TextView toolbarArea;
+    TextView toolbarDamagecaseArea;
 
-    @BindView(R.id.bs_dc_toolbar_date)
-    TextView toolbarDate;
+    @BindView(R.id.bs_dc_toolbar_location)
+    TextView toolbarDamagecaseLocation;
+
 
     @BindView(R.id.bs_dc_editText_inputDate)
     EditText contentInputDate;

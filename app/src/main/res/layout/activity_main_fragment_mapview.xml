@@ -20,13 +20,14 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
+
     <!--Bottom sheet layout-->
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
                                                 xmlns:tools="http://schemas.android.com/tools"
                                                 android:id="@+id/bottom_sheet_container"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="350dp"
+                                                android:layout_height="@dimen/bottomsheet_height"
                                                 android:background="@color/white"
                                                 android:clipToPadding="true"
                                                 app:behavior_hideable="true"
@@ -35,10 +36,12 @@
 
     <LinearLayout
             android:id="@+id/bottom_sheet_anchor"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_anchor="@id/bottom_sheet_container"
+            app:layout_anchorGravity="top|end"
+            >
 
     </LinearLayout>
 
@@ -47,10 +50,9 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:gravity="end"
+            android:layout_gravity="top|end"
             android:orientation="vertical"
-            app:layout_anchor="@id/bottom_sheet_container"
+            app:layout_anchor="@id/bottom_sheet_anchor"
             app:layout_anchorGravity="top|end">
 
         <!--Align right-->
@@ -58,17 +60,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
-                android:gravity="end"
                 android:orientation="vertical"
-                app:layout_anchor="@id/bottom_sheet_container">
+                >
 
             <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fab_locate"
-                    app:layout_anchor="@+id/bottom_sheet_container"
-                    app:layout_anchorGravity="bottom|right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
                     android:layout_margin="@dimen/fab_margin"
                     android:clickable="false"
                     android:tint="@color/white"

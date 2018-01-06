@@ -87,6 +87,7 @@ public abstract class ABottomSheetBaseFunctions<T>
         this.bottomSheetView = layoutInflater.inflate(this.getLayoutResourceFile(), null, false);
         ButterKnife.bind(this, this.bottomSheetView);
 
+        this.nestedScrollView.removeAllViewsInLayout();
         this.nestedScrollView.setNestedScrollingEnabled(false);
 
         this.lockableBottomSheetBehaviour.allowUserSwipe(false);
@@ -162,7 +163,6 @@ public abstract class ABottomSheetBaseFunctions<T>
         this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetListAdapter.setOnItemCountChanged(null);
         this.bottomSheetListAdapter = null;
-        this.nestedScrollView.removeView(this.bottomSheetView);
 
         if (this.onBottomSheetClose != null)
             this.onBottomSheetClose.onBottomSheetClose();

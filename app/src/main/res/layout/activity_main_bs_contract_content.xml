@@ -15,7 +15,7 @@
 
         <include layout="@layout/activity_main_bs_contract_input_damage"/>
 
-        <include layout="@layout/activity_main_bs_contract_input_contract"/>
+        <include layout="@layout/activity_main_bs_contract_input_location"/>
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="match_parent"

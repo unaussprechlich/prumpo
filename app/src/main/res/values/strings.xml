@@ -112,6 +112,9 @@
     </string-array>
 
     <string name="today">Heute</string>
+    <string name="bottomsheet_contract_toolbar_placeholder_nr">Vers-NR:</string>
+    <string name="bottomsheet_dc_toolbar_placeholder_nr">Schaden-NR:</string>
+    <string name="bottomsheet_contract_toolbar_placeholder_name">Kunde:</string>
 
     <string-array name="damages">
         <item>Feuer</item>

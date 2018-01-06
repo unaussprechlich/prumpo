@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import butterknife.BindArray;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -30,6 +31,18 @@ public abstract class ABottomSheetContractNewBindings<T>
 
     @BindView(R.id.bs_contract_add_damagecase)
     Button buttonAddDamageCase;
+
+    @BindView(R.id.bs_contract_toolbar_contract_nr)
+    TextView toolbarContractNr;
+
+    @BindView(R.id.bs_contract_toolbar_name)
+    TextView toolbarContractName;
+
+    @BindView(R.id.bs_contract_toolbar_area)
+    TextView toolbarContractArea;
+
+    @BindView(R.id.bs_contract_toolbar_date)
+    TextView toolbarContractDate;
 
     // ### Strings ######################################################################################## Strings ###
 

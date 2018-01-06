@@ -26,7 +26,6 @@ import org.joda.time.DateTime;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends ABottomSheetDamagecaseNewBindings<DamageCase> {
@@ -146,7 +145,8 @@ public class BottomSheetDamagecase extends ABottomSheetDamagecaseNewBindings<Dam
 
     @Override
     public void displayCurrentAreaValue(Double area) {
-        toolbarArea.setText(calculateAreaValue(area));
+        Log.i("AREA", "VALUE" + area);
+        toolbarDamagecaseArea.setText(calculateAreaValue(area));
     }
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###
@@ -185,7 +185,7 @@ public class BottomSheetDamagecase extends ABottomSheetDamagecaseNewBindings<Dam
         this.dateTime = dateTime;
 
         String dateString = dateTime.toString(strSimpleDateFormatPattern, Locale.GERMAN);
-        Stream.of(contentInputDate, toolbarDate).forEach(v -> v.setText(dateString));
+        contentInputDate.setText(dateString);
 
     }
 
