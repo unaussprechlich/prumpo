@@ -23,7 +23,7 @@
     <string name="nav_username">Benutzername</string>
     <string name="nav_role">Rolle</string>
     <string name="settings">Einstellungen</string>
-    <string name="insurances">Versicherungen</string>
+    <string name="contract">Versicherungen</string>
     <string name="damageCases">Schadensfälle</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>

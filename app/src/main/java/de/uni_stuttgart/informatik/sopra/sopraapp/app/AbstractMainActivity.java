@@ -1,8 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -12,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.InsuranceListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
@@ -26,7 +24,7 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     MapFragment mapFragment;
 
     @Inject
-    InsuranceListFragment insuranceListFragment;
+    ContractListFragment insuranceListFragment;
 
     @Inject
     DamageCaseListFragment damageCaseListFragment;

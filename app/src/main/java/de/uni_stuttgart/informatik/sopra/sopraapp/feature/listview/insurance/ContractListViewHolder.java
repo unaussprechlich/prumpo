@@ -9,17 +9,26 @@ import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 
-class InsuranceListViewHolder
+class ContractListViewHolder
         extends RecyclerView.ViewHolder
         implements AbstractListAdapter.ViewHolderRootElement{
 
-    @BindView(R.id.insurances_card)
+    @BindView(R.id.contract_card)
     CardView cardView;
 
-    @BindView(R.id.insurance_name)
-    TextView insuranceName;
+    @BindView(R.id.contract_name)
+    TextView contractName;
 
-    public InsuranceListViewHolder(View itemView) {
+    @BindView(R.id.contract_policyholder)
+    TextView policyHolder;
+
+    @BindView(R.id.contract_damagetypes)
+    TextView damageTypes;
+
+    @BindView(R.id.contract_area)
+    TextView area;
+
+    public ContractListViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }

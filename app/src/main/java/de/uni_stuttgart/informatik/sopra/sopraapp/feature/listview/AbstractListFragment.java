@@ -78,11 +78,18 @@ public abstract class AbstractListFragment
         return true; // true -> listener handled query already
     }
 
+    /**
+     * Called when the search query changes. Performs a filtering and changes the list items.
+     *
+     * @param newText the updated query.
+     */
+    @Override
+    public abstract boolean onQueryTextChange(String newText);
+
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getWindow()
-                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     /**
@@ -92,5 +99,22 @@ public abstract class AbstractListFragment
      * @return The id of the fragment to inflate.
      */
     protected abstract int getLayoutToInflate();
+
+    /**
+     * Checks whether one string contains the other string. Arguments can be null.
+     *
+     * @param o1 - Object nr 1
+     * @param s2 - String nr 2
+     * @return true, if one contains the other, false else
+     */
+    protected boolean compareBothUpper(@Nullable Object o1, @Nullable String s2) {
+        if (o1 == null || s2 == null)
+            return false;
+
+        String s1Upper = o1.toString().toUpperCase();
+        String s2Upper = s2.toUpperCase();
+
+        return s1Upper.contains(s2Upper) || s2Upper.contains(s1Upper);
+    }
 
 }

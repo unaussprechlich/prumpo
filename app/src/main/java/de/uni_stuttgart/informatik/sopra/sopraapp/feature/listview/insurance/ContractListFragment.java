@@ -1,7 +1,6 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +10,9 @@ import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
@@ -22,28 +22,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ActivityScope
-public class DamageCaseListFragment
+public class ContractListFragment
         extends AbstractListFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
     @Inject
-    DamageCaseRepository damageCaseRepository;
+    ContractRepository contractRepository;
 
-    @BindView(R.id.dc_recycler_view)
+    @BindView(R.id.contract_recycler_view)
     RecyclerView recyclerView;
 
-    @BindString(R.string.damageCases)
+    @BindString(R.string.contract)
     String toolbarTitle;
 
-    private List<DamageCase> damageCaseList = new ArrayList<>();
+    private List<Contract> contractList = new ArrayList<>();
 
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(new DamageCaseListAdapter(damageCaseList));
+        recyclerView.setAdapter(new ContractListAdapter(contractList));
 
         getActivity().setTitle(toolbarTitle);
 
@@ -54,29 +54,34 @@ public class DamageCaseListFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        damageCaseRepository.getAll().observe(this, this::setDamageCaseList);
+        contractRepository.getAll().observe(this, this::setContractList);
 
     }
 
-    public void setDamageCaseList(List<DamageCase> damageCaseList) {
-        this.damageCaseList = damageCaseList;
-        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseList), true);
+    public void setContractList(List<Contract> contractList) {
+        this.contractList = contractList;
+
+        recyclerView.swapAdapter(new ContractListAdapter(contractList), true);
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        ArrayList<DamageCase> damageCases = damageCaseList.stream()
-                .filter(damageCase -> compareBothUpper(damageCase.getContractHolderName(), newText))
+        ArrayList<Contract> contracts = contractList.stream()
+                .filter(contract -> {
+                    User value = contract.getHolder().getValue();
+                    return compareBothUpper(value != null ? value.getName() : null, newText);
+                })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCases), true);
+        recyclerView.swapAdapter(new ContractListAdapter(contracts), true);
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }
 
     @Override
     protected int getLayoutToInflate() {
-        return R.layout.activity_main_fragment_damagecases;
+        return R.layout.activity_main_fragment_contract;
     }
+
 }

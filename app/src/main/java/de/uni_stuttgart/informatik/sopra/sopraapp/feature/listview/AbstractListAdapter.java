@@ -6,17 +6,12 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Abstract list adapter.
- *
- * @param <T> The item to hold.
- * @param <U> The viewholder for the item {@code <T>}
- */
-public abstract class AbstractListAdapter<T, U extends RecyclerView.ViewHolder & AbstractListAdapter.ViewHolderRootElement>
-        extends RecyclerView.Adapter<U> {
+
+public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.ViewHolder & AbstractListAdapter.ViewHolderRootElement>
+        extends RecyclerView.Adapter<ViewHolder> {
 
 
-    public AbstractListAdapter(List<T> listItems) {
+    public AbstractListAdapter(List<Item> listItems) {
         setHasStableIds(true);
         dataHolder.dataList = listItems;
     }
@@ -39,11 +34,11 @@ public abstract class AbstractListAdapter<T, U extends RecyclerView.ViewHolder &
      * This dataHolder always holds the up to date underlying data.
      */
     public class Holder {
-        public List<T> dataList = new ArrayList<>();
+        public List<Item> dataList = new ArrayList<>();
     }
 
     @Override
-    public void onBindViewHolder(U holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
 
         holder.getRootElement().setOnClickListener(v -> onCardViewPressed(v, position));

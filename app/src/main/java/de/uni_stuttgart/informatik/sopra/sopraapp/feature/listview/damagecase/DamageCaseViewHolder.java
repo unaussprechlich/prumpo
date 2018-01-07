@@ -10,14 +10,6 @@ import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 
-/**
- * A view dataHolder holds the view of a list item.
- * In this class the xml attributes are bound to local variables (by id) once to use them later.
- *
- * @see <a href="https://developer.android.com/reference/android/support/v7/widget/RecyclerView.ViewHolder.html">
- * Android Developer Guide (RecyclerView.ViewHolder)
- * </a>
- */
 class DamageCaseViewHolder
         extends RecyclerView.ViewHolder implements AbstractListAdapter.ViewHolderRootElement {
 
@@ -30,8 +22,11 @@ class DamageCaseViewHolder
     @BindView(R.id.dc_policyholder)
     TextView policyHolder;
 
-    @BindView(R.id.dc_areacode)
-    TextView areaCode;
+    @BindView(R.id.dc_location)
+    TextView location;
+
+    @BindView(R.id.dc_area)
+    TextView area;
 
     DamageCaseViewHolder(View itemView) {
         super(itemView);

@@ -19,14 +19,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
@@ -38,6 +30,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -208,7 +205,7 @@ public abstract class AbstractBottomSheetBase<
                     TranslateAnimation.RELATIVE_TO_SELF, 0f,
                     TranslateAnimation.RELATIVE_TO_SELF, -0.2f); // this is distance of top and bottom form current positiong
 
-            anim.setRepeatCount(3);
+            anim.setRepeatCount(1);
             anim.setInterpolator(new FastOutSlowInInterpolator());
             anim.setDuration(350);
             anim.setRepeatMode(Animation.REVERSE);
@@ -231,6 +228,7 @@ public abstract class AbstractBottomSheetBase<
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
 
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setHideable(true);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().allowUserSwipe(false);
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetListAdapter.setOnItemCountChanged(null);
         this.bottomSheetListAdapter = null;
@@ -259,7 +257,7 @@ public abstract class AbstractBottomSheetBase<
         return retValue;
     }
 
-    protected static String calculateAreaValue(Double area) {
+    public static String calculateAreaValue(Double area) {
         return area == null ? "0.0" : "" + (double) Math.round(area * 100d) / 100d;
     }
 

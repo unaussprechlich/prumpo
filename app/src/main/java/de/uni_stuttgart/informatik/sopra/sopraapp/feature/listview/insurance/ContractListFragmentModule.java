@@ -4,8 +4,8 @@ import dagger.Module;
 
 /**
  * This is the place, where you can define all the stuff that is provided for
- * a {@link InsuranceListFragment}.
+ * a {@link ContractListFragment}.
  */
 @Module
-public class InsuranceListFragmentModule {
+public class ContractListFragmentModule {
 }

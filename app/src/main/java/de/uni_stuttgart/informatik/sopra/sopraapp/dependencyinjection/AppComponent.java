@@ -6,7 +6,6 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
-
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -32,6 +31,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
@@ -52,6 +52,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damage
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(DamageCaseListAdapter __);
+    void inject(ContractListAdapter __);
 
     void inject(SopraMap __);
 

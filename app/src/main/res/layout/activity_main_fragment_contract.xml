@@ -6,20 +6,13 @@
     android:layout_height="match_parent">
 
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/insurances_recycler_view"
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/contract_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            tools:listitem="@layout/activity_main_fragment_insurances_list_item">
+            tools:listitem="@layout/activity_main_fragment_contract_list_item">
 
-        </android.support.v7.widget.RecyclerView>
-
-    </android.support.design.widget.CoordinatorLayout>
+    </android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>

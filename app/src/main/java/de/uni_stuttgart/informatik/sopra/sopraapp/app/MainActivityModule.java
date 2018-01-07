@@ -8,8 +8,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.Act
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.FragmentScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragmentModule;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.InsuranceListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.InsuranceListFragmentModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
 
@@ -41,13 +41,13 @@ public abstract class MainActivityModule {
 
 
     @FragmentScope
-    @ContributesAndroidInjector(modules = {InsuranceListFragmentModule.class})
-    abstract InsuranceListFragment contributeInsuranceListFragment();
+    @ContributesAndroidInjector(modules = {ContractListFragmentModule.class})
+    abstract ContractListFragment contributeInsuranceListFragment();
 
     @ActivityScope
     @Provides
-    static InsuranceListFragment providesInsuranceListFragment(){
-        return new InsuranceListFragment();
+    static ContractListFragment providesInsuranceListFragment(){
+        return new ContractListFragment();
     }
 
 }
