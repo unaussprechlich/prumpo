@@ -1,7 +1,5 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase;
 
-import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -11,7 +9,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 
 public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBottomSheetBase<DamageCase, DamageCaseHandler> {
 
@@ -62,12 +60,8 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public AbstractBottomSheetDamagecaseBindings(Context context,
-                                                 NestedScrollView nestedScrollView,
-                                                 LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
-        super(context,
-                nestedScrollView,
-                lockableBottomSheetBehaviour);
+    public AbstractBottomSheetDamagecaseBindings(IBottomSheetOwner owner) {
+        super(owner);
     }
 
 

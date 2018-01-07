@@ -1,54 +1,56 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract;
 
-import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BottomSheetContract extends AbstractBottomSheetContractBindings{
+import javax.annotation.Nullable;
 
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
+
+public class BottomSheetContract extends AbstractBottomSheetContractBindings{
 
     protected List<String> selectedDamages = new ArrayList<>();
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public BottomSheetContract(Context context,
-                               NestedScrollView nestedScrollView,
-                               LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
-
-        super(context,
-                nestedScrollView,
-                lockableBottomSheetBehaviour);
+    public BottomSheetContract(IBottomSheetOwner owner) {
+        super(owner);
         SopraApp.getAppComponent().inject(this);
+        init();
     }
 
     @Override
     protected Contract collectDataForSave(Contract contract) {
-        return null;
-    }
+        try {
 
-    @Override
-    protected void onBottomSheetClose() {
+            if(this.user == null) throw new EditFieldValueIsEmptyException(inputPolicyholder);
 
+            contract.setAreaCode(getIfNotEmptyElseThrow(inputLocation))
+                    .setDamageType(getIfNotEmptyElseThrow(inputDamages))
+                    .setHolderID(user.getID());
+
+        } catch (EditFieldValueIsEmptyException e) {
+            e.showError();
+            iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+        return contract;
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
@@ -61,19 +63,16 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     @Override
     public void displayCurrentAreaValue(Double area) {
         toolbarContractArea.setText(AbstractBottomSheetBase.calculateAreaValue(area));
-
     }
 
     @Override
-    public void editThisOne(Contract contract) {
-
-        // todo check whether this contract already exists in data base
-
-        tbDeleteButton.setVisible(true);
+    protected void insertExistingData(Contract contract) {
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
     }
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###
+
+    private User user = null;
 
     @OnClick(R.id.bs_contract_editText_inputPolicyholder)
     public void onInputPolicyholderPressed(EditText editText) {
@@ -85,8 +84,8 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
             new InputRetrieverAutoComplete<User>(editText)
                     .withAutoCompleteSuggestions(users,
                             user -> {
-                                Log.e("FUCKING JAVA", user.toString());
-                                //TODO
+                                this.user = user;
+                                toolbarContractName.setText(user.toString());
                             })
                     .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                     .withHint(strBottomSheetInpDialogPolicyholderHint)
@@ -102,7 +101,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     public void onInputDamagesPressed(EditText editText) {
         List<String> temporaryList = new ArrayList<>(selectedDamages);
 
-        new AlertDialog.Builder(context).setTitle(strDamagesHeader)
+        new AlertDialog.Builder(getContext()).setTitle(strDamagesHeader)
                 .setMultiChoiceItems(allPossibleDamages, parseDamages(editText.getText().toString()),
                         (dialog, item, isChecked) ->
                         {
@@ -135,9 +134,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
 
     @OnClick(R.id.bs_contract_add_damagecase)
     public void onAddDamagecasePressed(Button button) {
-        Toast.makeText(context, "Add Button pressed", Toast.LENGTH_SHORT).show();
-        MapFragment.BottomSheetMaster bottomSheetMaster = MapFragment.getBottomSheetMaster();
-        bottomSheetMaster.inContractCreateNewDamageCase();
+        Toast.makeText(getContext(), "Add Button pressed", Toast.LENGTH_SHORT).show();
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
@@ -181,4 +178,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
 
         inputDamages.setText(damages);
     }
+
+    @Override
+    protected void onBottomSheetClose() {}
 }

@@ -55,6 +55,8 @@ public class Contract implements ModelDB<ContractRepository> {
     @ColumnInfo(index = true)
     String name;
 
+    String damageType;
+
     List<Long> damageCases = new ArrayList<>();
 
     List<LatLng> coordinates = new ArrayList<>();
@@ -72,8 +74,9 @@ public class Contract implements ModelDB<ContractRepository> {
             long holderID,
             List<LatLng> coordinates,
             DateTime date,
+            String damageType,
             boolean intial) {
-        this(name, areaCode, areaSize, ownerID, holderID, coordinates, date);
+        this(name, areaCode, areaSize, ownerID, holderID, coordinates, date, damageType);
         this.initial = intial;
     }
 
@@ -84,7 +87,8 @@ public class Contract implements ModelDB<ContractRepository> {
             long ownerID,
             long holderID,
             List<LatLng> coordinates,
-            DateTime date) {
+            DateTime date,
+            String damageType) {
         SopraApp.getAppComponent().inject(this);
         this.name = name;
         this.areaCode = areaCode;
@@ -93,10 +97,16 @@ public class Contract implements ModelDB<ContractRepository> {
         this.holderID = holderID;
         this.coordinates = coordinates;
         this.date = date;
+        this.damageType = damageType;
     }
 
     public boolean isChanged() {
         return isChanged;
+    }
+
+    @Override
+    public boolean isInitial() {
+        return initial;
     }
 
     //GETTER #######################################################################################
@@ -116,6 +126,10 @@ public class Contract implements ModelDB<ContractRepository> {
 
     public String getName() {
         return name;
+    }
+
+    public String getDamageType() {
+        return damageType;
     }
 
     public List<LatLng> getCoordinates() {
@@ -208,6 +222,12 @@ public class Contract implements ModelDB<ContractRepository> {
         return this;
     }
 
+    public Contract setDamageType(String damageType) {
+        isChanged = true;
+        this.damageType = damageType;
+        return this;
+    }
+
     public static final class Builder {
         private String name = "";
         private String areaCode = "";
@@ -215,6 +235,7 @@ public class Contract implements ModelDB<ContractRepository> {
         private long holderID = -1;
         private List<LatLng> coordinates = new ArrayList<>();
         private DateTime date = DateTime.now();
+        private String damageType;
 
         @Inject UserManager userManager;
 
@@ -224,6 +245,11 @@ public class Contract implements ModelDB<ContractRepository> {
 
         public Builder setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder setDamageType(String damageType) {
+            this.damageType = damageType;
             return this;
         }
 
@@ -259,7 +285,7 @@ public class Contract implements ModelDB<ContractRepository> {
 
         public Contract create() throws UserManager.NoUserException {
             long ownerID = userManager.getCurrentUser().getID();
-            return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, true);
+            return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, damageType, true);
         }
     }
 }

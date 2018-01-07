@@ -100,6 +100,11 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         return isChanged;
     }
 
+    @Override
+    public boolean isInitial() {
+        return initial;
+    }
+
     //FUN  #########################################################################################
 
     public long save() throws ExecutionException, InterruptedException {

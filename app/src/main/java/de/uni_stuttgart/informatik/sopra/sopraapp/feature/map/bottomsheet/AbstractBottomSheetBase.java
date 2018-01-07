@@ -19,6 +19,14 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
@@ -30,11 +38,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -45,9 +48,7 @@ public abstract class AbstractBottomSheetBase<
 
     // ### Constructor Variables ############################################################ Constructor Variables ###
 
-    protected Context context;
-    protected NestedScrollView nestedScrollView;
-    protected LockableBottomSheetBehaviour lockableBottomSheetBehaviour;
+    protected IBottomSheetOwner iBottomSheetOwner;
 
     // ### Toolbar Buttons ######################################################################## Toolbar Buttons ###
 
@@ -95,43 +96,37 @@ public abstract class AbstractBottomSheetBase<
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public AbstractBottomSheetBase(Context context,
-                                   NestedScrollView nestedScrollView,
-                                   LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
+    public AbstractBottomSheetBase(IBottomSheetOwner iBottomSheetOwner) {
 
-        this.context = context;
-        this.nestedScrollView = nestedScrollView;
-        this.lockableBottomSheetBehaviour = lockableBottomSheetBehaviour;
+        this.iBottomSheetOwner = iBottomSheetOwner;
 
-        LayoutInflater layoutInflater = LayoutInflater.from(this.context);
-        this.bottomSheetView = layoutInflater.inflate(this.getLayoutResourceFile(), null, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        bottomSheetView = layoutInflater.inflate(this.getLayoutResourceFile(), null, false);
         ButterKnife.bind(this, this.bottomSheetView);
 
-        this.nestedScrollView.removeAllViewsInLayout();
-        this.nestedScrollView.setNestedScrollingEnabled(false);
-
-        this.lockableBottomSheetBehaviour.allowUserSwipe(false);
-        this.lockableBottomSheetBehaviour.setPeekHeight(dimenBottomSheetPeekHeight);
+        getNestedScrollView().removeAllViewsInLayout();
+        getNestedScrollView().setNestedScrollingEnabled(false);
 
         //Init BottomSheetListAdapter
-        this.bottomSheetListAdapter = new BottomSheetListAdapter();
-        this.bottomSheetListAdapter.setOnItemCountChanged(this);
-        this.bottomSheetListAdapter.setAddButtonPressed(this::onBubbleListAddButtonPressed);
+        bottomSheetListAdapter = new BottomSheetListAdapter();
+        bottomSheetListAdapter.setOnItemCountChanged(this);
+        bottomSheetListAdapter.setAddButtonPressed(this::onBubbleListAddButtonPressed);
         getLifecycle().addObserver(bottomSheetListAdapter);
-        this.bottomSheetListAdapter.notifyDataSetChanged();
+        bottomSheetListAdapter.notifyDataSetChanged();
 
         viewBottomSheetBubbleList.setAdapter(bottomSheetListAdapter);
         viewBottomSheetBubbleList.setLayoutManager(new
-                LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false));
+                LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         viewBottomSheetToolbar.inflateMenu(R.menu.bottom_sheet);
 
-        this.tbSaveButton = viewBottomSheetToolbar.findViewById(R.id.act_botsheet_save);
-        this.tbSaveButton.setOnClickListener(v -> this.onSave());
-        this.tbSaveButton.setAlpha(0.25f);
+        //Init SAVE button
+        tbSaveButton = viewBottomSheetToolbar.findViewById(R.id.act_botsheet_save);
+        tbSaveButton.setOnClickListener(v -> this.onSave());
+        tbSaveButton.setAlpha(0.25f);
 
-        this.tbCloseButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_close);
-        this.tbCloseButton.setOnMenuItemClickListener(i ->
+        tbCloseButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_close);
+        tbCloseButton.setOnMenuItemClickListener(i ->
                 returnThisAfter(true, () -> {
                     Log.i("BS", "onBottomSheetCloseButtonPressed");
 
@@ -142,20 +137,43 @@ public abstract class AbstractBottomSheetBase<
                     }
                 }));
 
+        //Init DELETE button
         this.tbDeleteButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_delete);
         this.tbDeleteButton.setOnMenuItemClickListener(i ->
                 returnThisAfter(true, this::showDeleteAlert));
         this.tbDeleteButton.setVisible(false);
 
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setPeekHeight(dimenBottomSheetPeekHeight);
+
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
     }
 
+    protected void init(){
+        if(handler.hasValue()) loadModelFromHandler();
+    }
+
+    private void loadModelFromHandler(){
+        Model model = (Model) handler.getValue();
+        if(!model.isInitial()) tbDeleteButton.setVisible(true);
+        insertExistingData(model);
+    }
+
+    protected abstract void insertExistingData(Model model);
+
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
+
+    protected Context getContext(){
+        return iBottomSheetOwner.getContext();
+    }
+
+    private NestedScrollView getNestedScrollView(){
+        return iBottomSheetOwner.getNestedScrollView();
+    }
 
 
     private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(context, callbackDone);
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
 
         if (callbackDone.get()) {
             callbackDone.set(false);
@@ -165,14 +183,23 @@ public abstract class AbstractBottomSheetBase<
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
+
+    public int getState(){
+        return iBottomSheetOwner.getLockableBottomSheetBehaviour().getState();
+    }
+
+    public boolean isHidden(){
+        return iBottomSheetOwner.getLockableBottomSheetBehaviour().getState() == BottomSheetBehavior.STATE_HIDDEN;
+    }
+
     @Override
     public void onItemCountChanged(int newItemCount) {
-        this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
         boolean enabled = newItemCount > 3;
 
         this.tbSaveButton.setEnabled(enabled);
         this.tbSaveButton.setAlpha(enabled ? 1 : 0.25f);
-        this.lockableBottomSheetBehaviour.allowUserSwipe(enabled);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().allowUserSwipe(enabled);
 
         if (enabled && !animationShown) {
             TranslateAnimation anim = new TranslateAnimation(
@@ -185,7 +212,7 @@ public abstract class AbstractBottomSheetBase<
             anim.setInterpolator(new FastOutSlowInInterpolator());
             anim.setDuration(350);
             anim.setRepeatMode(Animation.REVERSE);
-            nestedScrollView.startAnimation(anim);
+            getNestedScrollView().startAnimation(anim);
 
             animationShown = true;
         }
@@ -194,17 +221,17 @@ public abstract class AbstractBottomSheetBase<
     public void show() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
 
-        this.lockableBottomSheetBehaviour.setHideable(false);
-        this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        this.nestedScrollView.addView(this.bottomSheetView);
-        this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setHideable(false);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
+        getNestedScrollView().addView(this.bottomSheetView);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     public void close() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
 
-        this.lockableBottomSheetBehaviour.setHideable(true);
-        this.lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setHideable(true);
+        iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_HIDDEN);
         this.bottomSheetListAdapter.setOnItemCountChanged(null);
         this.bottomSheetListAdapter = null;
 
@@ -251,7 +278,7 @@ public abstract class AbstractBottomSheetBase<
             if (handler.hasValue())
                 collectDataForSave((Model) handler.getValue()).save();
         } catch (InterruptedException | ExecutionException e) {
-            Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         } finally {
             close();
@@ -263,7 +290,7 @@ public abstract class AbstractBottomSheetBase<
     protected abstract String getDeleteMessage();
 
     protected void showDeleteAlert() {
-        new FixedDialog(context)
+        new FixedDialog(getContext())
                 .setTitle(strBottomSheetDeleteDialogHeader)
                 .setMessage(getDeleteMessage())
                 .setCancelable(false)
@@ -280,7 +307,7 @@ public abstract class AbstractBottomSheetBase<
     protected abstract String getCloseMessage();
 
     protected void showCloseAlert() {
-        new FixedDialog(context)
+        new FixedDialog(getContext())
                 .setTitle(strBottomSheetCloseDialogHeader)
                 .setMessage(getCloseMessage())
                 .setCancelable(false)
@@ -309,7 +336,5 @@ public abstract class AbstractBottomSheetBase<
      * Specifies the action after the Bottom Sheet got closed.
      */
     protected abstract void onBottomSheetClose();
-
-    public abstract void editThisOne(Model model);
 
 }

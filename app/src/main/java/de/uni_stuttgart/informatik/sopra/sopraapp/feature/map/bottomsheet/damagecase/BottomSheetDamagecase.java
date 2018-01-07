@@ -1,26 +1,25 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import org.joda.time.DateTime;
+
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -31,19 +30,12 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     protected DamageCaseHandler damageCaseHandler;
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-
-    private SopraMap sopraMap;
-
     // ### Constructor ################################################################################ Constructor ###
 
-    public BottomSheetDamagecase(Context context,
-                                 NestedScrollView nestedScrollView,
-                                 LockableBottomSheetBehaviour lockableBottomSheetBehaviour, SopraMap sopraMap) {
-
-        super(context,
-                nestedScrollView,
-                lockableBottomSheetBehaviour);
+    public BottomSheetDamagecase(IBottomSheetOwner owner) {
+        super(owner);
         SopraApp.getAppComponent().inject(this);
+        init();
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
@@ -60,14 +52,13 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
             //TODO REMOVE
             if(true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
 
-            model.setAreaCode("")
-                .setDate(dateTime)
-                .setAreaSize(sopraMap.getArea())
-                .setCoordinates(sopraMap.getActivePoints());
+            model.setDate(dateTime)
+                .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
+                .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints());
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
-            lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED);
+            iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         return model;
     }
@@ -79,13 +70,8 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    public void editThisOne(DamageCase damageCase) {
-
-        // todo check whether this damage case already exists in data base
-
-        tbDeleteButton.setVisible(true);
+    protected void insertExistingData(DamageCase damageCase) {
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
-
         setDate(damageCase.getDate());
     }
 
@@ -99,7 +85,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @OnClick(R.id.bs_dc_editText_inputDate)
     public void onInputDateFieldPressed(View view) {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(context,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 (view1, year, month, dayOfMonth) ->
                         setDate(dateTime.withDate(year, month + 1, dayOfMonth)),
                 dateTime.getYear(),
@@ -117,12 +103,12 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @OnClick(R.id.bs_dc_policyHolder_moreDatailsButton)
     public void onPolicyholderMoreDetailsButtonPressed(View view) {
-        Toast.makeText(context, "Pressed 1", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Pressed 1", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.bs_dc_contract_moreDatailsButton)
     public void onContractMoreDetailsButtonPressed(View view) {
-        Toast.makeText(context, "Pressed 2", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Pressed 2", Toast.LENGTH_SHORT).show();
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###

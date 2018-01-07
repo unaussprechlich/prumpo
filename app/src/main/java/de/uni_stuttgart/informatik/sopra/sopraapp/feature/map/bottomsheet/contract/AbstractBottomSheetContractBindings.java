@@ -1,7 +1,5 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract;
 
-import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,7 +11,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 
 public abstract class AbstractBottomSheetContractBindings
         extends AbstractBottomSheetBase<Contract, ContractHandler> {
@@ -85,12 +83,8 @@ public abstract class AbstractBottomSheetContractBindings
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public AbstractBottomSheetContractBindings(Context context,
-                                               NestedScrollView nestedScrollView,
-                                               LockableBottomSheetBehaviour lockableBottomSheetBehaviour) {
-        super(context,
-                nestedScrollView,
-                lockableBottomSheetBehaviour);
+    public AbstractBottomSheetContractBindings(IBottomSheetOwner owner) {
+        super(owner);
     }
 
 

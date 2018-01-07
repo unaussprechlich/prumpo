@@ -112,6 +112,11 @@ public final class User implements ModelDB<UserRepository> {
     }
 
     @Override
+    public boolean isInitial() {
+        return initial;
+    }
+
+    @Override
     public String toString() {
         return name + " #" + id;
     }

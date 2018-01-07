@@ -12,12 +12,27 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+
+import com.google.android.gms.maps.MapsInitializer;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
@@ -28,22 +43,18 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.LockableBottomSheetBehaviour;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
 public class MapFragment
         extends MapBindFragment
-        implements FragmentBackPressed, LocationCallbackListener {
+        implements FragmentBackPressed, LocationCallbackListener, IBottomSheetOwner {
 
     @Inject
     GpsService gpsService;
@@ -58,15 +69,11 @@ public class MapFragment
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;
 
-    private static BottomSheetMaster bottomSheetMaster;
-
-
     private Observer damageCaseObserver
             = damageCase -> updateDamageCase((DamageCase) damageCase);
 
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-    private LockableBottomSheetBehaviour mBottomSheetBehavior;
     private SopraMap sopraMap;
     private View mRootView;
     private boolean isGpsServiceBound;
@@ -85,12 +92,11 @@ public class MapFragment
                 false);
         ButterKnife.bind(this, mRootView);
         setHasOptionsMenu(true);
-        setUpBottomSheet();
         initMapView(savedInstanceState);
 
         onResume();
 
-        bottomSheetMaster = new BottomSheetMaster();
+        setupBottomSheetBehaviour();
 
         return mRootView;
     }
@@ -123,7 +129,7 @@ public class MapFragment
         });
 
         addInsurance.setOnClickListener(v -> {
-            bottomSheetMaster.createNewContract();
+            openBottomSheet(Contract.class);
             d.dismiss();
         });
 
@@ -134,26 +140,8 @@ public class MapFragment
 
 
     private void updateDamageCase(DamageCase damageCase) {
-        Log.e("LOG", "dc");
-
-        // todo check for opened insurance bottom sheet
-
-        if (damageCase == null) {
-            return;
-        }
-
-        // todo check whether damage case is completely new or is edited
-
-        if (damageCase.getDate() != null) {
-            Log.e("BS", "DATE not null: " + damageCase.getDate());
-            bottomSheetMaster.editDamageCase(damageCase);
-        } else {
-            Log.e("BS", "DATE null");
-
-            bottomSheetMaster.createNewDamageCase();
-
-            addVertexToActivePolygon();
-        }
+        if (damageCase == null) return;
+        openBottomSheet(DamageCase.class);
     }
 
     private void addVertexToActivePolygon() {
@@ -163,26 +151,6 @@ public class MapFragment
             callbackDone.set(false);
             gpsService.singleLocationCallback(lcl, 10000);
         }
-    }
-
-    private void setUpBottomSheet() {
-        mBottomSheetBehavior = LockableBottomSheetBehaviour.from(nestedScrollView);
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-
-            @Override
-            public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
-                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheetContainer, float slideOffset) {
-
-            }
-
-        });
-
-        mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void initMapView(Bundle savedInstanceState) {
@@ -203,7 +171,7 @@ public class MapFragment
             getLifecycle().addObserver(sopraMap);
 
             sopraMap.areaLiveData().observe(this, area -> {
-                bottomSheetMaster.currentBottomSheet.displayCurrentAreaValue(area);
+                currentBottomSheet.displayCurrentAreaValue(area);
             });
 
         });
@@ -240,14 +208,13 @@ public class MapFragment
 
     @Subscribe
     public void onCloseBottomSheet(EventsBottomSheet.Close event) {
-        bottomSheetMaster.currentBottomSheet = null;
+        currentBottomSheet = null;
     }
 
     @Override
     public BackButtonProceedPolicy onBackPressed() {
         Log.i("onBackButtonPressed", "init");
-        if (mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-            // mBottomSheetBehavior
+        if (currentBottomSheet.getState() != BottomSheetBehavior.STATE_HIDDEN) {
             return BackButtonProceedPolicy.SKIP_ACTIVITY;
         }
         return BackButtonProceedPolicy.WITH_ACTIVITY;
@@ -264,6 +231,8 @@ public class MapFragment
 
         sopraMap.mapCameraMoveToUser();
     }
+
+    //Lifecycle ####################################################################################
 
     @Override
     public void onStart() {
@@ -296,7 +265,7 @@ public class MapFragment
 
         gpsService.stopAllCallbacks();
         damageCaseHandler.getLiveData().removeObserver(damageCaseObserver);
-        bottomSheetMaster.currentBottomSheet = null;
+        currentBottomSheet = null;
     }
 
     @Override
@@ -316,77 +285,62 @@ public class MapFragment
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
     }
 
+    //##############################################################################################
+
+    private LockableBottomSheetBehaviour lockableBottomSheetBehaviour;
+    private void setupBottomSheetBehaviour(){
+        lockableBottomSheetBehaviour = LockableBottomSheetBehaviour.from(getNestedScrollView());
+        lockableBottomSheetBehaviour.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+            @Override
+            public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
+                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheetContainer, float slideOffset) {
+
+            }
+        });
+
+        lockableBottomSheetBehaviour.setHideable(true);
+        lockableBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
+        lockableBottomSheetBehaviour.allowUserSwipe(false);
+    }
+
+    @Override
+    public LockableBottomSheetBehaviour getLockableBottomSheetBehaviour() {
+        return lockableBottomSheetBehaviour;
+    }
+
+    @Override
+    public NestedScrollView getNestedScrollView() {
+        return nestedScrollView;
+    }
+
     public SopraMap getSopraMap() {
         return sopraMap;
     }
 
-    public class BottomSheetMaster {
-        private AbstractBottomSheetBase currentBottomSheet = null;
-
-        /**
-         * @param damageCase         - Damage case to edit
-         */
-        void editDamageCase(DamageCase damageCase) {
-            currentBottomSheet = createBottomSheetDamagecase();
-            currentBottomSheet.editThisOne(damageCase);
-            show();
-        }
-
-        /**
-         * @param contract           - Contract to edit
-         */
-        void editContract(Contract contract) {
-            currentBottomSheet = createBottomSheetContract();
-            currentBottomSheet.editThisOne(contract);
-            show();
-        }
-
-
-        void createNewDamageCase() {
-            currentBottomSheet = createBottomSheetDamagecase();
-            show();
-        }
-
-
-        void createNewContract() {
-            currentBottomSheet = createBottomSheetContract();
-            show();
-        }
-
-
-        /**
-         * When in contract bottom sheet: Create new damage case and return to this
-         */
-        public void inContractCreateNewDamageCase() {
-
-            currentBottomSheet.close();
-        }
-
-        public void inContractEditDamageCase(DamageCase damageCase) {
-
-        }
-
-        private BottomSheetDamagecase createBottomSheetDamagecase() {
-
-            return new BottomSheetDamagecase(getContext(),
-                    nestedScrollView,
-                    mBottomSheetBehavior,
-                    sopraMap);
-        }
-
-        private BottomSheetContract createBottomSheetContract() {
-
-            return new BottomSheetContract(getContext(),
-                    nestedScrollView,
-                    mBottomSheetBehavior);
-        }
-
-        private void show() {
-            new Handler().postDelayed(currentBottomSheet::show, 400);
+    private AbstractBottomSheetBase currentBottomSheet = null;
+    private void openBottomSheet(Class clazz){
+        if(clazz == DamageCase.class){
+            currentBottomSheet = new BottomSheetDamagecase(this);
+            showCurrentBottomSheet();
+        } else if(clazz == Contract.class){
+            currentBottomSheet = new BottomSheetContract(this);
+            showCurrentBottomSheet();
         }
     }
 
-    public static BottomSheetMaster getBottomSheetMaster() {
-        return bottomSheetMaster;
+
+
+    private void showCurrentBottomSheet() {
+        new Handler().postDelayed(currentBottomSheet::show, 400);
+    }
+
+    @Subscribe
+    void onBottomSheetCloseEvent(EventsBottomSheet.Close event){
+        currentBottomSheet = null;
     }
 }

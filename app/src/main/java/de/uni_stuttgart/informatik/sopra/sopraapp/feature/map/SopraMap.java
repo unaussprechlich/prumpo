@@ -65,8 +65,7 @@ public class SopraMap implements LifecycleObserver {
     // TODO: pls refactor me, senpai!
 
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject
-    DamageCaseHandler damageCaseHandler;
+    @Inject DamageCaseHandler damageCaseHandler;
 
     @Inject Vibrator vibrator;
 

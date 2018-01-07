@@ -21,7 +21,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
  * annotation if you change any of the models.
  */
 @ApplicationScope
-@Database(entities = {User.class, DamageCase.class, Contract.class}, version = 10)
+@Database(entities = {User.class, DamageCase.class, Contract.class}, version = 12)
 @TypeConverters({Converters.class})
 public abstract class DatabaseManager extends RoomDatabase {
 

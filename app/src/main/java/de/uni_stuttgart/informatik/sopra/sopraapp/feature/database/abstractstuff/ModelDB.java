@@ -9,4 +9,5 @@ public interface   ModelDB<Repository extends AbstractRepository> {
     long save() throws ExecutionException, InterruptedException;
     Repository getRepository();
     boolean isChanged();
+    boolean isInitial();
 }
