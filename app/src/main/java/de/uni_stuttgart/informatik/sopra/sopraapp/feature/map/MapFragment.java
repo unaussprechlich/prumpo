@@ -2,7 +2,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.arch.lifecycle.Observer;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,10 +35,10 @@ import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
@@ -68,9 +67,6 @@ public class MapFragment
 
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;
-
-    private Observer damageCaseObserver
-            = damageCase -> updateDamageCase((DamageCase) damageCase);
 
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
@@ -120,11 +116,6 @@ public class MapFragment
         Button abortButton = d.findViewById(R.id.map_frag_dialog_abort);
 
         addDc.setOnClickListener(v -> {
-            try {
-                damageCaseHandler.createNew();
-            } catch (UserManager.NoUserException e) {
-                e.printStackTrace();
-            }
             d.dismiss();
         });
 
@@ -136,12 +127,6 @@ public class MapFragment
         abortButton.setOnClickListener(v -> d.dismiss());
         d.show();
         return true;
-    }
-
-
-    private void updateDamageCase(DamageCase damageCase) {
-        if (damageCase == null) return;
-        openBottomSheet(DamageCase.class);
     }
 
     private void addVertexToActivePolygon() {
@@ -244,10 +229,6 @@ public class MapFragment
         isGpsServiceBound = true;
 
         gpsService.ongoingLocationCallback(this);
-
-        damageCaseHandler
-                .getLiveData()
-                .observe(getActivity(), damageCaseObserver);
     }
 
     @Override
@@ -264,7 +245,6 @@ public class MapFragment
         }
 
         gpsService.stopAllCallbacks();
-        damageCaseHandler.getLiveData().removeObserver(damageCaseObserver);
         currentBottomSheet = null;
     }
 
@@ -323,17 +303,24 @@ public class MapFragment
     }
 
     private AbstractBottomSheetBase currentBottomSheet = null;
-    private void openBottomSheet(Class clazz){
+    public void openBottomSheet(Class clazz){
+
+        if(currentBottomSheet != null) {
+            currentBottomSheet.close();
+            currentBottomSheet = null;
+        }
+
         if(clazz == DamageCase.class){
             currentBottomSheet = new BottomSheetDamagecase(this);
             showCurrentBottomSheet();
         } else if(clazz == Contract.class){
             currentBottomSheet = new BottomSheetContract(this);
             showCurrentBottomSheet();
+        } else {
+            throw new IllegalArgumentException("[MapFragment.openBottomSheet] There is no assignable BottomSheet for Class<"
+                    + clazz.toString() + ">!");
         }
     }
-
-
 
     private void showCurrentBottomSheet() {
         new Handler().postDelayed(currentBottomSheet::show, 400);

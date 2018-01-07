@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractModelHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 

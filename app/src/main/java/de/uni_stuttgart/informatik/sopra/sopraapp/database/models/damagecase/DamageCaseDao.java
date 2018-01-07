@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -7,8 +7,8 @@ import android.provider.BaseColumns;
 
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.IDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 
 
 /**

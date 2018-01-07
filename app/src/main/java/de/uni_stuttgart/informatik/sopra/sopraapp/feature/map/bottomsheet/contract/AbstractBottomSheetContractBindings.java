@@ -8,8 +8,8 @@ import butterknife.BindArray;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 

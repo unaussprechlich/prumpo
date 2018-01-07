@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 
 
 @ApplicationScope

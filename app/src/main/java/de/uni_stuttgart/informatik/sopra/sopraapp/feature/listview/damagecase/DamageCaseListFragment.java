@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,19 +8,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
-import butterknife.BindString;
-import butterknife.BindView;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import butterknife.BindString;
+import butterknife.BindView;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 @ActivityScope
 public class DamageCaseListFragment
@@ -67,7 +70,7 @@ public class DamageCaseListFragment
     public boolean onQueryTextChange(String newText) {
 
         ArrayList<DamageCase> damageCases = damageCaseList.stream()
-                .filter(damageCase -> compareBothUpper(damageCase.getContractHolderName(), newText))
+                .filter(damageCase -> compareBothUpper(damageCase.getContract().getValue().getHolder().getValue().toString(), newText))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         recyclerView.swapAdapter(new DamageCaseListAdapter(damageCases), true);

@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 
 
 /**

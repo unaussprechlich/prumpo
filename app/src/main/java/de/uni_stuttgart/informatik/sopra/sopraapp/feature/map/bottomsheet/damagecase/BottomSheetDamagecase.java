@@ -3,7 +3,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damag
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetBehavior;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,9 +15,8 @@ import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 
 @SuppressWarnings("ALL")
@@ -63,12 +61,6 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         return model;
     }
 
-
-    @Override
-    protected void onBottomSheetClose() {
-
-    }
-
     @Override
     protected void insertExistingData(DamageCase damageCase) {
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
@@ -77,8 +69,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @Override
     public void displayCurrentAreaValue(Double area) {
-        Log.i("AREA", "VALUE" + area);
-        toolbarDamagecaseArea.setText(AbstractBottomSheetBase.calculateAreaValue(area));
+        toolbarDamagecaseArea.setText(calculateAreaValue(area));
     }
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###

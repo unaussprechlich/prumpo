@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson;
+package de.uni_stuttgart.informatik.sopra.sopraapp.util;
 
 
 import com.google.gson.Gson;

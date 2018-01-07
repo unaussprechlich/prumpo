@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database;
 
 import android.arch.persistence.room.TypeConverter;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 
 /**
  * Typeconverters for Room.

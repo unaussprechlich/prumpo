@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
@@ -40,7 +40,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
             }
         }
 
-        this.model.postValue(model);
+        this.model.setValue(model);
     }
 
     protected abstract Model createNewObject() throws UserManager.NoUserException ;
@@ -59,6 +59,13 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
         }
 
         set(createNewObject());
+    }
+
+    /**
+     * Close the current loaded Model.
+     */
+    public void closeCurrent(){
+        set(null);
     }
 
     /**
@@ -93,7 +100,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
     public void deleteCurrent(){
         if(modelDB != null && modelDB.getValue() != null)
             getRepository().delete(modelDB.getValue());
-        model.postValue(null);
+        model.setValue(null);
     }
 
     /**

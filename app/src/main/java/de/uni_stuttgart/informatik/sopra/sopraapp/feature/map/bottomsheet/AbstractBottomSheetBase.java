@@ -21,10 +21,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.AbstractModelHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.ModelDB;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
@@ -125,13 +126,8 @@ public abstract class AbstractBottomSheetBase<
         tbCloseButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_close);
         tbCloseButton.setOnMenuItemClickListener(i ->
                 returnThisAfter(true, () -> {
-                    Log.i("BS", "onBottomSheetCloseButtonPressed");
-
-                    if ((getHandler().getValue() != null && getHandler().getValue().isChanged())) {
-                        showCloseAlert();
-                    } else {
-                        close();
-                    }
+                    if ((getHandler().getValue() != null && getHandler().getValue().isChanged())) showCloseAlert();
+                    else close();
                 }));
 
         //Init DELETE button
@@ -146,7 +142,18 @@ public abstract class AbstractBottomSheetBase<
     }
 
     protected void init(){
-        if(handler.hasValue()) loadModelFromHandler();
+        if(!handler.hasValue()) {
+            try {
+                handler.createNew();
+                loadModelFromHandler();
+            } catch (UserManager.NoUserException e) {
+                Toast.makeText(getContext(), "Bitte zuerst einloggen!", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        } else {
+            loadModelFromHandler();
+        }
+
     }
 
     private void loadModelFromHandler(){
@@ -167,7 +174,6 @@ public abstract class AbstractBottomSheetBase<
         return iBottomSheetOwner.getNestedScrollView();
     }
 
-
     private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
         LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
@@ -177,6 +183,20 @@ public abstract class AbstractBottomSheetBase<
             getGpsService().singleLocationCallback(lcl, 10000);
         }
     }
+
+    private void onSave() {
+        try {
+            if (handler.hasValue())
+                collectDataForSave((Model) handler.getValue()).save();
+        } catch (InterruptedException | ExecutionException e) {
+            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        } finally {
+            close();
+        }
+    }
+
+    protected abstract Model collectDataForSave(Model model);
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
@@ -225,23 +245,20 @@ public abstract class AbstractBottomSheetBase<
     }
 
     public void close() {
+        EventBus.getDefault().post(new EventsBottomSheet.Close());
+
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
 
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setHideable(true);
         iBottomSheetOwner.getLockableBottomSheetBehaviour().allowUserSwipe(false);
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_HIDDEN);
-        this.bottomSheetListAdapter.setOnItemCountChanged(null);
-        this.bottomSheetListAdapter = null;
+        bottomSheetListAdapter.setOnItemCountChanged(null);
+        bottomSheetListAdapter = null;
 
-        if (this.gpsService != null)
-            this.gpsService.stopSingleCallback();
+        if (gpsService != null)
+            gpsService.stopSingleCallback();
 
-        EventBus.getDefault().post(new EventsBottomSheet.Close());
-        onBottomSheetClose();
-    }
-
-    public void displayCurrentAreaValue(Double area) {
-
+        handler.closeCurrent();
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
@@ -271,19 +288,10 @@ public abstract class AbstractBottomSheetBase<
         return viewBottomSheetBubbleList;
     }
 
-    private void onSave() {
-        try {
-            if (handler.hasValue())
-                collectDataForSave((Model) handler.getValue()).save();
-        } catch (InterruptedException | ExecutionException e) {
-            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } finally {
-            close();
-        }
-    }
-
     // ### Abstract Functions ################################################################## Abstract Functions ###
+
+    protected abstract int getLayoutResourceFile();
+    public abstract void displayCurrentAreaValue(Double area);
 
     protected abstract String getDeleteMessage();
 
@@ -296,8 +304,7 @@ public abstract class AbstractBottomSheetBase<
                     handler.deleteCurrent();
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
-                })
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
                 .create()
                 .show();
     }
@@ -313,26 +320,8 @@ public abstract class AbstractBottomSheetBase<
                     EventBus.getDefault().post(new EventsBottomSheet.ForceClose());
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
-                })
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
                 .create()
                 .show();
     }
-
-
-    protected abstract Model collectDataForSave(Model model);
-
-    /**
-     * This method will return a reference to the layout resource file
-     * which holds the complete layout of this Bottom Sheet.
-     *
-     * @return The main resource file layout reference of this Bottom Sheet (e.g. <code>R.id.blabla</code>)
-     */
-    public abstract int getLayoutResourceFile();
-
-    /**
-     * Specifies the action after the Bottom Sheet got closed.
-     */
-    protected abstract void onBottomSheetClose();
-
 }

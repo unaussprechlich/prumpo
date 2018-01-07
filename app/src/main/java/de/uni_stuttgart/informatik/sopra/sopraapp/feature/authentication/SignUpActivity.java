@@ -25,8 +25,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 
 /**
  * A login screen that offers login via email/password.

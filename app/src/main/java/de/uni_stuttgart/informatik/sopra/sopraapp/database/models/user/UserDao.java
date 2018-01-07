@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -7,8 +7,7 @@ import android.provider.BaseColumns;
 
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff.IDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.IDao;
 
 
 /**
@@ -17,44 +16,46 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.U
  * Sadly copy&paste has to be your friend here :(
  */
 @Dao
-public interface ContractDao extends IDao<Contract> {
+public interface UserDao extends IDao<User> {
 
 // #################################################################################################
 
-    String TABLE_NAME = Contract.TABLE_NAME;
+    String TABLE_NAME = User.TABLE_NAME;
 
 // Standard Queries ################################################################################
-
     /**
      * Select all users.
-     *
      * @return  A {@link User} of all the users in the table.
      */
-    @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner OR holderID = :owner")
-    LiveData<List<Contract>> getAll(long owner);
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :userID")
+    LiveData<List<User>> getAll(long userID);
 
     /**
      * Select a user by their ID.
-     *
      * @param id    The ID of the row in question.
-     *
      * @return      A {@link User} of the selected users.
      */
     @Override
-    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR holderID = :owner)")
-    LiveData<Contract> getById(long id, long owner);
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :userID")
+    LiveData<User> getById(long id, long userID);
+
+
+    /**
+     * Select a user by their EMAIL.
+     * @param email  The NAME of the row in question.
+     * @return      A {@link User} of the selected users.
+     */
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE email = :email")
+    LiveData<User> getByEmail(String email);
 
 
     /**
      * Delete a user by the ID.
-     *
      * @param id    The ID of the row to delete.
-     *
      * @return      The number of users deleted.
      *              This should always be {@code 1}.
      */
-    @Query("DELETE FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID  + " = :id AND ownerID = :owner")
-    int deleteById(long id, long owner);
+    @Query("DELETE FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID  + " = :id")
+    int deleteById(long id);
 
 }

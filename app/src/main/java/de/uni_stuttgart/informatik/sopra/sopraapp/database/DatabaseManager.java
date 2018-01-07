@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
@@ -6,12 +6,12 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
 
 /**
  * This class represents the Database. If you add a new model provide it

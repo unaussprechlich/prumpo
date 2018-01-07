@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.abstractstuff;
+package de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff;
 
 
 import android.arch.lifecycle.LiveData;

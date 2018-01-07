@@ -12,5 +12,6 @@ public interface IBottomSheetOwner{
     SopraMap getSopraMap();
     Context getContext();
     LockableBottomSheetBehaviour getLockableBottomSheetBehaviour();
+    void openBottomSheet(Class clazz);
 
 }

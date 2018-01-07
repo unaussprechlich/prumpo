@@ -1,6 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 
 
 public class EventsAuthentication {
