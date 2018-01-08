@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
 import dagger.Module;
 

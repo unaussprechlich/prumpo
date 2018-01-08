@@ -4,6 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -14,15 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.Subscribe;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import org.greenrobot.eventbus.Subscribe;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 
@@ -75,6 +74,12 @@ public class MainActivity
     @Subscribe
     public void onOpenMapFragmentEvent(EventOpenMapFragment openMapFragmentEvent) {
         displayMapFragment();
+
+        Class targetBottomSheet = openMapFragmentEvent.targetBottomSheet;
+
+        if (targetBottomSheet != null)
+            new Handler().postDelayed(() -> mapFragment.openBottomSheet(targetBottomSheet),
+                    400);
     }
 
 

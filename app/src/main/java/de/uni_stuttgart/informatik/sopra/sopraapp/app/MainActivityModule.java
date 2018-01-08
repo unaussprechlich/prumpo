@@ -6,10 +6,10 @@ import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.FragmentScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragmentModule;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance.ContractListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
 

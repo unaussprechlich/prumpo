@@ -1,4 +1,4 @@
-package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.insurance;
+package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.contract.ContractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import org.greenrobot.eventbus.EventBus;
@@ -64,7 +64,7 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
         Contract contract = dataHolder.dataList.get(position);
 
         contractHandler.loadFromDatabase(contract.getID());
-        EventBus.getDefault().post(new EventOpenMapFragment());
+        EventBus.getDefault().post(new EventOpenMapFragment(Contract.class));
     }
 
     @Override

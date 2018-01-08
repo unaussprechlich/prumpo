@@ -5,26 +5,24 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
-
-public class BottomSheetContract extends AbstractBottomSheetContractBindings{
+public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     protected List<String> selectedDamages = new ArrayList<>();
 
@@ -42,7 +40,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     protected Contract collectDataForSave(Contract contract) {
         try {
 
-            if(this.user == null) throw new EditFieldValueIsEmptyException(inputPolicyholder);
+            if (this.user == null) throw new EditFieldValueIsEmptyException(inputPolicyholder);
 
             contract.setAreaCode(getIfNotEmptyElseThrow(inputLocation))
                     .setDamageType(getIfNotEmptyElseThrow(inputDamages))
@@ -61,11 +59,10 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
         displayCurrentAreaValue(contract.getAreaSize());
         setSelectedDamages(contract.getDamageType());
         contract.getHolder().observe(this, holder -> {
-            if(holder != null) inputPolicyholder.setText(holder.toString());
+            if (holder != null) inputPolicyholder.setText(holder.toString());
         });
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
     }
-
 
     @Override
     public int getLayoutResourceFile() {
@@ -76,7 +73,6 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     public void displayCurrentAreaValue(Double area) {
         toolbarContractArea.setText(calculateAreaValue(area));
     }
-
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###
 
@@ -97,7 +93,8 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
                             })
                     .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                     .withHint(strBottomSheetInpDialogPolicyholderHint)
-                    .setPositiveButtonAction((dialogInterface, i) -> {})
+                    .setPositiveButtonAction((dialogInterface, i) -> {
+                    })
                     .setNegativeButtonAction(null)
                     .show();
         });
@@ -108,37 +105,38 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
         List<String> temporaryList = new ArrayList<>(selectedDamages);
 
         new AlertDialog.Builder(getContext()).setTitle(strDamagesHeader)
-            .setMultiChoiceItems(allPossibleDamages, parseDamages(editText.getText().toString()),
-                    (dialog, item, isChecked) -> {
-                        if (isChecked) temporaryList.add(allPossibleDamages[item]);
-                        else temporaryList.remove(allPossibleDamages[item]);
-                    })
-            .setCancelable(false)
-            .setPositiveButton(strBottomSheetDialogPositive, (dialog, which) ->
-                    setSelectedDamages(temporaryList.stream().reduce((t, u) -> t + ", " + u).orElse("")))
-            .setNegativeButton(strBottomSheetDialogNegative, (dialog, which) -> {})
-            .create().show();
+                .setMultiChoiceItems(allPossibleDamages, parseDamages(editText.getText().toString()),
+                        (dialog, item, isChecked) -> {
+                            if (isChecked) temporaryList.add(allPossibleDamages[item]);
+                            else temporaryList.remove(allPossibleDamages[item]);
+                        })
+                .setCancelable(false)
+                .setPositiveButton(strBottomSheetDialogPositive, (dialog, which) ->
+                        setSelectedDamages(temporaryList.stream().reduce((t, u) -> t + ", " + u).orElse("")))
+                .setNegativeButton(strBottomSheetDialogNegative, (dialog, which) -> {
+                })
+                .create().show();
     }
 
     @OnClick(R.id.bs_contract_editText_region)
     public void onInputLocationPressed(EditText editText) {
         InputRetriever.of(editText)
-            .withTitle(strBottomSheetInpDialogLocationHeader)
-            .withHint(strBottomSheetInpDialogLocationHint)
-            .setPositiveButtonAction((dialogInterface, i) -> {
+                .withTitle(strBottomSheetInpDialogLocationHeader)
+                .withHint(strBottomSheetInpDialogLocationHint)
+                .setPositiveButtonAction((dialogInterface, i) -> {
 
-            })
-            .setNegativeButtonAction(null)
-            .show();
+                })
+                .setNegativeButtonAction(null)
+                .show();
     }
 
     @SuppressWarnings("ConstantConditions")
     @OnClick(R.id.bs_contract_add_damagecase)
     public void onAddDamagecasePressed(Button button) {
 
-        if(!getHandler().hasValue()) return;
+        if (!getHandler().hasValue()) return;
 
-        if(getHandler().getValue().isInitial() || getHandler().getValue().isChanged()){
+        if (getHandler().getValue().isInitial() || getHandler().getValue().isChanged()) {
             Toast.makeText(getContext(), "Der Vertrag is noch nicht gespeichert!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -180,7 +178,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings{
     }
 
     protected void setSelectedDamages(String damages) {
-        if(damages.equals("")) return;
+        if (damages.equals("")) return;
         selectedDamages = Arrays.stream(damages.split(","))
                 .map(String::trim)
                 .filter(str -> !str.isEmpty())

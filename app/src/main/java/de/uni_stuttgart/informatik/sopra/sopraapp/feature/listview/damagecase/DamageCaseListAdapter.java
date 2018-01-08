@@ -1,23 +1,23 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
+import android.arch.lifecycle.LiveData;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase.calculateAreaValue;
 
@@ -55,10 +55,17 @@ public class DamageCaseListAdapter
 
         // set bindings
         holder.damageCaseName.setText(damageCase.toString());
-        holder.policyHolder.setText(damageCase.getContract().getValue().getHolder().getValue().toString());
         holder.location.setText(String.valueOf(damageCase.getAreaCode()));
         holder.area.setText(calculateAreaValue(damageCase.getAreaSize()));
 
+        String policyholder = Optional.ofNullable(damageCase.getContract())
+                .map(LiveData::getValue)
+                .map(Contract::getHolder)
+                .map(LiveData::getValue)
+                .map(Object::toString)
+                .orElse("");
+
+        holder.policyHolder.setText(policyholder);
     }
 
     @Override
@@ -66,7 +73,7 @@ public class DamageCaseListAdapter
         DamageCase damageCase = dataHolder.dataList.get(position);
 
         damageCaseHandler.loadFromDatabase(damageCase.getID());
-        EventBus.getDefault().post(new EventOpenMapFragment());
+        EventBus.getDefault().post(new EventOpenMapFragment(DamageCase.class));
 
     }
 
