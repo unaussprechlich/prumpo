@@ -3,7 +3,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contr
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import butterknife.BindArray;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -31,6 +30,9 @@ public abstract class AbstractBottomSheetContractBindings
 
     @BindView(R.id.bs_contract_add_damagecase)
     Button buttonAddDamageCase;
+
+    @BindView(R.id.bs_contract_view_damagecases)
+    Button buttonViewDamageCases;
 
     @BindView(R.id.bs_contract_toolbar_contract_nr)
     TextView toolbarContractNr;
@@ -61,11 +63,17 @@ public abstract class AbstractBottomSheetContractBindings
     @BindString(R.string.map_frag_bs_contract_input_hint_damages)
     String strDamagesHeader;
 
+    @BindString(R.string.damageCases)
+    String strDamageCasesHeader;
+
+    @BindString(R.string.map_frag_bs_toast_input_button_add_but_contract_not_saved)
+    String strToastPleaseSaveContractFirst;
+
     @BindArray(R.array.damages)
     String[] allPossibleDamages;
 
     @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message) //TODO
-    String strBottomSheetCloseDialogMessage;
+            String strBottomSheetCloseDialogMessage;
 
     @Override
     protected String getCloseMessage() {
@@ -73,7 +81,7 @@ public abstract class AbstractBottomSheetContractBindings
     }
 
     @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message) //TODO
-    String strBottomSheetDeleteDialogMessage;
+            String strBottomSheetDeleteDialogMessage;
 
     @Override
     protected String getDeleteMessage() {

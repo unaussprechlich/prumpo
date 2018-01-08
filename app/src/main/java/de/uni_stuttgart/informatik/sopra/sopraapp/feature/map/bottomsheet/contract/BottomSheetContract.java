@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 
 public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
-    protected List<String> selectedDamages = new ArrayList<>();
+    protected List<String> selectedDamageTypes = new ArrayList<>();
+    protected List<DamageCase> damageCasesOfThisContract = new ArrayList<>();
 
     // ### Constructor ################################################################################ Constructor ###
 
@@ -57,11 +58,15 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     protected void insertExistingData(Contract contract) {
         inputLocation.setText(contract.getAreaCode());
         displayCurrentAreaValue(contract.getAreaSize());
-        setSelectedDamages(contract.getDamageType());
+        setSelectedDamageTypes(contract.getDamageType());
         contract.getHolder().observe(this, holder -> {
             if (holder != null) inputPolicyholder.setText(holder.toString());
         });
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
+
+        // todo set damageCasesOfThisContract
+        buttonViewDamageCases.setEnabled(!damageCasesOfThisContract.isEmpty());
+
     }
 
     @Override
@@ -102,7 +107,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @OnClick(R.id.bs_contract_editText_inputDamage)
     public void onInputDamagesPressed(EditText editText) {
-        List<String> temporaryList = new ArrayList<>(selectedDamages);
+        List<String> temporaryList = new ArrayList<>(selectedDamageTypes);
 
         new AlertDialog.Builder(getContext()).setTitle(strDamagesHeader)
                 .setMultiChoiceItems(allPossibleDamages, parseDamages(editText.getText().toString()),
@@ -112,7 +117,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
                         })
                 .setCancelable(false)
                 .setPositiveButton(strBottomSheetDialogPositive, (dialog, which) ->
-                        setSelectedDamages(temporaryList.stream().reduce((t, u) -> t + ", " + u).orElse("")))
+                        setSelectedDamageTypes(temporaryList.stream().reduce((t, u) -> t + ", " + u).orElse("")))
                 .setNegativeButton(strBottomSheetDialogNegative, (dialog, which) -> {
                 })
                 .create().show();
@@ -132,17 +137,34 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @SuppressWarnings("ConstantConditions")
     @OnClick(R.id.bs_contract_add_damagecase)
-    public void onAddDamagecasePressed(Button button) {
+    public void onAddDamageCasePressed(Button button) {
 
         if (!getHandler().hasValue()) return;
 
         if (getHandler().getValue().isInitial() || getHandler().getValue().isChanged()) {
-            Toast.makeText(getContext(), "Der Vertrag is noch nicht gespeichert!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), strToastPleaseSaveContractFirst, Toast.LENGTH_SHORT).show();
             return;
         }
 
         close();
         iBottomSheetOwner.openBottomSheet(DamageCase.class);
+    }
+
+    @OnClick(R.id.bs_contract_view_damagecases)
+    public void onViewDamageCasesPressed(Button button) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(strDamagesHeader);
+
+        String[] items = damageCasesOfThisContract.stream().map(Object::toString).toArray(String[]::new);
+        builder.setItems(items, (dialog, itemIdx) -> {
+
+            DamageCase damageCase = damageCasesOfThisContract.get(itemIdx);
+            // todo open that bottom sheet dc then
+
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
@@ -177,9 +199,9 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         return returnArray;
     }
 
-    protected void setSelectedDamages(String damages) {
+    protected void setSelectedDamageTypes(String damages) {
         if (damages.equals("")) return;
-        selectedDamages = Arrays.stream(damages.split(","))
+        selectedDamageTypes = Arrays.stream(damages.split(","))
                 .map(String::trim)
                 .filter(str -> !str.isEmpty())
                 .collect(Collectors.toList());

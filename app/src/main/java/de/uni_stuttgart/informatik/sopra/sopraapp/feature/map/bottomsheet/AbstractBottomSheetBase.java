@@ -21,11 +21,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
@@ -141,8 +141,8 @@ public abstract class AbstractBottomSheetBase<
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
     }
 
-    protected void init(){
-        if(!handler.hasValue()) {
+    protected void init() {
+        if (!handler.hasValue()) {
             try {
                 handler.createNew();
                 loadModelFromHandler();
@@ -156,9 +156,9 @@ public abstract class AbstractBottomSheetBase<
 
     }
 
-    private void loadModelFromHandler(){
+    private void loadModelFromHandler() {
         Model model = (Model) handler.getValue();
-        if(!model.isInitial()) tbDeleteButton.setVisible(true);
+        if (!model.isInitial()) tbDeleteButton.setVisible(true);
         insertExistingData(model);
     }
 
@@ -166,11 +166,11 @@ public abstract class AbstractBottomSheetBase<
 
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-    protected Context getContext(){
+    protected Context getContext() {
         return iBottomSheetOwner.getContext();
     }
 
-    private NestedScrollView getNestedScrollView(){
+    private NestedScrollView getNestedScrollView() {
         return iBottomSheetOwner.getNestedScrollView();
     }
 
@@ -201,11 +201,11 @@ public abstract class AbstractBottomSheetBase<
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
 
-    public int getState(){
+    public int getState() {
         return iBottomSheetOwner.getLockableBottomSheetBehaviour().getState();
     }
 
-    public boolean isHidden(){
+    public boolean isHidden() {
         return iBottomSheetOwner.getLockableBottomSheetBehaviour().getState() == BottomSheetBehavior.STATE_HIDDEN;
     }
 
@@ -291,6 +291,7 @@ public abstract class AbstractBottomSheetBase<
     // ### Abstract Functions ################################################################## Abstract Functions ###
 
     protected abstract int getLayoutResourceFile();
+
     public abstract void displayCurrentAreaValue(Double area);
 
     protected abstract String getDeleteMessage();
@@ -304,7 +305,8 @@ public abstract class AbstractBottomSheetBase<
                     handler.deleteCurrent();
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
+                })
                 .create()
                 .show();
     }
@@ -320,7 +322,8 @@ public abstract class AbstractBottomSheetBase<
                     EventBus.getDefault().post(new EventsBottomSheet.ForceClose());
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
+                })
                 .create()
                 .show();
     }

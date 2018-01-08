@@ -115,6 +115,9 @@
     <string name="bottomsheet_contract_toolbar_placeholder_nr">Vers-NR:</string>
     <string name="bottomsheet_dc_toolbar_placeholder_nr">Schaden-NR:</string>
     <string name="bottomsheet_contract_toolbar_placeholder_name">Kunde:</string>
+    <string name="map_frag_bs_contract_input_button_add_new">Schaden hinzufügen</string>
+    <string name="map_frag_bs_contract_input_button_view_dcs">Schadensliste anzeigen</string>
+    <string name="map_frag_bs_toast_input_button_add_but_contract_not_saved">Bitte den Vertrag zuerst speichern … </string>
 
     <string-array name="damages">
         <item>Feuer</item>
