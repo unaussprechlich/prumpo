@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -14,7 +17,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -62,6 +67,18 @@ public class ContractListFragment
         this.contractList = contractList;
 
         recyclerView.swapAdapter(new ContractListAdapter(contractList), true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem addMenuItem = menu.findItem(R.id.action_addContract);
+        addMenuItem.setVisible(true);
+        addMenuItem.setOnMenuItemClickListener(item -> {
+            EventBus.getDefault().post(new EventOpenMapFragment(Contract.class));
+            return true;
+        });
     }
 
     @Override
