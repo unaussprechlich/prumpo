@@ -31,6 +31,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallb
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
@@ -176,7 +177,7 @@ public abstract class AbstractBottomSheetBase<
 
     private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
+        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone, typePolygon());
 
         if (callbackDone.get()) {
             callbackDone.set(false);
@@ -197,6 +198,8 @@ public abstract class AbstractBottomSheetBase<
     }
 
     protected abstract Model collectDataForSave(Model model);
+
+    protected abstract PolygonType typePolygon();
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
 

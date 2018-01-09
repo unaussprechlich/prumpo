@@ -12,6 +12,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import org.joda.time.DateTime;
 
 import java.util.Locale;
@@ -46,17 +47,22 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         try {
 
             //TODO REMOVE
-            if(true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
+            if (true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
 
             model.setDate(dateTime)
-                .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
-                .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints());
+                    .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
+                    .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints());
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         return model;
+    }
+
+    @Override
+    protected PolygonType typePolygon() {
+        return PolygonType.DAMAGE_CASE;
     }
 
     @Override

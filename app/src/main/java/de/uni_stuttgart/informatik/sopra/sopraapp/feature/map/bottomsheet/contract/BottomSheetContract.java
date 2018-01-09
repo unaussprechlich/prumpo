@@ -15,6 +15,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.excepti
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         return contract;
+    }
+
+    @Override
+    protected PolygonType typePolygon() {
+        return PolygonType.CONTRACT;
     }
 
     @Override

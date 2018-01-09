@@ -1,6 +1,7 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events;
 
 import com.google.android.gms.maps.model.LatLng;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 
 public class EventsVertex {
 
@@ -25,9 +26,11 @@ public class EventsVertex {
     }
 
     public static class Created {
+        public PolygonType polygonType;
         public LatLng position;
 
-        public Created(LatLng position) {
+        public Created(LatLng position, PolygonType polygonType) {
+            this.polygonType = polygonType;
             this.position = position;
         }
     }

@@ -120,15 +120,6 @@ public class MapFragment
         return true;
     }
 
-    private void addVertexToActivePolygon() {
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone);
-
-        if (callbackDone.get()) {
-            callbackDone.set(false);
-            gpsService.singleLocationCallback(lcl, 10000);
-        }
-    }
-
     private void initMapView(Bundle savedInstanceState) {
         Log.i("initMapView", "init");
         mMapView.onCreate(savedInstanceState);
