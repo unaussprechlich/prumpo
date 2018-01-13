@@ -42,6 +42,10 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
         super.onBindViewHolder(holder, position, payloads);
 
         holder.getRootElement().setOnClickListener(v -> onCardViewPressed(v, position));
+        holder.getRootElement().setOnLongClickListener(v -> {
+            onCardViewLongPressed(v, position);
+            return true;
+        });
 
     }
 
@@ -59,9 +63,21 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
     /**
      * Specifies what should be done when user presses list item
      *
-     * @param view
-     * @param position
+     * @param view     the view which got pressed
+     * @param position the position in the current list
      */
     protected abstract void onCardViewPressed(View view, int position);
+
+    /**
+     * Specifies what should be done when user presses list item with a long click.
+     * <p>
+     * <i>This method is not abstract to let the child classes decide
+     * whether they want to invoke some action here.</i>
+     * </p>
+     *
+     * @param view     the view which got pressed
+     * @param position the position in the current list
+     */
+    protected void onCardViewLongPressed(View view, int position) { }
 
 }

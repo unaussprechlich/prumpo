@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SoPraApp</string>
     <string name="action_search">Search</string>
+    <string name="action_share">Share</string>
     <string name="title_activity_login">Login</string>
 
     <!-- Strings related to login -->
@@ -99,7 +100,7 @@
     <string name="su_name_hint">Name</string>
     <string name="su_name_last_hint">Nachname</string>
     <string name="su_name_first_hint">Vorname</string>
-    <string name="map_frag_add_dialog_title">Create new ...</string>
+    <string name="map_frag_add_dialog_title">Create new …</string>
     <string name="map_frag_dialog_add_dc">Damage-Case</string>
     <string name="map_frag_dialog_add_insurance">Insurance</string>
     <string name="map_frag_dialog_add_abort">Abort</string>
@@ -125,6 +126,11 @@
         <item>Hochwasser</item>
         <item>Schädlinge</item>
     </string-array>
+
+    <!-- list view - multi selection - title bar -->
+    <string name="listview_contract_multiselection_contract_singular">Vertrag</string>
+    <string name="listview_contract_multiselection_contract_plural">Verträge</string>
+    <string name="listview_contract_multiselection_chosen">ausgewählt</string>
 
 
 </resources>

@@ -16,7 +16,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import org.greenrobot.eventbus.EventBus;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 
 @ActivityScope
 public class ContractListFragment
-        extends AbstractListFragment
+        extends ContractListMultiSelectionFragment
         implements SearchView.OnQueryTextListener, FragmentBackPressed {
 
     @Inject
@@ -48,7 +47,7 @@ public class ContractListFragment
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(new ContractListAdapter(contractList));
+        recyclerView.setAdapter(createNewListContractListAdapter(contractList));
 
         getActivity().setTitle(toolbarTitle);
 
@@ -66,7 +65,8 @@ public class ContractListFragment
     public void setContractList(List<Contract> contractList) {
         this.contractList = contractList;
 
-        recyclerView.swapAdapter(new ContractListAdapter(contractList), true);
+        recyclerView.swapAdapter(createNewListContractListAdapter(contractList),
+                true);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ContractListFragment
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        recyclerView.swapAdapter(new ContractListAdapter(contracts), true);
+        recyclerView.swapAdapter(createNewListContractListAdapter(contracts), true);
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }
@@ -99,6 +99,16 @@ public class ContractListFragment
     @Override
     protected int getLayoutToInflate() {
         return R.layout.activity_main_fragment_contract;
+    }
+
+    /**
+     * Helper method which returns an updated contractListAdapter
+     *
+     * @param contractList the new items
+     * @return the new contractListAdapter
+     */
+    private ContractListAdapter createNewListContractListAdapter(List<Contract> contractList) {
+        return contractListAdapter = new ContractListAdapter(contractList, this);
     }
 
 }

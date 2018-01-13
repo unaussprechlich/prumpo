@@ -1,8 +1,10 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import butterknife.BindColor;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -28,10 +30,20 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
     @Inject
     ContractHandler contractHandler;
 
+    @BindColor(R.color.accent_15percent)
+    int selectedColor;
 
-    public ContractListAdapter(List<Contract> listItems) {
+    @BindColor(R.color.white)
+    int unselectedColor;
+
+    private MultiSelectionController<Contract> multiSelectionController;
+
+
+    public ContractListAdapter(List<Contract> listItems, @NonNull MultiSelectionController<Contract>
+            multiSelectionController) {
         super(listItems);
         SopraApp.getAppComponent().inject(this);
+        this.multiSelectionController = multiSelectionController;
     }
 
     @Override
@@ -57,14 +69,33 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
 
         User user = contract.getHolder().getValue();
         holder.policyHolder.setText(user != null ? user.getName() : "");
+
+        // background color
+        holder.cardView.setCardBackgroundColor(
+                contract.isSelected() ? selectedColor : unselectedColor
+        );
     }
 
     @Override
     protected void onCardViewPressed(View view, int position) {
         Contract contract = dataHolder.dataList.get(position);
 
-        contractHandler.loadFromDatabase(contract.getID());
-        EventBus.getDefault().post(new EventOpenMapFragment(Contract.class));
+        if (multiSelectionController.isActionModeStarted())
+            multiSelectionController.selectItem(contract);
+        else {
+            contractHandler.loadFromDatabase(contract.getID());
+            EventBus.getDefault().post(new EventOpenMapFragment(Contract.class));
+        }
+    }
+
+    @Override
+    protected void onCardViewLongPressed(View view, int position) {
+        Contract contract = dataHolder.dataList.get(position);
+
+        if (!multiSelectionController.isActionModeStarted())
+            multiSelectionController.startActionMode(contract);
+        else
+            multiSelectionController.selectItem(contract);
     }
 
     @Override
