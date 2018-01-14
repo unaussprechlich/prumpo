@@ -131,6 +131,30 @@
     <string name="listview_contract_multiselection_contract_singular">Vertrag</string>
     <string name="listview_contract_multiselection_contract_plural">Verträge</string>
     <string name="listview_contract_multiselection_chosen">ausgewählt</string>
+    
+    <!-- list view - multi selection - sharing -->
+    <string name="listview_contract_dialog_sharing_header">Verträge exportieren …</string>
+    <string name="listview_contract_dialog_sharing_plain_text">Klartext</string>
+    <string name="listview_contract_dialog_sharing_as_json">JSON-Datei</string>
+    <string name="listview_contract_dialog_sharing_as_text">Text</string>
+    <string name="listview_contract_dialog_sharing_abort">Abbrechen</string>
+
+    <!-- list view - multi selection - sharing as text -->
+    <string name="contract_export_util_format_1_long">-------------------------</string>
+    <string name="contract_export_util_format_1_short">-----</string>
+    <string name="contract_export_header">Versicherung</string>
+    <string name="contract_export_policyholder">Versicherungsnehmer</string>
+    <string name="contract_export_name">Versicherungsname</string>
+    <string name="contract_export_location">Ort</string>
+    <string name="contract_export_date">Datum</string>
+    <string name="contract_export_size">Versicherungsfläche</string>
+    <string name="contract_export_damagetypes">Versicherte Schäden</string>
+
+    <!-- list view - multi selection - sharing as json -->
+    <string name="contract_export_json_file_name_date_pattern">yyyyMMddHHmmss.SSS</string>
+    <string name="contract_export_json_succesful">Erfolgreich gespeichert unter </string>
+    <string name="contract_export_json_unsuccesful">Fehler beim Speichern</string>
+
 
 
 </resources>

@@ -19,11 +19,13 @@ import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
 import org.greenrobot.eventbus.Subscribe;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
 
 @ApplicationScope
 public class MainActivity
@@ -33,6 +35,7 @@ public class MainActivity
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker {
 
+    private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -163,7 +166,21 @@ public class MainActivity
                     return;
 
                 checkPermissions();
+                break;
+            }
+            case REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    if (contractShareHelper != null)
+                        contractShareHelper.saveAsJsonFile();
+
+                if (contractShareHelper != null)
+                    contractShareHelper.requestWritePermission();
+                break;
             }
         }
+    }
+
+    public void setContractShareHelper(@Nullable ContractShareHelper contractShareHelper) {
+        this.contractShareHelper = contractShareHelper;
     }
 }

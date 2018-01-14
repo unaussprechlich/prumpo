@@ -1,13 +1,11 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
-import android.view.ActionMode;
-
 /**
  * Interface for specifying the methods a multi selection handler must support.
  *
  * @param <Item> the item of the underlying data
  */
-public interface MultiSelectionController<Item> extends ActionMode.Callback {
+public interface MultiSelectionController<Item> {
 
     /**
      * Will add the given {@code item} to the list of selected items.

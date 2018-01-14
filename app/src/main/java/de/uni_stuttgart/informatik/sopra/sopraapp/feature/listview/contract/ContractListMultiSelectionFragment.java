@@ -1,12 +1,11 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.view.*;
 import butterknife.BindString;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
 
@@ -19,7 +18,7 @@ import java.util.Locale;
  */
 public abstract class ContractListMultiSelectionFragment
         extends AbstractListFragment
-        implements MultiSelectionController<Contract> {
+        implements MultiSelectionController<Contract>, ActionMode.Callback {
 
     @BindString(R.string.listview_contract_multiselection_contract_singular)
     String strContractSingular;
@@ -29,6 +28,9 @@ public abstract class ContractListMultiSelectionFragment
 
     @BindString(R.string.listview_contract_multiselection_chosen)
     String strContractChosen;
+
+    @BindString(R.string.listview_contract_dialog_sharing_header)
+    String strSharingDialogHeader;
 
     /**
      * Holder for the selected contracts.
@@ -58,8 +60,7 @@ public abstract class ContractListMultiSelectionFragment
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
         if (item.getItemId() == R.id.action_share) {
-            Toast.makeText(getContext(), "Now invoke sharing action ...", Toast.LENGTH_SHORT).show();
-            actionMode.finish();
+            showSharingDialog();
             return true;
         }
 
@@ -121,6 +122,36 @@ public abstract class ContractListMultiSelectionFragment
             actionMode.setTitle(
                     String.format(Locale.GERMAN, "%d %s %s", amount, header, chosen)
             );
+
+    }
+
+    private void showSharingDialog() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        LayoutInflater inflater = mainActivity.getLayoutInflater();
+
+        View shareView = inflater.inflate(R.layout.activity_main_fragment_contract_dialog_share, null);
+
+        ContractShareHelper shareHelper = new ContractShareHelper(shareView, selectedContracts, getActivity());
+
+        AlertDialog alertDialog = new Builder(getActivity())
+                .setView(shareView)
+                .setTitle(strSharingDialogHeader)
+                .create();
+
+        shareHelper.setOnShareAbort(() -> {
+            alertDialog.dismiss();
+            mainActivity.setContractShareHelper(null);
+        });
+
+        shareHelper.setOnShareDone(() -> {
+            alertDialog.dismiss();
+            actionMode.finish();
+            mainActivity.setContractShareHelper(null);
+        });
+
+        mainActivity.setContractShareHelper(shareHelper);
+
+        alertDialog.show();
 
     }
 

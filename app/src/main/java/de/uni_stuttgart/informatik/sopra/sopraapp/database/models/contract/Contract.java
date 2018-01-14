@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.Expose;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 
 /**
  * Represents one record of the Contract table.
+ * <p>
+ * All fields annotated with @Expose will be used when exporting to file.
  */
 @Entity(tableName = Contract.TABLE_NAME)
 public class Contract implements ModelDB<ContractRepository> {
@@ -40,28 +43,39 @@ public class Contract implements ModelDB<ContractRepository> {
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(index = true, name = BaseColumns._ID)
+    @Expose
     long id;
 
     @ColumnInfo(index = true)
     long ownerID;
 
     @ColumnInfo(index = true)
+    @Expose
     long holderID;
     @Ignore LiveData<User> holder;
 
     @ColumnInfo(index = true)
+    @Expose
     String name;
 
+    @Expose
     String damageType;
 
+    @Expose
     List<Long> damageCaseIDs = new ArrayList<>();
     @Ignore List<LiveData<DamageCase>> damageCases;
 
+    @Expose
     List<LatLng> coordinates = new ArrayList<>();
+
+    @Expose
     String areaCode;
+
+    @Expose
     double areaSize;
 
     @ColumnInfo(index = true)
+    @Expose
     DateTime date;
 
     public Contract(

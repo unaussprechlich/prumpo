@@ -10,6 +10,7 @@ public class Constants {
     /* permissions */
 
     public static final int REQUEST_LOCATION_PERMISSION = 202;
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 364;
 
     /* regex */
 
