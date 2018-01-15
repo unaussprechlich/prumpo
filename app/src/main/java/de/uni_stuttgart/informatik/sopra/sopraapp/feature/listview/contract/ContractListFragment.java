@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,7 +16,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
@@ -27,8 +25,7 @@ import java.util.stream.Collectors;
 
 @ActivityScope
 public class ContractListFragment
-        extends ContractListMultiSelectionFragment
-        implements SearchView.OnQueryTextListener, FragmentBackPressed {
+        extends ContractListMultiSelectionFragment {
 
     @Inject
     ContractRepository contractRepository;
@@ -62,7 +59,7 @@ public class ContractListFragment
 
     }
 
-    public void setContractList(List<Contract> contractList) {
+    private void setContractList(List<Contract> contractList) {
         this.contractList = contractList;
 
         recyclerView.swapAdapter(createNewListContractListAdapter(contractList),

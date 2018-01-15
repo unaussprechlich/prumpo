@@ -21,7 +21,11 @@ public abstract class AbstractListFragment
     @BindString(R.string.dc_fragment_search_hint)
     String searchHint;
 
+    private MenuItem searchMenuItem;
     private SearchView searchView;
+    protected NavMenuBlocker navMenuBlocker;
+
+    private OnViewCreatedDone onViewCreatedDone = () -> {/* Ignore */};
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,14 +46,17 @@ public abstract class AbstractListFragment
         inflater.inflate(R.menu.list_fragment_menu, menu);
 
         // init search view and attach listener
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        searchMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(searchHint);
 
         // attach navigation blocker if search menu item is opened
-        NavMenuBlocker navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
+        navMenuBlocker = new NavMenuBlocker((NavigationDrawLocker) getActivity());
         searchMenuItem.setOnActionExpandListener(navMenuBlocker);
+
+        onViewCreatedDone.afterViewCreated();
+        onViewCreatedDone = () -> {/* Ignore */};
     }
 
     @Override
@@ -75,7 +82,7 @@ public abstract class AbstractListFragment
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return true; // true -> listener handled query already
+        return onQueryTextChange(query); // true -> listener handled query already
     }
 
     /**
@@ -115,6 +122,21 @@ public abstract class AbstractListFragment
         String s2Upper = s2.toUpperCase();
 
         return s1Upper.contains(s2Upper) || s2Upper.contains(s1Upper);
+    }
+
+    public interface OnViewCreatedDone {
+        void afterViewCreated();
+    }
+
+    public void setOnViewCreatedDone(OnViewCreatedDone onViewCreatedDone) {
+        this.onViewCreatedDone = onViewCreatedDone;
+    }
+
+    public void insertSearchString(String searchString) {
+        if (searchMenuItem != null && searchView != null) {
+            searchMenuItem.expandActionView();
+            searchView.setQuery(searchString, true);
+        }
     }
 
 }

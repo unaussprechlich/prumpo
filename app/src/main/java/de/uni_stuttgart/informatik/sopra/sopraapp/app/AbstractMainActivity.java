@@ -11,6 +11,7 @@ import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
@@ -24,10 +25,13 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     MapFragment mapFragment;
 
     @Inject
-    ContractListFragment insuranceListFragment;
+    ContractListFragment contractListFragment;
 
     @Inject
     DamageCaseListFragment damageCaseListFragment;
+
+    @Inject
+    UserListFragment userListFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -98,9 +102,14 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
         navigationView.setCheckedItem(R.id.nav_damageCases);
     }
 
-    public void displayInsuranceFragment() {
-        switchToFragment(insuranceListFragment);
+    public void displayContractFragment() {
+        switchToFragment(contractListFragment);
         navigationView.setCheckedItem(R.id.nav_insurances);
+    }
+
+    public void displayUserFragment(){
+        switchToFragment(userListFragment);
+        navigationView.setCheckedItem(R.id.nav_users);
     }
 
     protected void switchToFragment(Fragment fragment) {
@@ -126,10 +135,17 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
      */
     public Fragment getCurrentlyActiveFragment() {
 
-        return Stream.of(damageCaseListFragment, insuranceListFragment, mapFragment)
+        return Stream.of(damageCaseListFragment, contractListFragment, mapFragment, userListFragment)
                 .filter(Fragment::isVisible)
                 .findFirst()
                 .orElse(mapFragment);
+    }
 
+    public ContractListFragment getContractListFragment() {
+        return contractListFragment;
+    }
+
+    public DamageCaseListFragment getDamageCaseListFragment() {
+        return damageCaseListFragment;
     }
 }

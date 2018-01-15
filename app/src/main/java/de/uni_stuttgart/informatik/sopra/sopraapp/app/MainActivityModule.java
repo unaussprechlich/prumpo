@@ -10,6 +10,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.Cont
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragmentModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragmentModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
 
@@ -49,5 +50,17 @@ public abstract class MainActivityModule {
     static ContractListFragment providesInsuranceListFragment(){
         return new ContractListFragment();
     }
+
+    @FragmentScope
+    @ContributesAndroidInjector(modules = {ContractListFragmentModule.class})
+    abstract UserListFragment contributeUserListFragment();
+
+    @ActivityScope
+    @Provides
+    static UserListFragment providesUserListFragment(){
+        return new UserListFragment();
+    }
+
+
 
 }

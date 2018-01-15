@@ -7,12 +7,12 @@
             android:icon="@drawable/ic_bar_search"
             android:title="@string/action_search"
             app:actionViewClass="android.support.v7.widget.SearchView"
-            app:showAsAction="collapseActionView|ifRoom"/>
+            app:showAsAction="collapseActionView|always"/>
 
     <item
             android:id="@+id/action_addContract"
             android:icon="@drawable/ic_add_white_24dp"
-            app:showAsAction="ifRoom"
+            app:showAsAction="always"
             android:visible="false"
             android:title="">
     </item>

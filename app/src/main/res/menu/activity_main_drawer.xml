@@ -16,6 +16,10 @@
             android:id="@+id/nav_damageCases"
             android:icon="@drawable/ic_menu_list"
             android:title="@string/damageCases" />
+        <item
+                android:id="@+id/nav_users"
+                android:icon="@drawable/ic_person_white_24dp"
+                android:title="@string/user" />
 
     </group>
 

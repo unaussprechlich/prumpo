@@ -31,6 +31,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
@@ -53,6 +54,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(DamageCaseListAdapter __);
     void inject(ContractListAdapter __);
+    void inject(UserListAdapter __);
 
     void inject(SopraMap __);
 
@@ -77,8 +79,8 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(BottomSheetListAdapter __);
 
-    void  inject(BottomSheetContract __);
-    void  inject(BottomSheetDamagecase __);
+    void inject(BottomSheetContract __);
+    void inject(BottomSheetDamagecase __);
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
