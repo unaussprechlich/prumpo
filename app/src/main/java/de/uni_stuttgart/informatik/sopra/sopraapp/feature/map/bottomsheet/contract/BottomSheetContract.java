@@ -13,9 +13,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetrieverAutoComplete;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -96,17 +95,17 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
             getUserRepository().getAll().removeObservers(this);
 
-            new InputRetrieverAutoComplete<User>(editText)
-                    .withAutoCompleteSuggestions(users,
-                            user -> {
-                                this.user = user;
-                                toolbarContractName.setText(user.toString());
-                            })
+            //noinspection unchecked
+            InputRetriever.newInputRetrieverAutoCompleteFrom(editText)
+                    .withAutocompletion(users)
+                    .onSelection(o -> {
+                        User user = (User) o;
+                        this.user = user;
+                        toolbarContractName.setText(user.toString());
+                    })
                     .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                     .withHint(strBottomSheetInpDialogPolicyholderHint)
-                    .setPositiveButtonAction((dialogInterface, i) -> {
-                    })
-                    .setNegativeButtonAction(null)
+                    .build()
                     .show();
         });
     }
@@ -131,13 +130,11 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @OnClick(R.id.bs_contract_editText_region)
     public void onInputLocationPressed(EditText editText) {
-        InputRetriever.of(editText)
+
+        InputRetriever.newRegularInputRetrieverFrom(editText)
                 .withTitle(strBottomSheetInpDialogLocationHeader)
                 .withHint(strBottomSheetInpDialogLocationHint)
-                .setPositiveButtonAction((dialogInterface, i) -> {
-
-                })
-                .setNegativeButtonAction(null)
+                .build()
                 .show();
     }
 

@@ -35,10 +35,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserList
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.GsonModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
 @ApplicationScope
 @Component(
