@@ -181,7 +181,7 @@ public class MapFragment
     @Override
     public BackButtonProceedPolicy onBackPressed() {
         Log.i("onBackButtonPressed", "init");
-        if (currentBottomSheet.getState() != BottomSheetBehavior.STATE_HIDDEN) {
+        if (currentBottomSheet != null && currentBottomSheet.getState() != BottomSheetBehavior.STATE_HIDDEN) {
             return BackButtonProceedPolicy.SKIP_ACTIVITY;
         }
         return BackButtonProceedPolicy.WITH_ACTIVITY;

@@ -58,6 +58,12 @@ public abstract class InputRetriever {
 
     public abstract void show();
 
+    /**
+     * Is only available after show() was invoked.
+     * @return the editText field of the input dialog
+     */
+    public abstract EditText getTemporaryEditText();
+
     public abstract static class Builder<T extends Builder<T>> {
 
         DialogInterface.OnClickListener positiveAction;

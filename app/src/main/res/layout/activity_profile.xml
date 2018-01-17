@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/profile_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:theme="@style/AppTheme.NoActionBar">
+            android:id="@+id/profile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.NoActionBar">
 
     <!--http://www.viralandroid.com/2016/03/android-material-design-profile-screen-xml-ui-design.html-->
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/header_cover_image"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/primaryDark"
-            android:scaleType="centerCrop" />
+                android:id="@+id/header_cover_image"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/primaryDark"
+                android:scaleType="centerCrop"/>
         <!--android:src="@drawable/navigation_header_image" -->
 
         <ImageButton
-            android:id="@+id/user_profile_photo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_below="@+id/header_cover_image"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="-60dp"
-            android:background="@drawable/profile_circular_border_imageview"
-            android:elevation="5dp"
-            android:padding="20dp"
-            android:scaleType="centerCrop" />
+                android:id="@+id/user_profile_photo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_below="@+id/header_cover_image"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-60dp"
+                android:background="@drawable/profile_circular_border_imageview"
+                android:elevation="5dp"
+                android:padding="20dp"
+                android:scaleType="centerCrop"/>
 
         <RelativeLayout
-            android:id="@+id/thisProfileLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_cover_image"
-            android:background="@color/primaryDark"
-            android:paddingBottom="24dp">
+                android:id="@+id/thisProfileLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/header_cover_image"
+                android:background="@color/primaryDark"
+                android:paddingBottom="24dp">
 
             <!--<ImageView-->
             <!--android:id="@+id/add_friend"-->
@@ -58,49 +58,39 @@
             <!--android:src="@drawable/ic_action_overflow" />-->
 
             <TextView
-                android:id="@+id/user_name_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="76dp"
-                android:text="@string/profile_title"
-                android:textColor="#f9f9f9"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                    android:id="@+id/user_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="76dp"
+                    android:text="@string/profile_title"
+                    android:textColor="#f9f9f9"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/user_role_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_name_text"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="12dp"
-                android:text="@string/profile_subtitle"
-                android:textColor="#f9f9f9"
-                android:textSize="14sp" />
+                    android:id="@+id/user_role_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_name_text"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/profile_subtitle"
+                    android:textColor="#f9f9f9"
+                    android:textSize="14sp"/>
         </RelativeLayout>
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/thisProfileLayout"
-            android:layout_marginTop="5dp"
-            android:gravity="center|bottom"
-            android:orientation="vertical">
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="8dp"
+                android:layout_below="@+id/thisProfileLayout"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:orientation="vertical">
 
-            <!--<TextView-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:background="?attr/colorProfileHeaderTextColor"-->
-            <!--android:clickable="true"-->
-            <!--android:text="" />-->
-            <Button
-                android:id="@+id/logout_button"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/profileLogoutButton" />
+            <include layout="@layout/activity_profile_input_email"/>
 
         </LinearLayout>
     </RelativeLayout>

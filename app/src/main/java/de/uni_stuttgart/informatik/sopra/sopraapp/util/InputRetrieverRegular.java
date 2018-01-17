@@ -10,6 +10,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 public class InputRetrieverRegular extends InputRetriever {
 
     private Builder builder;
+    private EditText temporaryEditText;
 
     InputRetrieverRegular(Builder builder) {
         super(builder);
@@ -43,20 +44,23 @@ public class InputRetrieverRegular extends InputRetriever {
         View dialogLayout = layoutInflater.inflate(R.layout.activity_bottom_sheet_dialog_interface, null);
 
         // find the input field of the dialog
-        EditText editText = dialogLayout.findViewById(R.id.userInputDialog);
-        editText.requestFocus();
+        temporaryEditText = dialogLayout.findViewById(R.id.userInputDialog);
+        temporaryEditText.requestFocus();
 
         // sets hint to input field
-        editText.setHint(builder.hint != null ? builder.hint : "");
+        temporaryEditText.setHint(builder.hint != null ? builder.hint : "");
 
         // sets text to input field
-        editText.setText(builder.pressedTextField.getText());
+        temporaryEditText.setText(builder.pressedTextField.getText());
 
         // sets courser at the end of the input field
-        Selection.setSelection(editText.getText(), editText.length());
+        Selection.setSelection(temporaryEditText.getText(), temporaryEditText.length());
 
-        showDialog(context, dialogLayout, editText);
+        showDialog(context, dialogLayout, temporaryEditText);
     }
 
-
+    @Override
+    public EditText getTemporaryEditText() {
+        return temporaryEditText;
+    }
 }

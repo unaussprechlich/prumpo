@@ -17,6 +17,7 @@ public class InputRetrieverAutocomplete<U> extends InputRetriever {
 
 
     private Builder builder;
+    AutoCompleteTextView autoCompleteTextView;
 
     InputRetrieverAutocomplete(Builder<? extends Builder<?, U>, U> builder) {
         super(builder);
@@ -79,7 +80,7 @@ public class InputRetrieverAutocomplete<U> extends InputRetriever {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         View dialogLayout = layoutInflater.inflate(R.layout.activity_bottom_sheet_dialog_interface_autocomplete, null);
-        AutoCompleteTextView autoCompleteTextView = dialogLayout.findViewById(R.id.userInputDialogAutoComplete);
+        autoCompleteTextView = dialogLayout.findViewById(R.id.userInputDialogAutoComplete);
         autoCompleteTextView.requestFocus();
 
         autoCompleteTextView.setHint(hint != null ? hint : "");
@@ -99,5 +100,10 @@ public class InputRetrieverAutocomplete<U> extends InputRetriever {
         Selection.setSelection(autoCompleteTextView.getText(), autoCompleteTextView.length());
 
         showDialog(context, dialogLayout, autoCompleteTextView);
+    }
+
+    @Override
+    public EditText getTemporaryEditText() {
+        return autoCompleteTextView;
     }
 }

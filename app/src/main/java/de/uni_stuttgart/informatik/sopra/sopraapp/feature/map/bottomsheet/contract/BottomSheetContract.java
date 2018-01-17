@@ -99,9 +99,11 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
             InputRetriever.newInputRetrieverAutoCompleteFrom(editText)
                     .withAutocompletion(users)
                     .onSelection(o -> {
-                        User user = (User) o;
-                        this.user = user;
-                        toolbarContractName.setText(user.toString());
+                        if (o != null) {
+                            User user = (User) o;
+                            this.user = user;
+                            toolbarContractName.setText(user.toString());
+                        }
                     })
                     .withTitle(strBottomSheetInpDialogPolicyholderHeader)
                     .withHint(strBottomSheetInpDialogPolicyholderHint)

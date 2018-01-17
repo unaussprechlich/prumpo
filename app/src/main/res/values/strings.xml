@@ -3,6 +3,7 @@
     <string name="action_search">Search</string>
     <string name="action_share">Share</string>
     <string name="title_activity_login">Login</string>
+    <string name="profile_activity_logout">Logout</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -31,7 +32,13 @@
     <string name="profile_title_app_bar">Profilansicht</string>
     <string name="profile_title">Your Name</string>
     <string name="profile_subtitle">Subtitle</string>
-    <string name="profileLogoutButton">Log Out</string>
+    <string name="profile_logout_dialog_title">Ausloggen</string>
+    <string name="profile_logout_dialog_message">Wollen Sie sich wirklich ausloggen?</string>
+    <string name="profile_logout_dialog_message_onchange">Wollen Sie sich wirklich ausloggen? Ihre Änderungen
+        werden verworfen.</string>
+    <string name="profile_leave_dialog_title">Änderungen verwerfen?</string>
+    <string name="profile_leave_dialog_message">Möchten Sie ihre Änderungen verwerfen?</string>
+
     <string name="title_activity_maps">Map</string>
     <string name="damage_case_pre_policyholder">Versicherungsnehmer</string>
     <string name="map_frag_bs_contract_input_hint_damages">Schäden</string>
@@ -108,7 +115,6 @@
 
     <string-array name="user_groups">
         <item>ADMIN</item>
-        <item>NULL</item>
         <item>GUTACHTER</item>
         <item>BAUER</item>
     </string-array>
