@@ -34,6 +34,8 @@ public interface ContractDao extends IDao<Contract> {
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE ownerID = :owner OR holderID = :owner")
     LiveData<List<Contract>> getAll(long owner);
 
+
+
     /**
      * Select a user by their ID.
      *
@@ -45,6 +47,9 @@ public interface ContractDao extends IDao<Contract> {
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR holderID = :owner)")
     LiveData<Contract> getById(long id, long owner);
 
+    @Override
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR holderID = :owner)")
+    Contract getByIdDirect(long id, long owner);
 
     /**
      * Delete a user by the ID.

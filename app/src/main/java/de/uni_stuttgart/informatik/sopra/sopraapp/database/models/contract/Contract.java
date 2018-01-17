@@ -6,8 +6,19 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
+
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
@@ -15,13 +26,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import org.joda.time.DateTime;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 
 /**
@@ -30,7 +34,7 @@ import java.util.stream.Collectors;
  * All fields annotated with @Expose will be used when exporting to file.
  */
 @Entity(tableName = Contract.TABLE_NAME)
-public class Contract implements ModelDB<ContractRepository> {
+public final class Contract implements ModelDB<ContractRepository> {
 
     public static final String TABLE_NAME = "contract";
     @Ignore private boolean isChanged = false;
@@ -175,7 +179,7 @@ public class Contract implements ModelDB<ContractRepository> {
     }
 
     public void addDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
-        damageCase.setContractID(this.id).save();
+        if(damageCase.isInitial()) return;
         this.damageCaseIDs.add(damageCase.getID());
         loadDamageCases();
     }
@@ -317,5 +321,10 @@ public class Contract implements ModelDB<ContractRepository> {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    @Override
+    public String toString() {
+        return name + " #" + id;
     }
 }

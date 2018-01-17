@@ -39,6 +39,9 @@ public interface UserDao extends IDao<User> {
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :userID")
     LiveData<User> getById(long id, long userID);
 
+    @Override
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND ownerID = :userID")
+    User getByIdDirect(long id, long userID);
 
     /**
      * Select a user by their EMAIL.

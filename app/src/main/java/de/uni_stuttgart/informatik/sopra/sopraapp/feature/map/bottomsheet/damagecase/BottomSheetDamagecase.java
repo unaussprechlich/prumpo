@@ -9,18 +9,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.joda.time.DateTime;
+
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -31,12 +38,31 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     protected DamageCaseHandler damageCaseHandler;
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
+    private Contract damageCaseContract = null;
+
+    @Inject
+    ContractHandler contractHandler;
+
     // ### Constructor ################################################################################ Constructor ###
 
-    public BottomSheetDamagecase(IBottomSheetOwner owner) {
+    public BottomSheetDamagecase(IBottomSheetOwner owner, Contract contract) {
         super(owner);
         SopraApp.getAppComponent().inject(this);
         init();
+        contractHandler.loadFromDatabase(contract.getID());
+        contractHandler.getLiveData().observe(this, this::insertContract);
+    }
+
+    private void insertContract(Contract contract){
+        if(contract == null) return;
+        damageCaseContract = contract;
+        contentPolicyholder.setText(contract.getHolderID() + "");
+        contentContractName.setText(contract.toString());
+    }
+
+    @Override
+    protected void onClose() {
+        contractHandler.closeCurrent();
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
@@ -55,10 +81,15 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
             model.setDate(dateTime)
                     .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
-                    .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints());
+                    .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
+                    .setContractID(damageCaseContract.getID());
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
+            iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
+        } catch (InterruptedException |  ExecutionException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "ERROR!", Toast.LENGTH_SHORT).show();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         return model;
@@ -136,5 +167,4 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         contentInputDate.setText(dateString);
 
     }
-
 }

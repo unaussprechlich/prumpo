@@ -48,6 +48,27 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         return 0;
     }
 
+    // GET ASYNC ###################################################################################
+
+    @SuppressWarnings("unchecked")
+    //@SafeVarargs is present in the actual async task .... so I don't care!
+    public Model getAsync(long id) throws ExecutionException, InterruptedException{
+        return new AbstractRepository.GetAsyncTask<>(dao, getUserId()).execute(id).get();
+    }
+
+    private static class GetAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTaskT<Long, Model, Dao, Model> {
+
+
+        public GetAsyncTask(Dao dao, Long userID) {
+            super(dao, userID);
+        }
+
+        @SafeVarargs
+        protected final Model doInBackground(final Long... params) {
+            return dao.getByIdDirect(params[0], userID);
+        }
+    }
+
     // CREATE ######################################################################################
 
     @SuppressWarnings("unchecked")
@@ -105,6 +126,23 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         protected Long userID;
 
         public AbstractAsyncTask(Dao dao, Long userID) {
+            this.dao = dao;
+            this.userID = userID;
+        }
+    }
+
+    abstract static class AbstractAsyncTaskT<
+            T,
+            Model extends ModelDB,
+            Dao extends IDao<Model>,
+            Return
+            >
+            extends AsyncTask<T, Void, Return> {
+
+        protected Dao dao;
+        protected Long userID;
+
+        public AbstractAsyncTaskT(Dao dao, Long userID) {
             this.dao = dao;
             this.userID = userID;
         }

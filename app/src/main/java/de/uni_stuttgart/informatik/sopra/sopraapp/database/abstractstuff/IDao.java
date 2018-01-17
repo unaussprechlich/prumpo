@@ -16,6 +16,8 @@ public interface IDao<T extends ModelDB> {
 
     LiveData<T> getById(long id, long owner);
 
+    T getByIdDirect(long id, long owner);
+
     /**
      * Update the userDB. The userDB is identified by the row ID.
      *

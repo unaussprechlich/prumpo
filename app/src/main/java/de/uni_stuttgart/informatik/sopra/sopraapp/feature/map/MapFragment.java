@@ -11,14 +11,30 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+
+import com.google.android.gms.maps.MapsInitializer;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
@@ -33,11 +49,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contra
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -284,8 +295,14 @@ public class MapFragment
         return sopraMap;
     }
 
+
     private AbstractBottomSheetBase currentBottomSheet = null;
-    public void openBottomSheet(Class clazz){
+
+    public void openBottomSheet(Class clazz ){
+        openBottomSheet(clazz, null);
+    }
+
+    public <Model extends ModelDB> void openBottomSheet(Class clazz, Model model ){
 
         if(currentBottomSheet != null) {
             currentBottomSheet.close();
@@ -293,7 +310,7 @@ public class MapFragment
         }
 
         if(clazz == DamageCase.class){
-            currentBottomSheet = new BottomSheetDamagecase(this);
+            currentBottomSheet = new BottomSheetDamagecase(this, (Contract) model);
             showCurrentBottomSheet();
         } else if(clazz == Contract.class){
             currentBottomSheet = new BottomSheetContract(this);

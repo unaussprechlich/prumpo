@@ -54,8 +54,10 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
 
     long expertID;
     @Ignore LiveData<User> expert;
+    @Ignore User usereCached;
     long contractID;
     @Ignore LiveData<Contract> contract;
+    @Ignore Contract contractCached;
 
     List<LatLng> coordinates = new ArrayList<>();
     String areaCode;
@@ -90,7 +92,13 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         SopraApp.getAppComponent().inject(this);
         this.name = name;
         setExpertID(expertID);
-        setContractID(contractID);
+
+        try {
+            setContractID(contractID);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.ownerID = ownerID;
@@ -178,10 +186,17 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         return this;
     }
 
-    public DamageCase setContractID(long contractID) {
+    public DamageCase setContractID(long contractID) throws ExecutionException, InterruptedException {
+        if(contractID == -1) return this;
+
         isChanged = true;
         this.contractID = contractID;
         this.contract = contractRepository.getById(contractID);
+
+        contractCached = contractRepository.getAsync(contractID);
+        contractCached.addDamageCase(this);
+        contractCached.save();
+
         return this;
     }
 

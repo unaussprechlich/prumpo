@@ -16,13 +16,15 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 public abstract class AbstractModelHandler<Model extends ModelDB, Repository extends AbstractRepository> implements LifecycleOwner {
 
 
-    private MutableLiveData<Model> model = new MutableLiveData<>();
+    private MutableLiveData<Model> modelLiveData = new MutableLiveData<>();
     private LiveData<Model> modelDB = null;
     private LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
+    private Model model;
+
     public AbstractModelHandler(SopraApp sopraApp) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
-        model.postValue(null);
+        modelLiveData.postValue(null);
     }
 
 
@@ -40,7 +42,8 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
             }
         }
 
-        this.model.setValue(model);
+        this.modelLiveData.postValue(model);
+        this.model = model;
     }
 
     protected abstract Model createNewObject() throws UserManager.NoUserException ;
@@ -82,7 +85,8 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
      */
     @Nullable
     public Model getValue(){
-        return model.getValue();
+        //return modelLiveData.getValue();
+        return model;
     }
 
     /**
@@ -90,7 +94,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
      * @return Model wrapped in LiveData
      */
     public LiveData<Model> getLiveData(){
-        return model;
+        return modelLiveData;
     }
 
     /**
@@ -100,7 +104,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
     public void deleteCurrent(){
         if(modelDB != null && modelDB.getValue() != null)
             getRepository().delete(modelDB.getValue());
-        model.setValue(null);
+        modelLiveData.setValue(null);
     }
 
     /**

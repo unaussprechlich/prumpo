@@ -2,9 +2,17 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contr
 
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -16,12 +24,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBotto
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     protected List<String> selectedDamageTypes = new ArrayList<>();
@@ -32,6 +34,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     public BottomSheetContract(IBottomSheetOwner owner) {
         super(owner);
         SopraApp.getAppComponent().inject(this);
+        getHandler().getLiveData().observe(this, contract -> Log.e("[Shit]", contract + " - null"));
         init();
     }
 
@@ -146,13 +149,15 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         if (!getHandler().hasValue()) return;
 
-        if (getHandler().getValue().isInitial() || getHandler().getValue().isChanged()) {
-            Toast.makeText(getContext(), strToastPleaseSaveContractFirst, Toast.LENGTH_SHORT).show();
-            return;
-        }
+        //TODO
+//        if (getHandler().getValue().isInitial() || getHandler().getValue().isChanged()) {
+//            Toast.makeText(getContext(), strToastPleaseSaveContractFirst, Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+        Contract contract = getHandler().getValue();
 
         close();
-        iBottomSheetOwner.openBottomSheet(DamageCase.class);
+        iBottomSheetOwner.openBottomSheet(DamageCase.class, contract);
     }
 
     @OnClick(R.id.bs_contract_view_damagecases)

@@ -45,6 +45,9 @@ public interface DamageCaseDao extends IDao<DamageCase> {
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR expertID = :owner)")
     LiveData<DamageCase> getById(long id, long owner);
 
+    @Override
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE " + BaseColumns._ID + " = :id AND (ownerID = :owner OR expertID = :owner)")
+    DamageCase getByIdDirect(long id, long owner);
 
     /**
      * Delete a user by the ID.

@@ -19,6 +19,14 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
@@ -32,11 +40,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocatio
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -187,6 +190,7 @@ public abstract class AbstractBottomSheetBase<
 
     private void onSave() {
         try {
+            Log.i("[TEST]", handler.getValue().toString());
             if (handler.hasValue())
                 collectDataForSave((Model) handler.getValue()).save();
         } catch (InterruptedException | ExecutionException e) {
@@ -247,6 +251,8 @@ public abstract class AbstractBottomSheetBase<
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+    protected void onClose(){}
+
     public void close() {
         EventBus.getDefault().post(new EventsBottomSheet.Close());
 
@@ -262,6 +268,8 @@ public abstract class AbstractBottomSheetBase<
             gpsService.stopSingleCallback();
 
         handler.closeCurrent();
+        onClose();
+
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
