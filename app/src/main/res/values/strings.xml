@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SoPraApp</string>
+    <string name="app_name">Prumpo</string>
     <string name="action_search">Search</string>
     <string name="action_share">Share</string>
     <string name="title_activity_login">Login</string>
@@ -17,7 +17,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_main">SoPraApp</string>
+    <string name="title_activity_main">Prumpo</string>
 
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_closed">Close navigation drawer</string>
