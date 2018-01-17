@@ -1,4 +1,4 @@
-# App-Name
+# Prumpo
 
 ![Das Interface zur Schadenerfassung](doc/images/header.png)
 
