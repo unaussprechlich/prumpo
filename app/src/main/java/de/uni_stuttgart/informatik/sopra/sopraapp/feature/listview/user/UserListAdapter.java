@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
@@ -17,6 +18,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker
 import java.util.List;
 
 public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
+
+    private static int[] profileImageResources = Constants.PROFILE_IMAGE_RESOURCES;
 
     private FragmentActivity fragmentActivity;
     private NavMenuBlocker navMenuBlocker;
@@ -47,6 +50,7 @@ public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
 
         holder.userName.setText(user.getName());
         holder.userEmail.setText(user.getEmail());
+        holder.profileImage.setImageResource(profileImageResources[user.getProfilePicture()]);
 
         holder.contractImgBtn.setOnClickListener(v -> onContractButtonPressed(user));
         holder.damageImgBtn.setOnClickListener(v -> onDamageCaseButtonPressed(user));

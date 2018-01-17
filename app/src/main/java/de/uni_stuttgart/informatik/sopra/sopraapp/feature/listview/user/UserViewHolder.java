@@ -4,6 +4,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +28,9 @@ public class UserViewHolder
 
     @BindView(R.id.view_user_damages_btn)
     ImageButton damageImgBtn;
+
+    @BindView(R.id.view_user_image)
+    ImageView profileImage;
 
     UserViewHolder(View itemView) {
         super(itemView);
