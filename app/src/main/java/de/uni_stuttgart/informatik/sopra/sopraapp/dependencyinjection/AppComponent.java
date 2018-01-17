@@ -6,6 +6,7 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;

@@ -5,12 +5,14 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
+
 import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 
 
 @ApplicationScope
@@ -22,6 +24,8 @@ public class UserManager {
     @Inject
     public UserManager(SopraApp app) {
         this.context = app;
+
+
         startAuthenticationActivity();
     }
 

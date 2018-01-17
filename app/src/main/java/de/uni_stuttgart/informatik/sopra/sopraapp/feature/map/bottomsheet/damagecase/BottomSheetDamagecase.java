@@ -5,10 +5,20 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetBehavior;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.joda.time.DateTime;
+
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -16,15 +26,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
-import org.joda.time.DateTime;
-
-import javax.inject.Inject;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -130,23 +135,36 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @OnClick(R.id.bs_dc_policyHolder_moreDatailsButton)
     public void onPolicyholderMoreDetailsButtonPressed(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE );
+        try {
 
-        View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_policyholder, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
 
-        TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_policyholder_identifier);
-        TextView emailView = inflate.findViewById(R.id.bs_dc_detail_policyholder_email);
-        TextView nameView = inflate.findViewById(R.id.bs_dc_detail_policyholder_name);
+            View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_policyholder, null);
 
-        // todo
-        identifierView.setText("TODO vermerkt");
-        emailView.setText("TODO vermerkt");
-        nameView.setText("TODO vermerkt");
+            TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_policyholder_identifier);
+            TextView emailView = inflate.findViewById(R.id.bs_dc_detail_policyholder_email);
+            TextView nameView = inflate.findViewById(R.id.bs_dc_detail_policyholder_name);
 
-        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {});
-        builder.create().show();
+            User user = damageCaseContract.getHolderAsync();
+
+            Log.e("USER", user.toString());
+
+            // todo
+            identifierView.setText("#" + user.getID());
+            emailView.setText(user.getEmail());
+            nameView.setText(user.getName());
+
+            builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {
+            });
+            builder.create().show();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
     }
 

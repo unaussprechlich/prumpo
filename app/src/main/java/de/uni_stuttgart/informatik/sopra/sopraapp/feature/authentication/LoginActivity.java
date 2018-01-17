@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -24,10 +23,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 
 /**
  * A login screen that offers login via email/password.
@@ -49,18 +48,6 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        //TODO remove dummy
-        try {
-            userRepository.insert(new User.Builder()
-                    .setEmail("dummy@dummy.net")
-                    .setPassword("dummy")
-                    .setName("Mister Dummy")
-                    .setRole(User.EnumUserRoles.ADMIN)
-                    .build());
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
         mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin();
@@ -70,6 +57,7 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    //TODO REMOVE THIS
     @OnClick(R.id.SKIP_LOGIN)
     public void onClickSkipLogin(){
         LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");

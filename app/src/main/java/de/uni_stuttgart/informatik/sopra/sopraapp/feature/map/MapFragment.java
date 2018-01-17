@@ -295,7 +295,6 @@ public class MapFragment
         return sopraMap;
     }
 
-
     private AbstractBottomSheetBase currentBottomSheet = null;
 
     public void openBottomSheet(Class clazz ){

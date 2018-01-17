@@ -178,20 +178,25 @@ public final class Contract implements ModelDB<ContractRepository> {
         return holderID;
     }
 
-    public void addDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
-        if(damageCase.isInitial()) return;
+    public Contract addDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
+        if(damageCase.isInitial()) return this;
         this.damageCaseIDs.add(damageCase.getID());
         loadDamageCases();
+        return this;
     }
 
-    public void removeDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
-        damageCase.setContractID(-1).save();
+    public Contract removeDamageCase(DamageCase damageCase) throws ExecutionException, InterruptedException {
         this.damageCaseIDs.remove(damageCase.getID());
         loadDamageCases();
+        return this;
     }
 
     private void loadDamageCases(){
         this.damageCases = damageCaseIDs.stream().map(damageCaseRepository::getById).collect(Collectors.toList());
+    }
+
+    public User getHolderAsync() throws ExecutionException, InterruptedException {
+        return userRepository.getAsync(holderID);
     }
 
     public LiveData<User> getHolder(){

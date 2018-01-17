@@ -5,6 +5,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -16,10 +23,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.regex.Pattern;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -93,7 +96,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event) {
-        textViewUserName.setText(event.user.getName());
+        textViewUserName.setText(event.user.toString());
         textViewUserRole.setText(event.user.getRole().toString());
 
         editTextEmailField.setText(event.user.getEmail());
