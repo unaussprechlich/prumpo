@@ -65,7 +65,7 @@ public final class User implements ModelDB<UserRepository> {
     }
 
     public User setProfilePicture(int profilePicture) {
-        if(profilePicture > 28 || profilePicture < 0) throw new IndexOutOfBoundsException();
+        if(profilePicture > 27 || profilePicture < 0) throw new IndexOutOfBoundsException();
         isChanged = true;
         this.profilePicture = profilePicture;
         return this;
