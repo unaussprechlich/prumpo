@@ -34,14 +34,15 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * If we really would do it correctly we should separate the sharing logic from the ui stuff.
+ * But I don't want to do this, because Java.
  */
 public class ContractShareHelper extends ContractShareHelperBindings {
 
     private FragmentActivity fragmentActivity;
     private List<Contract> contracts;
 
-    private ContractShareCallback onShareAbort = () -> { };
-    private ContractShareCallback onShareDone = () -> { };
+    private ContractShareCallback onShareAbort = () -> { /* Ignore */ };
+    private ContractShareCallback onShareDone = () -> { /* Ignore */ };
 
     // Sharing options
     private boolean plainText = false;
@@ -231,7 +232,7 @@ public class ContractShareHelper extends ContractShareHelperBindings {
      */
     private boolean isReadyToSaveAsFile() {
         File folder = new File(getExportDirectoryPath());
-        return folder.exists() || folder.mkdir();
+        return folder.exists() || folder.mkdirs();
     }
 
     /**
