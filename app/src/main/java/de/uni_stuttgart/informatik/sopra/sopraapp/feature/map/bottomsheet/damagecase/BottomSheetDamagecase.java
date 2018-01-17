@@ -9,15 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -28,6 +19,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import org.joda.time.DateTime;
+
+import javax.inject.Inject;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -148,14 +145,33 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         emailView.setText("TODO vermerkt");
         nameView.setText("TODO vermerkt");
 
-        builder.setView(inflate).setPositiveButton("Ok", (dialog, which) -> {});
+        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {});
         builder.create().show();
 
     }
 
     @OnClick(R.id.bs_dc_contract_moreDatailsButton)
     public void onContractMoreDetailsButtonPressed(View view) {
-        Toast.makeText(getContext(), "Pressed 2", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+
+        View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_contract, null);
+
+        TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_contract_identifier);
+        TextView dateView = inflate.findViewById(R.id.bs_dc_detail_contract_date);
+        TextView damagetypesView = inflate.findViewById(R.id.bs_dc_detail_contract_damagetypes);
+        TextView areaView = inflate.findViewById(R.id.bs_dc_detail_contract_area);
+
+        // todo
+        identifierView.setText("TODO vermerkt");
+        dateView.setText(DateTime.now().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+        damagetypesView.setText("TODO vermerkt");
+        areaView.setText("TODO vermerkt");
+
+        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {});
+        builder.create().show();
+
     }
 
     // ### Helper Functions ###################################################################### Helper Functions ###
