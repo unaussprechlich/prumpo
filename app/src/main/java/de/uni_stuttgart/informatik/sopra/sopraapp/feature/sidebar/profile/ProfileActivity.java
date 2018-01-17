@@ -1,17 +1,11 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.*;
 import android.widget.EditText;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-
+import android.widget.GridView;
+import android.widget.ImageButton;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -23,6 +17,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+import org.greenrobot.eventbus.Subscribe;
+
+import javax.inject.Inject;
+import java.util.regex.Pattern;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -210,5 +208,22 @@ public class ProfileActivity extends ProfileActivityBindings {
                 .create()
                 .show();
     }
+
+
+    @OnClick(R.id.user_profile_photo)
+    public void onProfileImagePressed(ImageButton imageButton) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = getLayoutInflater();
+
+        View inflate = layoutInflater.inflate(R.layout.activity_profile_input_img_dialog, null);
+        GridView gridView = inflate.findViewById(R.id.gridview);
+
+
+        builder.setView(gridView);
+        builder.setTitle("Goto");
+        builder.show();
+
+    }
+
 
 }
