@@ -2,28 +2,11 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.*;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -33,6 +16,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+import org.greenrobot.eventbus.Subscribe;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -41,7 +32,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     private boolean isChanged = false;
 
-    private void isChanged(boolean value){
+    private void isChanged(boolean value) {
         isChanged = value;
         menuSaveItem.getIcon().setAlpha(255 / (isChanged ? 1 : 4));
         menuSaveItem.setEnabled(isChanged);
@@ -52,7 +43,9 @@ public class ProfileActivity extends ProfileActivityBindings {
     @Inject
     UserManager userManager;
 
-    private int[] profilePictures;
+    private AlertDialog userProfileSelectionDialog;
+    private List<ImageView> imageList;
+    private int lastSelectedImagePosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,37 +55,11 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         setTitle(strProfileAppBarTitle);
 
-        profilePictures = new int[]{
-            R.drawable.zprofile_1,
-            R.drawable.zprofile_2,
-            R.drawable.zprofile_3,
-            R.drawable.zprofile_4,
-            R.drawable.zprofile_5,
-            R.drawable.zprofile_6,
-            R.drawable.zprofile_7,
-            R.drawable.zprofile_8,
-            R.drawable.zprofile_9,
-            R.drawable.zprofile_10,
-            R.drawable.zprofile_11,
-            R.drawable.zprofile_12,
-            R.drawable.zprofile_13,
-            R.drawable.zprofile_14,
-            R.drawable.zprofile_15,
-            R.drawable.zprofile_16,
-            R.drawable.zprofile_17,
-            R.drawable.zprofile_18,
-            R.drawable.zprofile_19,
-            R.drawable.zprofile_20,
-            R.drawable.zprofile_21,
-            R.drawable.zprofile_22,
-            R.drawable.zprofile_23,
-            R.drawable.zprofile_24,
-            R.drawable.zprofile_25,
-            R.drawable.zprofile_26,
-            R.drawable.zprofile_27,
-            R.drawable.zprofile_28,
-            R.drawable.zprofile_29
-        };
+        if (imageList == null)
+            imageList = Arrays.stream(Constants.PROFILE_IMAGE_RESOURCES)
+                    .mapToObj(this::mapToImageView)
+                    .collect(Collectors.toList());
+
     }
 
     @Override
@@ -146,15 +113,18 @@ public class ProfileActivity extends ProfileActivityBindings {
     public void handleLogin(EventsAuthentication.Login event) {
         textViewUserName.setText(event.user.toString());
         textViewUserRole.setText(event.user.getRole().toString());
-        imageViewProfilePicture.setImageResource(profilePictures[event.user.getProfilePicture()]);
+
+        lastSelectedImagePosition = event.user.getProfilePicture();
+        imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[lastSelectedImagePosition]);
 
         editTextEmailField.setText(event.user.getEmail());
         editTextEmailField.addTextChangedListener((RemoveErrorTextWatcher) s -> {
-            if (isEmailValid(editTextEmailField)){
+            if (isEmailValid(editTextEmailField)) {
                 editTextEmailField.setError(null);
                 isChanged(true);
             }
         });
+
     }
 
     /**
@@ -164,7 +134,10 @@ public class ProfileActivity extends ProfileActivityBindings {
      * @return true if action event consumed in this activity, false else
      */
     private boolean onSaveButtonPressed(MenuItem __) {
-        if (isChanged) saveUserNow();
+
+        if (isChanged)
+            saveUserNow();
+
         return true;
     }
 
@@ -172,8 +145,11 @@ public class ProfileActivity extends ProfileActivityBindings {
      * Invoked when user hits back button or when user hits the back button in the toolbar.
      */
     private void onUserWantsToLeave() {
-        if (isChanged) showLeaveWithoutSaveDialog();
-        else super.onBackPressed();
+
+        if (isChanged)
+            showLeaveWithoutSaveDialog();
+        else
+            super.onBackPressed();
     }
 
     /**
@@ -203,7 +179,10 @@ public class ProfileActivity extends ProfileActivityBindings {
     private void saveUserNow() {
         try {
             isChanged(false);
-            userManager.getCurrentUser().setEmail(editTextEmailField.getText().toString()).save();
+            userManager.getCurrentUser()
+                    .setEmail(editTextEmailField.getText().toString())
+                    .setProfilePicture(lastSelectedImagePosition)
+                    .save();
         } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -232,69 +211,44 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     @OnClick(R.id.user_profile_photo)
     public void onProfileImagePressed(ImageButton imageButton) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = getLayoutInflater();
 
-        View inflate = layoutInflater.inflate(R.layout.activity_profile_input_img_dialog, null);
-        inflate.findViewById(R.id.gridview);
-        // Prepare grid view
-        GridView gridView = new GridView(this);
-        gridView.setAdapter(new ImageAdapter(profilePictures));
-        gridView.setNumColumns(4);
-        gridView.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                userManager.getCurrentUser().setProfilePicture(position);
-                imageViewProfilePicture.setImageResource(profilePictures[position]);
-                isChanged(true);
-            } catch ( UserManager.NoUserException e) {
-                e.printStackTrace();
-            }
+        // Grid adapter
+        ProfileImageGridViewAdapter adapter = new ProfileImageGridViewAdapter(imageList);
+        adapter.setOnImageSelected((drawable, position) -> {
+            imageViewProfilePicture.setImageDrawable(drawable);
+            isChanged(userManager.getCurrentUser().getProfilePicture() != position);
+            lastSelectedImagePosition = position;
+            userProfileSelectionDialog.dismiss();
+            userProfileSelectionDialog = null;
         });
 
-        builder.setView(gridView);
-        builder.setTitle("Goto");
-        builder.show();
+        // Inflate Dialog layout & Grid view & adapter
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View inflate = layoutInflater.inflate(R.layout.activity_profile_input_img_dialog, null);
+        GridView gridView = inflate.findViewById(R.id.gridview);
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(adapter);
 
+        // Set layout and build
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(strChangeProfileImageHeader);
+        builder.setView(inflate);
+        userProfileSelectionDialog = builder.create();
+        userProfileSelectionDialog.show();
     }
 
-    private class ImageAdapter extends BaseAdapter {
-
-        List<Integer> imageList;
-
-        public ImageAdapter(int[] intArray) {
-            imageList = Arrays.stream(intArray).boxed().collect(Collectors.toList());
-        }
-
-        @Override
-        public int getCount() {
-            return imageList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return position;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
-            if (convertView == null) {
-                imageView = new ImageView(getApplication());
-                imageView.setLayoutParams(new GridView.LayoutParams(160, 160));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(5, 5, 5, 5);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-            imageView.setImageResource(profilePictures[position]);
-            return imageView;
-        }
+    /**
+     * Will transform a image layout to and imageView.
+     *
+     * @param layoutID the id
+     * @return the imageView found by the given id
+     */
+    private ImageView mapToImageView(int layoutID) {
+        ImageView imageView = new ImageView(getApplicationContext());
+        imageView.setLayoutParams(new GridView.LayoutParams(320, 320));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setPadding(15, 15, 15, 15);
+        imageView.setImageResource(layoutID);
+        return imageView;
     }
-
-
 }

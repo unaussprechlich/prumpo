@@ -30,6 +30,7 @@
     <string name="user">Benutzer</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>
+    <string name="profile_image_change">Profilbild ändern</string>
     <string name="profile_title">Your Name</string>
     <string name="profile_subtitle">Subtitle</string>
     <string name="profile_logout_dialog_title">Ausloggen</string>

@@ -36,6 +36,10 @@ public abstract class ProfileActivityBindings extends BaseEventBusActivity {
     @BindString(R.string.profile_leave_dialog_message)
     String strLeaveDialogMessage;
 
+    @BindString(R.string.profile_image_change)
+    String strChangeProfileImageHeader;
+
+
     @BindView(R.id.profile_input_email)
     EditText editTextEmailField;
 
