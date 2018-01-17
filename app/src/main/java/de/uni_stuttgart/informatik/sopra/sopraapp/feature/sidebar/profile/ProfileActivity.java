@@ -85,7 +85,7 @@ public class ProfileActivity extends ProfileActivityBindings {
         retrieverRegular.show();
 
         EditText temporaryEditText = retrieverRegular.getTemporaryEditText();
-        temporaryEditText.addTextChangedListener((CleanUpTextWatcher) s -> {
+        temporaryEditText.addTextChangedListener((RemoveErrorTextWatcher) s -> {
             if (isEmailValid(temporaryEditText))
                 temporaryEditText.setError(null);
         });
@@ -97,7 +97,7 @@ public class ProfileActivity extends ProfileActivityBindings {
         textViewUserRole.setText(event.user.getRole().toString());
 
         editTextEmailField.setText(event.user.getEmail());
-        editTextEmailField.addTextChangedListener((CleanUpTextWatcher) s -> {
+        editTextEmailField.addTextChangedListener((RemoveErrorTextWatcher) s -> {
             if (isEmailValid(editTextEmailField))
                 editTextEmailField.setError(null);
             updateMenuSaveButton();
