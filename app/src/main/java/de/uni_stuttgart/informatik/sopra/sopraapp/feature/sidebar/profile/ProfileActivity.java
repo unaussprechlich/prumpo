@@ -118,7 +118,7 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private void onUserWantsToLeave() {
 
-        if (isChanged)
+        if (hasUserChangedSomething())
             showLeaveWithoutSaveDialog();
         else
             super.onBackPressed();

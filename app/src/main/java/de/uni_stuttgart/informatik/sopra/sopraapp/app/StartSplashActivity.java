@@ -1,0 +1,18 @@
+package de.uni_stuttgart.informatik.sopra.sopraapp.app;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
+
+public class StartSplashActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Intent intent = new Intent(this, AuthenticationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+}
