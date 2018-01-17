@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -55,14 +56,21 @@ public class LoginActivity extends BaseActivity {
             }
             return false;
         });
+
+        //TODO REMOVE
+        userRepository.insertDummyIfNotExist();
     }
 
     //TODO REMOVE THIS
     @OnClick(R.id.SKIP_LOGIN)
     public void onClickSkipLogin(){
         LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
-        user.observe(this, user1 -> userManager.login(user));
-        gotoMainActivity();
+        user.observe(this, user1 -> {
+            if(user1 == null) return;
+            Log.e("TEST", user1.toString());
+            userManager.login(user);
+            gotoMainActivity();
+        });
     }
 
     @OnClick(R.id.sign_up_button)

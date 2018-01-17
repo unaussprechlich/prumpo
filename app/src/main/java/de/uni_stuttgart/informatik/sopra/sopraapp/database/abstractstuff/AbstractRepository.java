@@ -14,7 +14,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 
 public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao<Model>> {
 
-    private final Dao dao;
+    protected final Dao dao;
 
     @Inject
     protected UserManager userManager;
@@ -56,7 +56,7 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         return new AbstractRepository.GetAsyncTask<>(dao, getUserId()).execute(id).get();
     }
 
-    private static class GetAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTaskT<Long, Model, Dao, Model> {
+    private static class GetAsyncTask<Model extends ModelDB, Dao extends IDao<Model>> extends AbstractAsyncTaskT<Long, Dao, Model> {
 
 
         public GetAsyncTask(Dao dao, Long userID) {
@@ -131,11 +131,10 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         }
     }
 
-    abstract static class AbstractAsyncTaskT<
+    protected abstract static class AbstractAsyncTaskT<
             T,
-            Model extends ModelDB,
-            Dao extends IDao<Model>,
-            Return
+            Dao extends IDao<Return>,
+            Return extends ModelDB
             >
             extends AsyncTask<T, Void, Return> {
 

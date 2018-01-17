@@ -28,7 +28,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
@@ -41,6 +40,13 @@ public class ProfileActivity extends ProfileActivityBindings {
     private static final Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
 
     private boolean isChanged = false;
+
+    private void isChanged(boolean value){
+        isChanged = value;
+        menuSaveItem.getIcon().setAlpha(255 / (isChanged ? 1 : 4));
+        menuSaveItem.setEnabled(isChanged);
+    }
+
     private MenuItem menuSaveItem;
 
     @Inject
@@ -144,9 +150,10 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         editTextEmailField.setText(event.user.getEmail());
         editTextEmailField.addTextChangedListener((RemoveErrorTextWatcher) s -> {
-            if (isEmailValid(editTextEmailField))
+            if (isEmailValid(editTextEmailField)){
                 editTextEmailField.setError(null);
-            updateMenuSaveButton();
+                isChanged(true);
+            }
         });
     }
 
@@ -157,10 +164,7 @@ public class ProfileActivity extends ProfileActivityBindings {
      * @return true if action event consumed in this activity, false else
      */
     private boolean onSaveButtonPressed(MenuItem __) {
-
-        if (isChanged)
-            saveUserNow();
-
+        if (isChanged) saveUserNow();
         return true;
     }
 
@@ -168,36 +172,8 @@ public class ProfileActivity extends ProfileActivityBindings {
      * Invoked when user hits back button or when user hits the back button in the toolbar.
      */
     private void onUserWantsToLeave() {
-
-        if (hasUserChangedSomething())
-            showLeaveWithoutSaveDialog();
-        else
-            super.onBackPressed();
-    }
-
-    /**
-     * Returns whether the current logged in user has changed
-     *
-     * @return true if changed, false else
-     */
-    private boolean hasUserChangedSomething() {
-        try {
-            User currentUser = userManager.getCurrentUser();
-            return !currentUser.getEmail().equals(editTextEmailField.getText().toString()) || currentUser.isChanged();
-        } catch (UserManager.NoUserException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * Will update the state of the menu save button.
-     * Will be enabled if user has changed and if changed value is valid.
-     */
-    private void updateMenuSaveButton() {
-        isChanged = hasUserChangedSomething() && isEmailValid(editTextEmailField);
-        menuSaveItem.getIcon().setAlpha(255 / (isChanged ? 1 : 4));
-        menuSaveItem.setEnabled(isChanged);
+        if (isChanged) showLeaveWithoutSaveDialog();
+        else super.onBackPressed();
     }
 
     /**
@@ -226,8 +202,8 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private void saveUserNow() {
         try {
+            isChanged(false);
             userManager.getCurrentUser().setEmail(editTextEmailField.getText().toString()).save();
-            updateMenuSaveButton();
         } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -269,7 +245,7 @@ public class ProfileActivity extends ProfileActivityBindings {
             try {
                 userManager.getCurrentUser().setProfilePicture(position);
                 imageViewProfilePicture.setImageResource(profilePictures[position]);
-                updateMenuSaveButton();
+                isChanged(true);
             } catch ( UserManager.NoUserException e) {
                 e.printStackTrace();
             }

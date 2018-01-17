@@ -51,6 +51,8 @@ public interface UserDao extends IDao<User> {
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE email = :email")
     LiveData<User> getByEmail(String email);
 
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE email = :email")
+    User getByEmailDirect(String email);
 
     /**
      * Delete a user by the ID.

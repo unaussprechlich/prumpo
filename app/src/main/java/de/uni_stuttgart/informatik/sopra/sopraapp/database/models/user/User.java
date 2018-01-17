@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 
 
@@ -36,6 +37,7 @@ public final class User implements ModelDB<UserRepository> {
     @ColumnInfo(index = true)
     String email;
     String password;
+    @ColumnInfo(index = true)
     public long ownerID = 0;
     public int profilePicture = 0;
 
@@ -170,13 +172,11 @@ public final class User implements ModelDB<UserRepository> {
         this.password = password;
         this.email = email;
         this.role = role;
+        SopraApp.getAppComponent().inject(this);
     }
 
     public User(String name, String password, String email, EnumUserRoles role, boolean initial) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-        this.role = role;
+        this(name, password, email, role);
         this.initial = initial;
     }
 }
