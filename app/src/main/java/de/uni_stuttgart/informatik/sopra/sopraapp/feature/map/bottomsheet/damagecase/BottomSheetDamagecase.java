@@ -10,15 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -30,6 +21,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import org.joda.time.DateTime;
+
+import javax.inject.Inject;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -55,8 +52,8 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         contractHandler.getLiveData().observe(this, this::insertContract);
     }
 
-    private void insertContract(Contract contract){
-        if(contract == null) return;
+    private void insertContract(Contract contract) {
+        if (contract == null) return;
         damageCaseContract = contract;
         contentPolicyholder.setText(contract.getHolderID() + "");
         contentContractName.setText(contract.toString());
@@ -89,7 +86,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
-        } catch (InterruptedException |  ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "ERROR!", Toast.LENGTH_SHORT).show();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -156,8 +153,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
             emailView.setText(user.getEmail());
             nameView.setText(user.getName());
 
-            builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {
-            });
+            builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */});
             builder.create().show();
 
         } catch (InterruptedException e) {
@@ -187,7 +183,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         damagetypesView.setText("TODO vermerkt");
         areaView.setText("TODO vermerkt");
 
-        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> {});
+        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */ });
         builder.create().show();
 
     }
