@@ -1,6 +1,7 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -43,4 +44,7 @@ public abstract class ProfileActivityBindings extends BaseEventBusActivity {
 
     @BindView(R.id.user_role_text)
     TextView textViewUserRole;
+
+    @BindView(R.id.user_profile_photo)
+    ImageView imageViewProfilePicture;
 }

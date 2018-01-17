@@ -2,7 +2,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +18,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -29,7 +29,6 @@ import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
@@ -45,10 +44,9 @@ public class ProfileActivity extends ProfileActivityBindings {
     private MenuItem menuSaveItem;
 
     @Inject
-    UserRepository userRepository;
-
-    @Inject
     UserManager userManager;
+
+    private int[] profilePictures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +55,38 @@ public class ProfileActivity extends ProfileActivityBindings {
         ButterKnife.bind(this);
 
         setTitle(strProfileAppBarTitle);
+
+        profilePictures = new int[]{
+            R.drawable.zprofile_1,
+            R.drawable.zprofile_2,
+            R.drawable.zprofile_3,
+            R.drawable.zprofile_4,
+            R.drawable.zprofile_5,
+            R.drawable.zprofile_6,
+            R.drawable.zprofile_7,
+            R.drawable.zprofile_8,
+            R.drawable.zprofile_9,
+            R.drawable.zprofile_10,
+            R.drawable.zprofile_11,
+            R.drawable.zprofile_12,
+            R.drawable.zprofile_13,
+            R.drawable.zprofile_14,
+            R.drawable.zprofile_15,
+            R.drawable.zprofile_16,
+            R.drawable.zprofile_17,
+            R.drawable.zprofile_18,
+            R.drawable.zprofile_19,
+            R.drawable.zprofile_20,
+            R.drawable.zprofile_21,
+            R.drawable.zprofile_22,
+            R.drawable.zprofile_23,
+            R.drawable.zprofile_24,
+            R.drawable.zprofile_25,
+            R.drawable.zprofile_26,
+            R.drawable.zprofile_27,
+            R.drawable.zprofile_28,
+            R.drawable.zprofile_29
+        };
     }
 
     @Override
@@ -110,6 +140,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     public void handleLogin(EventsAuthentication.Login event) {
         textViewUserName.setText(event.user.toString());
         textViewUserRole.setText(event.user.getRole().toString());
+        imageViewProfilePicture.setImageResource(profilePictures[event.user.getProfilePicture()]);
 
         editTextEmailField.setText(event.user.getEmail());
         editTextEmailField.addTextChangedListener((RemoveErrorTextWatcher) s -> {
@@ -151,7 +182,8 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private boolean hasUserChangedSomething() {
         try {
-            return !userManager.getCurrentUser().getEmail().equals(editTextEmailField.getText().toString());
+            User currentUser = userManager.getCurrentUser();
+            return !currentUser.getEmail().equals(editTextEmailField.getText().toString()) || currentUser.isChanged();
         } catch (UserManager.NoUserException e) {
             e.printStackTrace();
         }
@@ -194,11 +226,9 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private void saveUserNow() {
         try {
-            User currentUser = userManager.getCurrentUser();
-            currentUser.setEmail(editTextEmailField.getText().toString());
-            userRepository.update(currentUser);
+            userManager.getCurrentUser().setEmail(editTextEmailField.getText().toString()).save();
             updateMenuSaveButton();
-        } catch (UserManager.NoUserException e) {
+        } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -233,10 +263,16 @@ public class ProfileActivity extends ProfileActivityBindings {
         inflate.findViewById(R.id.gridview);
         // Prepare grid view
         GridView gridView = new GridView(this);
-        gridView.setAdapter(new ImageAdapter(getResources().getIntArray(R.array.profile_imgs)));
-        gridView.setNumColumns(2);
+        gridView.setAdapter(new ImageAdapter(profilePictures));
+        gridView.setNumColumns(4);
         gridView.setOnItemClickListener((parent, view, position, id) -> {
-            Log.e("IM", "PRESSED");
+            try {
+                userManager.getCurrentUser().setProfilePicture(position);
+                imageViewProfilePicture.setImageResource(profilePictures[position]);
+                updateMenuSaveButton();
+            } catch ( UserManager.NoUserException e) {
+                e.printStackTrace();
+            }
         });
 
         builder.setView(gridView);
@@ -251,7 +287,6 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         public ImageAdapter(int[] intArray) {
             imageList = Arrays.stream(intArray).boxed().collect(Collectors.toList());
-            imageList.forEach(System.out::println);
         }
 
         @Override
@@ -274,13 +309,13 @@ public class ProfileActivity extends ProfileActivityBindings {
             ImageView imageView;
             if (convertView == null) {
                 imageView = new ImageView(getApplication());
-                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+                imageView.setLayoutParams(new GridView.LayoutParams(160, 160));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(5, 5, 5, 5);
             } else {
                 imageView = (ImageView) convertView;
             }
-            imageView.setImageResource(imageList.get(position));
+            imageView.setImageResource(profilePictures[position]);
             return imageView;
         }
     }

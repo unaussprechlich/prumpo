@@ -37,6 +37,7 @@ public final class User implements ModelDB<UserRepository> {
     String email;
     String password;
     public long ownerID = 0;
+    public int profilePicture = 0;
 
     @ColumnInfo(index = true)
     EnumUserRoles role;
@@ -59,6 +60,13 @@ public final class User implements ModelDB<UserRepository> {
         else if(isChanged) userRepository.update(this);
         isChanged = false;
         return id;
+    }
+
+    public User setProfilePicture(int profilePicture) {
+        if(profilePicture > 28 || profilePicture < 0) throw new IndexOutOfBoundsException();
+        isChanged = true;
+        this.profilePicture = profilePicture;
+        return this;
     }
 
     public User setName(String name) {
@@ -99,6 +107,10 @@ public final class User implements ModelDB<UserRepository> {
 
     public EnumUserRoles getRole() {
         return role;
+    }
+
+    public int getProfilePicture() {
+        return profilePicture;
     }
 
     @Override
