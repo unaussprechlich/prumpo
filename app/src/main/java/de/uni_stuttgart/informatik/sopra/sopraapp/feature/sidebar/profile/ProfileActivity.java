@@ -2,10 +2,28 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.*;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -17,10 +35,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.regex.Pattern;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -216,13 +230,59 @@ public class ProfileActivity extends ProfileActivityBindings {
         LayoutInflater layoutInflater = getLayoutInflater();
 
         View inflate = layoutInflater.inflate(R.layout.activity_profile_input_img_dialog, null);
-        GridView gridView = inflate.findViewById(R.id.gridview);
-
+        inflate.findViewById(R.id.gridview);
+        // Prepare grid view
+        GridView gridView = new GridView(this);
+        gridView.setAdapter(new ImageAdapter(getResources().getIntArray(R.array.profile_imgs)));
+        gridView.setNumColumns(2);
+        gridView.setOnItemClickListener((parent, view, position, id) -> {
+            Log.e("IM", "PRESSED");
+        });
 
         builder.setView(gridView);
         builder.setTitle("Goto");
         builder.show();
 
+    }
+
+    private class ImageAdapter extends BaseAdapter {
+
+        List<Integer> imageList;
+
+        public ImageAdapter(int[] intArray) {
+            imageList = Arrays.stream(intArray).boxed().collect(Collectors.toList());
+            imageList.forEach(System.out::println);
+        }
+
+        @Override
+        public int getCount() {
+            return imageList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
+            if (convertView == null) {
+                imageView = new ImageView(getApplication());
+                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setPadding(5, 5, 5, 5);
+            } else {
+                imageView = (ImageView) convertView;
+            }
+            imageView.setImageResource(imageList.get(position));
+            return imageView;
+        }
     }
 
 
