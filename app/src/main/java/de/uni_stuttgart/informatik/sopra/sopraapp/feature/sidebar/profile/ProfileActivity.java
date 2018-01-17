@@ -9,6 +9,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
@@ -26,6 +28,9 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     private boolean isChanged = false;
     private MenuItem menuSaveItem;
+
+    @Inject
+    UserRepository userRepository;
 
     @Inject
     UserManager userManager;
@@ -174,7 +179,9 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private void saveUserNow() {
         try {
-            userManager.getCurrentUser().setEmail(editTextEmailField.getText().toString());
+            User currentUser = userManager.getCurrentUser();
+            currentUser.setEmail(editTextEmailField.getText().toString());
+            userRepository.update(currentUser);
             updateMenuSaveButton();
         } catch (UserManager.NoUserException e) {
             e.printStackTrace();
