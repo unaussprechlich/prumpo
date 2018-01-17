@@ -1,9 +1,13 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetBehavior;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -98,7 +102,24 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @OnClick(R.id.bs_dc_policyHolder_moreDatailsButton)
     public void onPolicyholderMoreDetailsButtonPressed(View view) {
-        Toast.makeText(getContext(), "Pressed 1", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE );
+
+        View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_policyholder, null);
+
+        TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_policyholder_identifier);
+        TextView emailView = inflate.findViewById(R.id.bs_dc_detail_policyholder_email);
+        TextView nameView = inflate.findViewById(R.id.bs_dc_detail_policyholder_name);
+
+        // todo
+        identifierView.setText("TODO vermerkt");
+        emailView.setText("TODO vermerkt");
+        nameView.setText("TODO vermerkt");
+
+        builder.setView(inflate).setPositiveButton("Ok", (dialog, which) -> {});
+        builder.create().show();
+
     }
 
     @OnClick(R.id.bs_dc_contract_moreDatailsButton)
