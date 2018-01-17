@@ -47,7 +47,6 @@ public class Constants {
             R.drawable.zprofile_24,
             R.drawable.zprofile_25,
             R.drawable.zprofile_26,
-            R.drawable.zprofile_27,
             R.drawable.zprofile_28,
             R.drawable.zprofile_29
     };
