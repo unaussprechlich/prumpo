@@ -33,30 +33,25 @@
 
         <activity android:name=".app.StartSplashActivity"
                   android:theme="@style/SplashTheme">
-
-        </activity>
-        <activity
-            android:name=".feature.authentication.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".app.MainActivity"
-            android:label="@string/title_activity_main"
-            android:launchMode="singleTask"
-            android:parentActivityName=".feature.authentication.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.LoginActivity" />
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".app.MainActivity"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTask"
+            android:parentActivityName=".feature.authentication.AuthenticationActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity" />
+        </activity>
+
         <activity
             android:name=".feature.sidebar.profile.ProfileActivity"
             android:launchMode="singleTask"
@@ -82,10 +77,8 @@
             android:name=".feature.authentication.AuthenticationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_authentication"
+            android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".feature.authentication.SignUpActivity"
-            android:label="@string/title_activity_sign_up" />
     </application>
 
 </manifest>

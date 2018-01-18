@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#3F51B5</color>
-    <color name="primaryDark">#303f9f</color>
 
-    <color name="accent">#ffff4081</color>
+    <color name="greyblue_lighter">#5a6775</color>
+    <color name="greyblue_light">#404C59</color>
+    <color name="greyblue_def">#242C35</color>
+    <color name="greyblue_dark">#182431</color>
+    <color name="greyblue_darker">#0D1927</color>
+
+    <color name="green_lighter">#6C8F6C</color>
+    <color name="green_light">#4C6D4C</color>
+    <color name="green_def">#2A412A</color>
+    <color name="green_dark">#1A3C1A</color>
+    <color name="green_darker">#0D300D</color>
+
+    <color name="purple_lighter">#695F7A</color>
+    <color name="purple_light">#4C435D</color>
+    <color name="purple_def">#2C2637</color>
+    <color name="purple_dark">#231933</color>
+    <color name="purple_darker">#180E28</color>
+
+    <color name="coffee_1_lighter">#B3AE87</color>
+    <color name="coffee_1_light">#88835F</color>
+    <color name="coffee_1_def">#514E35</color>
+    <color name="coffee_1_dark">#4B4621</color>
+    <color name="coffee_1_darker">#3B3610</color>
+
+    <color name="coffee_2_lighter">#B3A287</color>
+    <color name="coffee_2_light">#88785F</color>
+    <color name="coffee_2_def">#514635</color>
+    <color name="coffee_2_dark">#4B3A21</color>
+    <color name="coffee_2_darker">#3B2A10</color>
+
+    <color name="text">#ffffff</color>
+    <color name="text_hint">#66ffffff</color>
+
     <color name="accent_light">#ff85af</color>
     <color name="accent_15percent">#26ff4081</color>
 

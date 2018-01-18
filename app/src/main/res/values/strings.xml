@@ -5,6 +5,9 @@
     <string name="title_activity_login">Login</string>
     <string name="profile_activity_logout">Logout</string>
 
+    <string name="activity_authenticate_create_new_account"><![CDATA[<font color="#5a6775">Noch keinen Account?</font> <b><font color="#ffffff">Benutzerkonto erstellen</font></b>]]></string>
+    <string name="activity_authenticate_back_to_login"><![CDATA[<font color="#5a6775">Zurück zum</font> <b><font color="#ffffff">Login</font></b>]]></string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

@@ -301,7 +301,7 @@ public class SopraMap implements LifecycleObserver {
                         .center(latLngOf(location))
                         .radius(radius)
                         .strokeWidth(4f)
-                        .strokeColor(resources.getColor(R.color.accent, null))
+                        .strokeColor(resources.getColor(R.color.coffee_1_def, null))
                         .fillColor(resources.getColor(R.color.accent_15percent, null))
                         .zIndex(0);
 
@@ -311,7 +311,7 @@ public class SopraMap implements LifecycleObserver {
                         options
                                 .radius(1)
                                 .strokeWidth(10)
-                                .fillColor(resources.getColor(R.color.accent, null))
+                                .fillColor(resources.getColor(R.color.coffee_1_def, null))
                 );
     }
 
@@ -785,10 +785,10 @@ public class SopraMap implements LifecycleObserver {
                 options.center(points.get(i));
 
                 if (i == points.size()-1) {
-                    options.fillColor(resources.getColor(R.color.accent, null));
+                    options.fillColor(resources.getColor(R.color.coffee_1_def, null));
 
                 } else if (i == points.size()-2) {
-                    options.fillColor(resources.getColor(R.color.accent_light, null));
+                    options.fillColor(resources.getColor(R.color.coffee_1_lighter, null));
                 }
 
                 Circle circle = gMap.addCircle(options);

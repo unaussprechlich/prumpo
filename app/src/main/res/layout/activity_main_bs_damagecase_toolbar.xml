@@ -9,7 +9,7 @@
             android:id="@+id/bottom_sheet_toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottomsheet_toolbar_height"
-            android:background="@color/primary"
+            android:background="@color/greyblue_def"
             android:elevation="0dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
