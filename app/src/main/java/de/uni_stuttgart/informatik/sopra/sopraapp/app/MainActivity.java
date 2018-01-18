@@ -13,8 +13,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
@@ -22,7 +27,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import org.greenrobot.eventbus.Subscribe;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
@@ -37,6 +41,10 @@ public class MainActivity
 
     private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
+
+    @Nullable @BindView(R.id.user_role_text) TextView userRoleTextView;
+    @Nullable @BindView(R.id.user_name_text) TextView userNameTextView;
+    @Nullable @BindView(R.id.nav_user_icon)  ImageView navUserIconImageView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,11 +96,10 @@ public class MainActivity
 
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event) {
-        if (findViewById(R.id.user_role_text) == null) return;
-        // TODO: fix null binding
 
-        ((TextView) findViewById(R.id.user_role_text)).setText(event.user.getRole().toString());
-        ((TextView) findViewById(R.id.user_name_text)).setText(event.user.getName());
+        userRoleTextView.setText(event.user.getRole().toString());
+        userNameTextView.setText(event.user.getName());
+        navUserIconImageView.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[event.user.getProfilePicture()]);
     }
 
     /**

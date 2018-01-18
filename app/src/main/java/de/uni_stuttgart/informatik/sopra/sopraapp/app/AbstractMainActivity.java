@@ -7,6 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
@@ -16,22 +21,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
-import javax.inject.Inject;
-import java.util.stream.Stream;
-
 abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
-    @Inject
-    MapFragment mapFragment;
-
-    @Inject
-    ContractListFragment contractListFragment;
-
-    @Inject
-    DamageCaseListFragment damageCaseListFragment;
-
-    @Inject
-    UserListFragment userListFragment;
+    @Inject MapFragment mapFragment;
+    @Inject ContractListFragment contractListFragment;
+    @Inject DamageCaseListFragment damageCaseListFragment;
+    @Inject UserListFragment userListFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
