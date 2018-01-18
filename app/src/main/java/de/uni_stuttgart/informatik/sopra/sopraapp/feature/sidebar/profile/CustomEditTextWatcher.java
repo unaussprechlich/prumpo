@@ -2,7 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.text.TextWatcher;
 
-public interface RemoveErrorTextWatcher extends TextWatcher {
+public interface CustomEditTextWatcher extends TextWatcher {
 
     @Override
     default void beforeTextChanged(CharSequence s, int start, int count, int after) { /*Ignore*/ }

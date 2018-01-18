@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
@@ -28,23 +29,22 @@ import java.util.stream.Collectors;
 
 public class ProfileActivity extends ProfileActivityBindings {
 
-    private static final Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
-
-    private boolean isChanged = false;
-
-    private void isChanged(boolean value) {
-        isChanged = value;
-        menuSaveItem.getIcon().setAlpha(255 / (isChanged ? 1 : 4));
-        menuSaveItem.setEnabled(isChanged);
-    }
+    @Inject
+    UserManager userManager;
 
     private MenuItem menuSaveItem;
 
-    @Inject UserManager userManager;
+    private static final Pattern PATTERN_EMAIL = Pattern.compile(Constants.EMAIL_REGEX);
+    private CustomEditTextWatcher textWatcher = s -> onUserChangedSomething();
 
     private AlertDialog userProfileSelectionDialog;
     private List<ImageView> imageList;
     private int lastSelectedImagePosition = 0;
+
+    private boolean loggedIn = false;
+
+
+    // ### Lifecycle ##################################################################################################
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,143 +88,40 @@ public class ProfileActivity extends ProfileActivityBindings {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        editTextEmailField.removeTextChangedListener(textWatcher);
+        editTextPassword.removeTextChangedListener(textWatcher);
+        editTextPasswordConfirm.removeTextChangedListener(textWatcher);
+    }
+
+    @Override
     public void onBackPressed() {
         onUserWantsToLeave();
     }
 
-    @OnClick(R.id.profile_input_email)
-    public void onProfileInputEmailFieldPressed(EditText editText) {
-        InputRetrieverRegular retrieverRegular = InputRetriever
-                .newRegularInputRetrieverFrom(editText)
-                .withTitle(strEmailDialogTitle)
-                .build();
-
-        retrieverRegular.show();
-
-        EditText temporaryEditText = retrieverRegular.getTemporaryEditText();
-        temporaryEditText.addTextChangedListener((RemoveErrorTextWatcher) s -> {
-            if (isEmailValid(temporaryEditText))
-                temporaryEditText.setError(null);
-        });
-    }
-
-    @OnClick(R.id.profile_input_password)
-    public void onPasswordInputFieldPressed(EditText editText){
-        InputRetriever.newPasswordRetrieverFrom(editText)
-                .withTitle(strPasswordDialogHeader)
-                .build()
-                .show();
-    }
-
-    @OnClick(R.id.profile_input_password_confirm)
-    public void onPasswordConfirmInputFieldPressed(EditText editText){
-        InputRetriever.newPasswordRetrieverFrom(editText)
-                .withTitle(strPasswordDialogConfirmHeader)
-                .build()
-                .show();
-    }
-
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event) {
+        if (loggedIn) return;
+
+        loggedIn = true;
+
         textViewUserName.setText(event.user.toString());
         textViewUserRole.setText(event.user.getRole().toString());
 
         lastSelectedImagePosition = event.user.getProfilePicture();
         imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[lastSelectedImagePosition]);
-
         editTextEmailField.setText(event.user.getEmail());
-        editTextEmailField.addTextChangedListener((RemoveErrorTextWatcher) s -> {
-            if (isEmailValid(editTextEmailField)) {
-                editTextEmailField.setError(null);
-                isChanged(true);
-            }
-        });
+
+        editTextEmailField.addTextChangedListener(textWatcher);
+        editTextPassword.addTextChangedListener(textWatcher);
+        editTextPasswordConfirm.addTextChangedListener(textWatcher);
 
     }
 
 
-
-    /**
-     * Invoked when user hits the enabled save button in the menu bar.
-     *
-     * @param __ the menu item
-     * @return true if action event consumed in this activity, false else
-     */
-    private boolean onSaveButtonPressed(MenuItem __) {
-
-        if (isChanged)
-            saveUserNow();
-
-        return true;
-    }
-
-    /**
-     * Invoked when user hits back button or when user hits the back button in the toolbar.
-     */
-    private void onUserWantsToLeave() {
-
-        if (isChanged)
-            showLeaveWithoutSaveDialog();
-        else
-            super.onBackPressed();
-    }
-
-    /**
-     * Checks whether the value of the given editText is valid
-     *
-     * @param editText the field to check
-     * @return true if valid, false else
-     */
-    private boolean isEmailValid(EditText editText) {
-
-        String emailText = editText.getText().toString();
-
-        if (emailText.isEmpty())
-            editText.setError("Field is empty!");
-        else if (!emailPattern.matcher(emailText).matches())
-            editText.setError("No valid Email address!");
-        else
-            return true;
-
-        editText.requestFocus();
-        return false;
-    }
-
-    /**
-     * Will save the actual changed user.
-     */
-    private void saveUserNow() {
-        try {
-            isChanged(false);
-            userManager.getCurrentUser()
-                    .setEmail(editTextEmailField.getText().toString())
-                    .setProfilePicture(lastSelectedImagePosition)
-                    .save();
-        } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showLogoutConfirmationDialog() {
-        new FixedDialog(ProfileActivity.this)
-                .setTitle(strLogoutDialogTitle)
-                .setMessage(isChanged ? strLogoutDialogMessageOnChange : strLogoutDialogMessage)
-                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> userManager.logout())
-                .setNegativeButton(strLogoutDialogConfirmNo, (dialog, id) -> { /* Ignore */ })
-                .create()
-                .show();
-    }
-
-    private void showLeaveWithoutSaveDialog() {
-        new FixedDialog(ProfileActivity.this)
-                .setTitle(strLeaveDialogTitle)
-                .setMessage(strLeaveDialogMessage)
-                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> super.onBackPressed())
-                .setNegativeButton(strLogoutDialogConfirmNo, (dialog, id) -> { /* Ignore */ })
-                .create()
-                .show();
-    }
-
+    // ### Onclick listener ###########################################################################################
 
     @OnClick(R.id.user_profile_photo)
     public void onProfileImagePressed(ImageButton imageButton) {
@@ -233,8 +130,8 @@ public class ProfileActivity extends ProfileActivityBindings {
         ProfileImageGridViewAdapter adapter = new ProfileImageGridViewAdapter(imageList);
         adapter.setOnImageSelected((drawable, position) -> {
             imageViewProfilePicture.setImageDrawable(drawable);
-            isChanged(userManager.getCurrentUser().getProfilePicture() != position);
             lastSelectedImagePosition = position;
+            onUserChangedSomething();
             userProfileSelectionDialog.dismiss();
             userProfileSelectionDialog = null;
         });
@@ -254,6 +151,136 @@ public class ProfileActivity extends ProfileActivityBindings {
         userProfileSelectionDialog.show();
     }
 
+    @OnClick(R.id.profile_input_email)
+    public void onProfileInputEmailFieldPressed(EditText editText) {
+        InputRetrieverRegular retrieverRegular = InputRetriever
+                .newRegularInputRetrieverFrom(editText)
+                .withTitle(strEmailDialogTitle)
+                .build();
+
+        retrieverRegular.show();
+
+        EditText temporaryEditText = retrieverRegular.getTemporaryEditText();
+        temporaryEditText.addTextChangedListener((CustomEditTextWatcher) s -> {
+            if (isEmailValid(temporaryEditText))
+                temporaryEditText.setError(null);
+        });
+    }
+
+    @OnClick(R.id.profile_input_password)
+    public void onPasswordInputFieldPressed(EditText editText) {
+        InputRetriever.newPasswordRetrieverFrom(editText)
+                .withTitle(strPasswordDialogHeader)
+                .build()
+                .show();
+    }
+
+    @OnClick(R.id.profile_input_password_confirm)
+    public void onPasswordConfirmInputFieldPressed(EditText editText) {
+        InputRetriever.newPasswordRetrieverFrom(editText)
+                .withTitle(strPasswordDialogConfirmHeader)
+                .build()
+                .show();
+    }
+
+    // ### Helper #####################################################################################################
+
+    /**
+     * Invoked when user hits the enabled save button in the menu bar.
+     *
+     * @param __ the menu item
+     * @return true if action event consumed in this activity, false else
+     */
+    private boolean onSaveButtonPressed(MenuItem __) {
+        saveUserNow();
+        onUserChangedSomething();
+        return true;
+    }
+
+    /**
+     * Invoked when user hits back button or when user hits the back button in the toolbar.
+     */
+    private void onUserWantsToLeave() {
+
+        if (hasUserChangedSomething())
+            showLeaveWithoutSaveDialog();
+        else
+            super.onBackPressed();
+    }
+
+    /**
+     * Checks whether the value of the given editText is valid
+     *
+     * @param editText the field to check
+     * @return true if valid, false else
+     */
+    private boolean isEmailValid(EditText editText) {
+
+        String emailText = editText.getText().toString();
+
+        if (emailText.isEmpty())
+            editText.setError("Field is empty!");
+        else if (!PATTERN_EMAIL.matcher(emailText).matches())
+            editText.setError("No valid Email address!");
+        else
+            return true;
+
+        editText.requestFocus();
+        return false;
+    }
+
+    /**
+     * Will save the actual changed user.
+     */
+    private void saveUserNow() {
+
+        try {
+
+            User currentUser = userManager.getCurrentUser();
+
+            currentUser.setEmail(editTextEmailField.getText().toString());
+            currentUser.setProfilePicture(lastSelectedImagePosition);
+
+            String newPassword = editTextPassword.getText().toString();
+            if (!newPassword.isEmpty())
+                currentUser.setPassword(newPassword);
+
+            currentUser.save();
+
+            editTextPassword.getText().clear();
+            editTextPasswordConfirm.getText().clear();
+
+        } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Will display the logout confirm dialog.
+     */
+    private void showLogoutConfirmationDialog() {
+        new FixedDialog(ProfileActivity.this)
+                .setTitle(strLogoutDialogTitle)
+                .setMessage(hasUserChangedSomething() ? strLogoutDialogMessageOnChange : strLogoutDialogMessage)
+                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> userManager.logout())
+                .setNegativeButton(strLogoutDialogConfirmNo, (dialog, id) -> { /* Ignore */ })
+                .create()
+                .show();
+    }
+
+    /**
+     * Will display the dialog hinting the user that his changes will be abandoned.
+     */
+    private void showLeaveWithoutSaveDialog() {
+        new FixedDialog(ProfileActivity.this)
+                .setTitle(strLeaveDialogTitle)
+                .setMessage(strLeaveDialogMessage)
+                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> super.onBackPressed())
+                .setNegativeButton(strLogoutDialogConfirmNo, (dialog, id) -> { /* Ignore */ })
+                .create()
+                .show();
+    }
+
     /**
      * Will transform a image layout to and imageView.
      *
@@ -267,5 +294,70 @@ public class ProfileActivity extends ProfileActivityBindings {
         imageView.setPadding(15, 15, 15, 15);
         imageView.setImageResource(layoutID);
         return imageView;
+    }
+
+
+    // ### Validation logic for the menu save button ##################################################################
+
+    /**
+     * Always call this method if relevant user information is changed in the UI.
+     * <p>
+     * This method will turn on the save button in the menu bar, if
+     * <ul>
+     * <li>
+     * any user info in the ui does not match the user info in the data base
+     * </li>
+     * <li>
+     * all user info (in the input fields) is valid
+     * </li>
+     * </ul>
+     */
+    private void onUserChangedSomething() {
+        editTextEmailField.setError(null);
+        editTextPasswordConfirm.setError(null);
+
+        boolean enableSaveButton =
+                hasUserChangedSomething() && isCurrentStateAllowed();
+
+        menuSaveItem.getIcon().setAlpha(255 / (enableSaveButton ? 1 : 4));
+        menuSaveItem.setEnabled(enableSaveButton);
+
+    }
+
+    /**
+     * Checks whether user has changed something.
+     *
+     * @return true, if user changed something
+     */
+    private boolean hasUserChangedSomething() {
+
+        try {
+            User currentUser = userManager.getCurrentUser();
+
+            return !currentUser.getEmail().equals(editTextEmailField.getText().toString())
+                    || currentUser.getProfilePicture() != lastSelectedImagePosition
+                    || !editTextPassword.getText().toString().isEmpty()
+                    || !editTextPasswordConfirm.getText().toString().isEmpty();
+
+        } catch (UserManager.NoUserException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the current state of the input fields is valid to save.
+     * Will show errors on the fields which are not.
+     *
+     * @return true if all data from the input fields can be saved into the data base.
+     */
+    private boolean isCurrentStateAllowed() {
+        boolean isConfirmPwValid = editTextPassword.getText().toString()
+                .equals(editTextPasswordConfirm.getText().toString());
+
+        if (!isConfirmPwValid) editTextPasswordConfirm.setError("");
+
+        return isEmailValid(editTextEmailField) && isConfirmPwValid;
     }
 }
