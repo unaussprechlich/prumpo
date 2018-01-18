@@ -30,7 +30,7 @@
     <string name="settings">Einstellungen</string>
     <string name="contract">Versicherungen</string>
     <string name="damageCases">Schadensfälle</string>
-    <string name="user">Benutzer</string>
+    <string name="user">Kunden</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>
     <string name="profile_image_change">Profilbild ändern</string>
