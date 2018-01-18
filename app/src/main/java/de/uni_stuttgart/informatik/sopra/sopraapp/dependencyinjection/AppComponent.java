@@ -38,6 +38,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.GsonModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
@@ -107,6 +108,12 @@ abstract class AppModule {
     @Provides
     public static ContractHandler provideContractHandler(SopraApp app) {
         return new ContractHandler(app);
+    }
+
+    @ApplicationScope
+    @Provides
+    public static AnimationHelper provideAnimationHelper() {
+        return new AnimationHelper();
     }
 
     @Provides

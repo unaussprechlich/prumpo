@@ -2,7 +2,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +9,19 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,57 +33,42 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-
-import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class AuthenticationActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
+public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
 
-    @Inject
-    UserRepository userRepository;
-    @Inject
-    UserManager userManager;
+    @Inject UserRepository userRepository;
+    @Inject UserManager userManager;
 
-    @BindView(R.id.su_email)
-    EditText signUpEmail;
-    @BindView(R.id.su_name_first)
-    EditText signUpFirstName;
-    @BindView(R.id.su_name_last)
-    EditText signUpLastName;
-    @BindView(R.id.su_password)
-    EditText signUpPassword;
-    @BindView(R.id.su_password_confirm)
-    EditText signUpPasswordConfirm;
+    @BindView(R.id.su_email)        EditText signUpEmail;
+    @BindView(R.id.su_name_first)   EditText signUpFirstName;
+    @BindView(R.id.su_name_last)    EditText signUpLastName;
+    @BindView(R.id.su_password)     EditText signUpPassword;
+    @BindView(R.id.su_password_confirm) EditText signUpPasswordConfirm;
 
     private User.EnumUserRoles userRole;
 
-    @BindView(R.id.login_email)
-    EditText loginEmail;
-    @BindView(R.id.login_password)
-    EditText loginPassword;
+    @BindView(R.id.login_email)   EditText loginEmail;
+    @BindView(R.id.login_password)EditText loginPassword;
 
-    @BindView(R.id.activity_authentication_create_new_account)
-    TextView createNewAccount;
-    @BindView(R.id.activity_authentication_back_to_login)
-    TextView backToLogin;
+    @BindView(R.id.activity_authentication_create_new_account) TextView createNewAccount;
+    @BindView(R.id.activity_authentication_back_to_login) TextView backToLogin;
 
-    @BindView(R.id.login_progress)
-    View progressView;
-    @BindView(R.id.login_layout)
-    View loginView;
-    @BindView(R.id.signup_layout)
-    View signupView;
+    @BindView(R.id.login_progress) View progressViewLogin;
+    @BindView(R.id.signup_progress) View progressViewSignUp;
+    @BindView(R.id.login_layout)   View loginView;
+    @BindView(R.id.signup_layout)   View signupView;
 
-    @BindString(R.string.activity_authenticate_create_new_account)
-    String createNewAccountString;
-    @BindString(R.string.activity_authenticate_back_to_login)
-    String backToLoginString;
+    @BindView(R.id.logo_image) ImageView logoImage;
+    @BindView(R.id.login_animation) View loginAnimation;
+    @BindView(R.id.activity_authentication_demo_modus) View buttonDemoModus;
+
+    @BindString(R.string.activity_authenticate_create_new_account) String createNewAccountString;
+    @BindString(R.string.activity_authenticate_back_to_login) String backToLoginString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +76,7 @@ public class AuthenticationActivity extends BaseActivity implements AdapterView.
         setContentView(R.layout.activity_authentication);
         ButterKnife.bind(this);
 
+        //Set the Text from html, to display it in two different colors
         createNewAccount.setText(Html.fromHtml(createNewAccountString), TextView.BufferType.SPANNABLE);
         backToLogin.setText(Html.fromHtml(backToLoginString), TextView.BufferType.SPANNABLE);
 
@@ -91,29 +88,34 @@ public class AuthenticationActivity extends BaseActivity implements AdapterView.
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        //Insert the dummy object if it not exists
         userRepository.insertDummyIfNotExist();
     }
 
+    /**
+     * Starts the Demo modus with a default user!
+     */
     @OnClick(R.id.activity_authentication_demo_modus)
-    public void onDemoModus() {
-        LiveData<User> user = userRepository.getByEmail("dummy@dummy.net");
-        user.observe(this, user1 -> {
-            if (user1 == null) return;
-            Log.e("TEST", user1.toString());
-            userManager.login(user);
+    public void onDemoModus(){
+        try {
+            User user = userRepository.getByEmailAsync("dummy@dummy.net");
+            if(user == null) return;
+            userManager.login(userRepository.getByEmail("dummy@dummy.net"));
             gotoMainActivity();
-        });
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to sign in and show some fancy animations below the login button!
+     *
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     @OnClick(R.id.login_button)
     void attemptLogin() {
-        try {
-            showProgress(true, loginView);
+
             View view = this.getCurrentFocus();
 
             if (view != null) {
@@ -125,162 +127,192 @@ public class AuthenticationActivity extends BaseActivity implements AdapterView.
             loginEmail.setError(null);
             loginPassword.setError(null);
 
-            final String email = getFieldValueIfNotEmpty(loginEmail);
-            final String password = getFieldValueIfNotEmpty(loginPassword);
+            AnimationHelper.showProgress(progressViewLogin, new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    try {
 
-            if (!Pattern.matches(Constants.EMAIL_REGEX, email))
-                throw new EditFieldValueException(loginEmail, "Invalid mail address!");
+                        final String email = getFieldValueIfNotEmpty(loginEmail);
+                        final String password = getFieldValueIfNotEmpty(loginPassword);
 
-            LiveData<User> liveUser = userRepository.getByEmail(email);
-            liveUser.observe(this, user -> {
-                try {
+                        if (!Pattern.matches(Constants.EMAIL_REGEX, email))
+                            throw new EditFieldValueException(loginEmail, "Invalid mail address!");
 
-                    if (user == null) throw new EditFieldValueException(loginEmail, "User not found!");
+                        User user = userRepository.getByEmailAsync(email);
+                        if (user == null) throw new EditFieldValueException(loginEmail, "User not found!");
 
-                    else {
-                        if (user.getPassword().equals(password)) {
-                            userManager.login(liveUser);
-                            gotoMainActivity();
+                        if (!user.getPassword().equals(password))
+                            throw new EditFieldValueException(loginPassword, "Password Incorrect!");
 
-                        } else throw new EditFieldValueException(loginPassword, "Password Incorrect!");
+                        userManager.login(userRepository.getByEmail(email));
+                        gotoMainActivity();
+
+                    } catch (EditFieldValueException e) {
+                        e.showError();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    } finally {
+                        progressViewLogin.setVisibility(View.GONE);
                     }
-
-                } catch (EditFieldValueException e) {
-                    e.showError();
-                    showProgress(false, loginView);
                 }
             });
-        } catch (EditFieldValueException e) {
-            e.showError();
-            showProgress(false, loginView);
-        }
+
     }
 
+    /**
+     * Attempts to sign up and show some fancy animations below the signup button!
+     *
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
     @OnClick(R.id.su_signup_button)
-    void signUp() {
-        try {
-            showProgress(true, signupView);
+    void attemptSignUp() {
+        View view = this.getCurrentFocus();
 
-            final String nameFirst = getFieldValueIfNotEmpty(signUpFirstName);
-            final String nameLast = getFieldValueIfNotEmpty(signUpLastName);
-            final String email = getFieldValueIfNotEmpty(signUpEmail);
-            final String password = getFieldValueIfNotEmpty(signUpPassword);
-            final String passwordConfirm = getFieldValueIfNotEmpty(signUpPasswordConfirm);
-
-            if (!password.equals(passwordConfirm))
-                throw new EditFieldValueException(signUpPasswordConfirm, "Passwords do not match!");
-
-            if (!Pattern.matches(Constants.EMAIL_REGEX, email))
-                throw new EditFieldValueException(signUpEmail, "Invalid mail address!");
-
-            if (userRole == User.EnumUserRoles.NULL)
-                throw new IllegalArgumentException("Keine Benutzerrolle ausgewählt!");
-
-            //TODO check if user exists
-
-            User user = new User.Builder()
-                    .setEmail(email)
-                    .setPassword(password)
-                    .setName(nameFirst + " " + nameLast)
-                    .setRole(userRole)
-                    .build();
-
-            userRepository.insert(user);
-
-            onClickToLogin();
-        } catch (EditFieldValueException e) {
-            e.showError();
-        } catch (IllegalArgumentException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Something went wrong:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-        } finally {
-            showProgress(false, signupView);
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+
+        signUpFirstName.setError(null);
+        signUpLastName.setError(null);
+        signUpEmail.setError(null);
+        signUpPassword.setError(null);
+        signUpPasswordConfirm.setError(null);
+
+        AnimationHelper.showProgress(progressViewSignUp, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                try{
+                    final String nameFirst          = getFieldValueIfNotEmpty(signUpFirstName);
+                    final String nameLast           = getFieldValueIfNotEmpty(signUpLastName);
+                    final String email              = getFieldValueIfNotEmpty(signUpEmail);
+                    final String password           = getFieldValueIfNotEmpty(signUpPassword);
+                    final String passwordConfirm    = getFieldValueIfNotEmpty(signUpPasswordConfirm);
+
+                    if(!password.equals(passwordConfirm))
+                        throw new EditFieldValueException(signUpPasswordConfirm, "Passwords do not match!");
+
+                    if(!Pattern.matches(Constants.EMAIL_REGEX, email))
+                        throw new EditFieldValueException(signUpEmail, "Invalid mail address!");
+
+                    if(userRole == User.EnumUserRoles.NULL)
+                        throw new IllegalArgumentException("Keine Benutzerrolle ausgewählt!");
+
+                    //TODO check if user exists
+
+                    User user = new User.Builder()
+                            .setEmail(email)
+                            .setPassword(password)
+                            .setName(nameFirst + " " + nameLast)
+                            .setRole(userRole)
+                            .build();
+
+                    userRepository.insert(user);
+
+                    onClickToLogin();
+                } catch(EditFieldValueException e) {
+                    e.showError();
+                } catch (IllegalArgumentException e){
+                    Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getBaseContext(), "Something went wrong:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                } finally {
+                    progressViewSignUp.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
-    private void gotoMainActivity() {
-        Intent myIntent = new Intent(AuthenticationActivity.this, MainActivity.class);
-        myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(myIntent);
+    /**
+     * Starts some fancy animations and finally leaves the {@link AuthenticationActivity}
+     * to start the actual {@link MainActivity}
+     */
+    private void gotoMainActivity(){
+        loginAnimation.setVisibility(View.VISIBLE);
+        loginAnimation.animate().alpha(1).setDuration(100).setStartDelay(500).start();
+
+        AnimationHelper.slideOfBottom(buttonDemoModus);
+        AnimationHelper.slideOfTop(logoImage);
+        AnimationHelper.slideOfBottom(loginView, () ->{
+            Intent myIntent = new Intent(AuthenticationActivity.this, MainActivity.class);
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(myIntent);
+            finish();
+        });
     }
 
-    private String getFieldValueIfNotEmpty(EditText editText) throws EditFieldValueIsEmptyException {
-        editText.setError(null);
-        String text = editText.getText().toString();
-        if (text.isEmpty()) throw new EditFieldValueIsEmptyException(editText);
-        return text;
-    }
-
-
+    /**
+     * Switches from SignUp to Login
+     */
     @OnClick(R.id.activity_authentication_back_to_login)
-    public void onClickToLogin() {
-        animateViewVisibility(false, signupView);
-        animateViewVisibility(true, loginView);
-
+    public void onClickToLogin(){
         resetEditText(signUpFirstName);
         resetEditText(signUpLastName);
         resetEditText(signUpEmail);
         resetEditText(signUpPassword);
         resetEditText(signUpPasswordConfirm);
+
+        AnimationHelper.viewVisibilityHide(false, signupView);
+        AnimationHelper.viewVisibilityHide(true, loginView);
     }
 
+    /**
+     * Switches from Login to SignUp
+     */
     @OnClick(R.id.activity_authentication_create_new_account)
-    public void onClickToSignUp() {
-        animateViewVisibility(false, loginView);
-        animateViewVisibility(true, signupView);
-
+    public void onClickToSignUp(){
         resetEditText(loginEmail);
         resetEditText(loginPassword);
+
+        AnimationHelper.viewVisibilityHide(false, loginView);
+        AnimationHelper.viewVisibilityHide(true, signupView);
     }
 
+    /**
+     * <p>Callback method to be invoked when an item in this view has been
+     * selected. This callback is invoked only when the newly selected
+     * position is different from the previously selected position or if
+     * there was no selected item.</p>
+     *
+     * Impelmenters can call getItemAtPosition(position) if they need to access the
+     * data associated with the selected item.
+     *
+     * @param parent The AdapterView where the selection happened
+     * @param view The view within the AdapterView that was clicked
+     * @param position The position of the view in the adapter
+     * @param id The row id of the item that is selected
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        try {
+        try{
             userRole = User.EnumUserRoles.valueOf(parent.getItemAtPosition(position).toString());
-        } catch (Exception e) {
+        } catch(Exception e){
             Log.e("SignUpActivity", "Could not find enum for given role", e);
             userRole = User.EnumUserRoles.NULL;
         }
     }
 
+    /**
+     * Callback method to be invoked when the selection disappears from this
+     * view. The selection can disappear for instance when touch is activated
+     * or when the adapter becomes empty.
+     *
+     * @param parent The AdapterView that now contains no selected item.
+     */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         this.userRole = User.EnumUserRoles.NULL;
-    }
-
-    private void resetEditText(EditText editText) {
-        editText.setError(null);
-        editText.setText("");
     }
 
     /**
      * Lock the User in place ¯\_(ツ)_/¯
      */
     @Override
-    public void onBackPressed() {
-    }
+    public void onBackPressed() {}
 
-    private void animateViewVisibility(final boolean visibility, View view) {
-        view.setVisibility(visibility ? View.VISIBLE : View.GONE);
 
-        view.animate()
-                .setDuration(300)
-                .alpha(visibility ? 1 : 0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        view.setVisibility(visibility ? View.VISIBLE : View.GONE);
-                    }
-                });
-    }
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    private void showProgress(final boolean show, View view) {
-        animateViewVisibility(!show, view);
-        animateViewVisibility(show, progressView);
-    }
 }
