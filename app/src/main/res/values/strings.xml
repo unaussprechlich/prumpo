@@ -42,6 +42,10 @@
         werden verworfen.</string>
     <string name="profile_leave_dialog_title">Änderungen verwerfen?</string>
     <string name="profile_leave_dialog_message">Möchten Sie ihre Änderungen verwerfen?</string>
+    <string name="profile_input_password_hint">Neues Password</string>
+    <string name="profile_input_password_title">Password</string>
+    <string name="profile_input_password_title_confirm">Password bestätigen</string>
+    <string name="profile_input_password_hint_confirm">Neues Password bestätigen</string>
 
     <string name="title_activity_maps">Map</string>
     <string name="damage_case_pre_policyholder">Versicherungsnehmer</string>

@@ -114,4 +114,8 @@ public abstract class InputRetriever {
     public static InputRetrieverAutocomplete.Builder newInputRetrieverAutoCompleteFrom(EditText editText) {
         return new InputRetrieverAutocomplete.Builder(editText);
     }
+
+    public static InputRetrieverPassword.Builder newPasswordRetrieverFrom(EditText editText){
+        return new InputRetrieverPassword.Builder(editText);
+    }
 }

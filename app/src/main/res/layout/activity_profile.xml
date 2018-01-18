@@ -91,6 +91,8 @@
                 android:orientation="vertical">
 
             <include layout="@layout/activity_profile_input_email"/>
+            <include layout="@layout/activity_profile_input_password"/>
+            <include layout="@layout/activity_profile_input_password_confirm"/>
 
         </LinearLayout>
     </RelativeLayout>

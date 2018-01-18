@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.util;
 
 import android.content.Context;
 import android.text.Selection;
+import android.text.method.TransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ public class InputRetrieverRegular extends InputRetriever {
         // find the input field of the dialog
         temporaryEditText = dialogLayout.findViewById(R.id.userInputDialog);
         temporaryEditText.requestFocus();
+        temporaryEditText.setTransformationMethod(getTransformationMethod());
 
         // sets hint to input field
         temporaryEditText.setHint(builder.hint != null ? builder.hint : "");
@@ -62,5 +64,9 @@ public class InputRetrieverRegular extends InputRetriever {
     @Override
     public EditText getTemporaryEditText() {
         return temporaryEditText;
+    }
+
+    protected TransformationMethod getTransformationMethod() {
+        return null;
     }
 }

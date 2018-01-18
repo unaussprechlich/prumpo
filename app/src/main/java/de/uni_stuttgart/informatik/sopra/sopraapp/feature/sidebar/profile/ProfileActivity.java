@@ -2,26 +2,11 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -31,6 +16,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserMan
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+import org.greenrobot.eventbus.Subscribe;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -115,6 +108,22 @@ public class ProfileActivity extends ProfileActivityBindings {
         });
     }
 
+    @OnClick(R.id.profile_input_password)
+    public void onPasswordInputFieldPressed(EditText editText){
+        InputRetriever.newPasswordRetrieverFrom(editText)
+                .withTitle(strPasswordDialogHeader)
+                .build()
+                .show();
+    }
+
+    @OnClick(R.id.profile_input_password_confirm)
+    public void onPasswordConfirmInputFieldPressed(EditText editText){
+        InputRetriever.newPasswordRetrieverFrom(editText)
+                .withTitle(strPasswordDialogConfirmHeader)
+                .build()
+                .show();
+    }
+
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event) {
         textViewUserName.setText(event.user.toString());
@@ -132,6 +141,8 @@ public class ProfileActivity extends ProfileActivityBindings {
         });
 
     }
+
+
 
     /**
      * Invoked when user hits the enabled save button in the menu bar.

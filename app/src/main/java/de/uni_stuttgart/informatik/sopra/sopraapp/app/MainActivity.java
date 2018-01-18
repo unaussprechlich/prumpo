@@ -16,9 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.Subscribe;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -27,6 +24,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import org.greenrobot.eventbus.Subscribe;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;

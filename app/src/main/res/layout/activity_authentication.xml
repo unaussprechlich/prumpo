@@ -62,16 +62,16 @@
 
             <EditText
                 android:id="@+id/login_email"
+                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
-                android:drawableStart="@android:drawable/sym_action_email"
+                android:drawableStart="@drawable/ic_email_grey_24dp"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:nextFocusLeft="@id/login_email"
                 android:nextFocusUp="@id/login_email"
-                android:singleLine="true"
                 android:textColor="@color/text"
                 android:theme="@style/EditText" />
 
@@ -79,12 +79,12 @@
                 android:id="@+id/login_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@android:drawable/ic_lock_lock"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_lock_grey_24dp"
                 android:hint="@string/prompt_password"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@color/text"
                 android:theme="@style/EditText" />
 
@@ -170,7 +170,6 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@color/text"
                 android:theme="@style/EditText" />
 
@@ -186,7 +185,6 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@color/text"
                 android:theme="@style/EditText" />
 

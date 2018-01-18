@@ -39,6 +39,17 @@ public abstract class ProfileActivityBindings extends BaseEventBusActivity {
     @BindString(R.string.profile_image_change)
     String strChangeProfileImageHeader;
 
+    @BindString(R.string.profile_input_password_title)
+    String strPasswordDialogHeader;
+
+    @BindString(R.string.profile_input_password_title_confirm)
+    String strPasswordDialogConfirmHeader;
+
+    @BindView(R.id.profile_input_password)
+    EditText editTextPassword;
+
+    @BindView(R.id.profile_input_password_confirm)
+    EditText editTextPasswordConfirm;
 
     @BindView(R.id.profile_input_email)
     EditText editTextEmailField;
