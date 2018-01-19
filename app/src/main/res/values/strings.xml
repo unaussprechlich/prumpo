@@ -171,6 +171,21 @@
     <string name="contract_export_json_succesful">Erfolgreich gespeichert unter </string>
     <string name="contract_export_json_unsuccesful">Fehler beim Speichern</string>
 
+    <string name="about_fragment_contributor_header">Entwicklerteam</string>
+    <string name="about_fragment_contributor_1">Alexander Zeising</string>
+    <string name="about_fragment_contributor_2">Alexander Zeck</string>
+    <string name="about_fragment_contributor_3">Elias Müller</string>
+    <string name="about_fragment_contact_header">Kontakt</string>
+    <string name="about_fragment_contact_message">Sie haben Fragen oder brauchen Hilfe?</string>
+    <string name="about_fragment_contact_chooser_title">Send Feedback/Help</string>
+    <string name="about_fragment_contact_email_subject">Feedback/Help</string>
+    <string name="about_fragment_contact_address">st108477@stud.uni-stuttgart.de</string>
+    <string name="about_fragment_licence_header">Lizenz</string>
+    <string name="about_fragment_licence">…</string>
+    <string name="about_fragment_licence_message">Im Browser anzeigen</string>
+    <string name="about_fragment_licence_url">http://www.google.de</string>
+    <string name="about_fragment_version_header">Version</string>
+    <string name="about_fragment_version">1.0</string>
 
 
 </resources>
