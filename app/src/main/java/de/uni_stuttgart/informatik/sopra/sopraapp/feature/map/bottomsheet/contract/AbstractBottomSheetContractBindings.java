@@ -63,7 +63,7 @@ public abstract class AbstractBottomSheetContractBindings
     @BindString(R.string.map_frag_bs_contract_input_hint_damages)
     String strDamagesHeader;
 
-    @BindString(R.string.damageCases)
+    @BindString(R.string.nav_appbar_damagecases)
     String strDamageCasesHeader;
 
     @BindString(R.string.map_frag_bs_toast_input_button_add_but_contract_not_saved)

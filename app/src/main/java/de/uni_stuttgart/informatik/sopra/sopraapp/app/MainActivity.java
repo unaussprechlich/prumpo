@@ -110,11 +110,17 @@ public class MainActivity
             case R.id.nav_damageCases:
                 displayDamageCaseListFragment();
                 break;
-            case R.id.nav_insurances:
+            case R.id.nav_contract:
                 displayContractFragment();
                 break;
             case R.id.nav_users:
                 displayUserFragment();
+                break;
+            case R.id.nav_settings:
+                displaySettingsFragment();
+                break;
+            case R.id.nav_about:
+                displayAboutFragment();
                 break;
             default:
                 displayMapFragment();

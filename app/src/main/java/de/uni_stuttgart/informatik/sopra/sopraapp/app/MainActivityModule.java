@@ -13,6 +13,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.Da
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragmentModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsModule;
 
 /**
  * Here goes all the stuff provided for the MainActivity, to be injected.
@@ -26,7 +30,7 @@ public abstract class MainActivityModule {
 
     @ActivityScope
     @Provides
-    static DamageCaseListFragment providesDamageCaseListFragment(){
+    static DamageCaseListFragment providesDamageCaseListFragment() {
         return new DamageCaseListFragment();
     }
 
@@ -36,7 +40,7 @@ public abstract class MainActivityModule {
 
     @ActivityScope
     @Provides
-    static MapFragment providesMainFragment(){
+    static MapFragment providesMainFragment() {
         return new MapFragment();
     }
 
@@ -47,7 +51,7 @@ public abstract class MainActivityModule {
 
     @ActivityScope
     @Provides
-    static ContractListFragment providesInsuranceListFragment(){
+    static ContractListFragment providesInsuranceListFragment() {
         return new ContractListFragment();
     }
 
@@ -57,10 +61,28 @@ public abstract class MainActivityModule {
 
     @ActivityScope
     @Provides
-    static UserListFragment providesUserListFragment(){
+    static UserListFragment providesUserListFragment() {
         return new UserListFragment();
     }
 
+    @FragmentScope
+    @ContributesAndroidInjector(modules = {AboutModule.class})
+    abstract AboutFragment contributeAboutFragment();
 
+    @ActivityScope
+    @Provides
+    static AboutFragment providesAboutFragment() {
+        return new AboutFragment();
+    }
+
+    @FragmentScope
+    @ContributesAndroidInjector(modules = {SettingsModule.class})
+    abstract SettingsFragment contributeSettingsFragment();
+
+    @ActivityScope
+    @Provides
+    static SettingsFragment providesSettingsFragment() {
+        return new SettingsFragment();
+    }
 
 }

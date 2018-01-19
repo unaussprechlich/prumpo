@@ -55,6 +55,7 @@ Die Entwicklungsgeschichte befindet sich in [CHANGELOG.md](CHANGELOG.md).
 **TODO:** Verwendete Bibliotheken auflisten
 
 Android Support
+* android support preference-v7 v26.1.0
 * android support appcompat-v7 v26.1.0
 * android support constraint constraint-layout v1.0.2
 * android support design v26.1.0

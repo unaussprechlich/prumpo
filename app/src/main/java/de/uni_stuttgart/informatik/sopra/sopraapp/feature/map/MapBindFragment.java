@@ -23,7 +23,7 @@ public abstract class MapBindFragment extends DaggerFragment {
     MapView mMapView;
     @BindView(R.id.fab_locate)
     FloatingActionButton mFabLocate;
-    @BindString(R.string.appbar_title_map)
+    @BindString(R.string.nav_appbar_map)
     String strAppbarTitle;
     @BindString(R.string.prompt_enable_localization)
     String strPromptEnableLocation;

@@ -24,13 +24,14 @@
 
     <string name="nav_drawer_open">Open navigation drawer</string>
     <string name="nav_drawer_closed">Close navigation drawer</string>
-    <string name="appbar_title_map">Karte</string>
+    <string name="nav_appbar_map">Karte</string>
     <string name="nav_username">Benutzername</string>
     <string name="nav_role">Rolle</string>
-    <string name="settings">Einstellungen</string>
-    <string name="contract">Versicherungen</string>
-    <string name="damageCases">Schadensfälle</string>
-    <string name="user">Kunden</string>
+    <string name="nav_appbar_contract">Versicherungen</string>
+    <string name="nav_appbar_damagecases">Schadensfälle</string>
+    <string name="nav_appbar_users">Kunden</string>
+    <string name="nav_appbar_settings">Einstellungen</string>
+    <string name="nav_appbar_about">Weitere Informationen</string>
 
     <string name="profile_title_app_bar">Profilansicht</string>
     <string name="profile_image_change">Profilbild ändern</string>

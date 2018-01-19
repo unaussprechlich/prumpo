@@ -7,11 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
@@ -19,7 +14,13 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.Da
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
+
+import javax.inject.Inject;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
@@ -27,6 +28,8 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     @Inject ContractListFragment contractListFragment;
     @Inject DamageCaseListFragment damageCaseListFragment;
     @Inject UserListFragment userListFragment;
+    @Inject SettingsFragment settingsFragment;
+    @Inject AboutFragment aboutFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -37,6 +40,9 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
 
+    private Supplier<Stream<Fragment>> fragmentsStreamSupplier =
+            () -> Stream.of(damageCaseListFragment, contractListFragment, mapFragment,
+                    userListFragment, settingsFragment, aboutFragment);
 
     // ### OnBackPressed action #######################################################################################
 
@@ -99,12 +105,21 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
     public void displayContractFragment() {
         switchToFragment(contractListFragment);
-        navigationView.setCheckedItem(R.id.nav_insurances);
+        navigationView.setCheckedItem(R.id.nav_contract);
     }
 
-    public void displayUserFragment(){
+    public void displayUserFragment() {
         switchToFragment(userListFragment);
         navigationView.setCheckedItem(R.id.nav_users);
+    }
+
+    public void displaySettingsFragment() {
+        switchToFragment(settingsFragment);
+        navigationView.setCheckedItem(R.id.nav_settings);
+    }
+
+    public void displayAboutFragment() {
+        switchToFragment(aboutFragment);
     }
 
     protected void switchToFragment(Fragment fragment) {
@@ -128,9 +143,8 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
      *
      * @return The current visible active fragment
      */
-    public Fragment getCurrentlyActiveFragment() {
-
-        return Stream.of(damageCaseListFragment, contractListFragment, mapFragment, userListFragment)
+    Fragment getCurrentlyActiveFragment() {
+        return fragmentsStreamSupplier.get()
                 .filter(Fragment::isVisible)
                 .findFirst()
                 .orElse(mapFragment);

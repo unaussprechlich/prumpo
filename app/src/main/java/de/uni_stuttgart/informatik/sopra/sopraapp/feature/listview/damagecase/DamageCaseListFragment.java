@@ -31,11 +31,10 @@ public class DamageCaseListFragment
     @BindView(R.id.dc_recycler_view)
     RecyclerView recyclerView;
 
-    @BindString(R.string.damageCases)
+    @BindString(R.string.nav_appbar_damagecases)
     String toolbarTitle;
 
     private List<DamageCase> damageCaseList = new ArrayList<>();
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

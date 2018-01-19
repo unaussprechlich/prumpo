@@ -9,23 +9,31 @@
         <item
                 android:id="@+id/nav_map"
                 android:icon="@drawable/ic_menu_map"
-                android:title="@string/appbar_title_map"/>
+                android:title="@string/nav_appbar_map"/>
+        <item
+                android:id="@+id/nav_contract"
+                android:icon="@drawable/ic_attach_money_black_24dp"
+                android:title="@string/nav_appbar_contract"/>
+        <item
+                android:id="@+id/nav_damageCases"
+                android:icon="@drawable/ic_menu_list"
+                android:title="@string/nav_appbar_damagecases"/>
+        <item
+                android:id="@+id/nav_users"
+                android:icon="@drawable/ic_group_black_24dp"
+                android:title="@string/nav_appbar_users"/>
     </group>
 
     <group android:checkableBehavior="single"
            android:id="@+id/grp2">
         <item
-                android:id="@+id/nav_insurances"
-                android:icon="@drawable/ic_attach_money_black_24dp"
-                android:title="@string/contract"/>
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="@string/nav_appbar_settings"/>
         <item
-                android:id="@+id/nav_damageCases"
-                android:icon="@drawable/ic_menu_list"
-                android:title="@string/damageCases"/>
-        <item
-                android:id="@+id/nav_users"
-                android:icon="@drawable/ic_group_black_24dp"
-                android:title="@string/user"/>
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="@string/nav_appbar_about"/>
     </group>
 
 

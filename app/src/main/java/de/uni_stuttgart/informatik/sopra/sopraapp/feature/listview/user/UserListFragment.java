@@ -26,7 +26,7 @@ public class UserListFragment
     @BindView(R.id.user_recycler_view)
     RecyclerView recyclerView;
 
-    @BindString(R.string.user)
+    @BindString(R.string.nav_appbar_users)
     String toolbarTitle;
 
     private List<User> userList = new ArrayList<>();

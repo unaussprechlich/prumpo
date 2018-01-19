@@ -33,7 +33,7 @@ public class ContractListFragment
     @BindView(R.id.contract_recycler_view)
     RecyclerView recyclerView;
 
-    @BindString(R.string.contract)
+    @BindString(R.string.nav_appbar_contract)
     String toolbarTitle;
 
     private List<Contract> contractList = new ArrayList<>();
