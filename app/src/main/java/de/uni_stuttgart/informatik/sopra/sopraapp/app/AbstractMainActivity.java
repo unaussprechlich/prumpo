@@ -120,6 +120,7 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
     public void displayAboutFragment() {
         switchToFragment(aboutFragment);
+        navigationView.setCheckedItem(R.id.nav_about);
     }
 
     protected void switchToFragment(Fragment fragment) {

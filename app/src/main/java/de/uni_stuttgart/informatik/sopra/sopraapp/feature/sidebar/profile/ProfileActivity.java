@@ -1,6 +1,7 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.EditText;
@@ -54,11 +55,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         setTitle(strProfileAppBarTitle);
 
-        if (imageList == null)
-            imageList = Arrays.stream(Constants.PROFILE_IMAGE_RESOURCES)
-                    .mapToObj(this::mapToImageView)
-                    .collect(Collectors.toList());
-
+        new LoadProfileImagesTask().execute(Constants.PROFILE_IMAGE_RESOURCES);
     }
 
     @Override
@@ -125,6 +122,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     @OnClick(R.id.user_profile_photo)
     public void onProfileImagePressed(ImageButton imageButton) {
+        if (imageList == null) return;
 
         // Grid adapter
         ProfileImageGridViewAdapter adapter = new ProfileImageGridViewAdapter(imageList);
@@ -281,21 +279,6 @@ public class ProfileActivity extends ProfileActivityBindings {
                 .show();
     }
 
-    /**
-     * Will transform a image layout to and imageView.
-     *
-     * @param layoutID the id
-     * @return the imageView found by the given id
-     */
-    private ImageView mapToImageView(int layoutID) {
-        ImageView imageView = new ImageView(getApplicationContext());
-        imageView.setLayoutParams(new GridView.LayoutParams(320, 320));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imageView.setPadding(15, 15, 15, 15);
-        imageView.setImageResource(layoutID);
-        return imageView;
-    }
-
 
     // ### Validation logic for the menu save button ##################################################################
 
@@ -359,5 +342,40 @@ public class ProfileActivity extends ProfileActivityBindings {
         if (!isConfirmPwValid) editTextPasswordConfirm.setError("");
 
         return isEmailValid(editTextEmailField) && isConfirmPwValid;
+    }
+
+    /**
+     * Task for loading profile images asynchronously.
+     */
+    private class LoadProfileImagesTask extends AsyncTask<Integer, Void, List<ImageView>> {
+
+        @Override
+        protected List<ImageView> doInBackground(Integer... integers) {
+            if (imageList != null) return imageList;
+
+            return Arrays.stream(integers)
+                    .map(this::mapToImageView)
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        protected void onPostExecute(List<ImageView> imageViews) {
+            imageList = imageViews;
+        }
+
+        /**
+         * Will transform a image layout to and imageView.
+         *
+         * @param layoutID the id
+         * @return the imageView found by the given id
+         */
+        private ImageView mapToImageView(int layoutID) {
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setLayoutParams(new GridView.LayoutParams(320, 320));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imageView.setPadding(15, 15, 15, 15);
+            imageView.setImageResource(layoutID);
+            return imageView;
+        }
     }
 }

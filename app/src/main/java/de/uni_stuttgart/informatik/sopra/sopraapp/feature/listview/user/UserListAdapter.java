@@ -19,7 +19,7 @@ import java.util.List;
 
 public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
 
-    private static int[] profileImageResources = Constants.PROFILE_IMAGE_RESOURCES;
+    private static Integer[] profileImageResources = Constants.PROFILE_IMAGE_RESOURCES;
 
     private FragmentActivity fragmentActivity;
     private NavMenuBlocker navMenuBlocker;

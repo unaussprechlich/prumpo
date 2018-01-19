@@ -20,7 +20,7 @@ public class Constants {
     public static final LatLng LOCATION_SUPPLIER_BASE = new LatLng(48.743488, 9.091318);
 
 
-    public static int[] PROFILE_IMAGE_RESOURCES = new int[]{
+    public static Integer[] PROFILE_IMAGE_RESOURCES = new Integer[]{
             R.drawable.zprofile_1,
             R.drawable.zprofile_2,
             R.drawable.zprofile_3,
