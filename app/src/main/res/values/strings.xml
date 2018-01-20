@@ -181,9 +181,9 @@
     <string name="about_fragment_contact_email_subject">Feedback/Help</string>
     <string name="about_fragment_contact_address">st108477@stud.uni-stuttgart.de</string>
     <string name="about_fragment_licence_header">Lizenz</string>
-    <string name="about_fragment_licence">…</string>
+    <string name="about_fragment_licence">Apache License 2.0</string>
     <string name="about_fragment_licence_message">Im Browser anzeigen</string>
-    <string name="about_fragment_licence_url">http://www.google.de</string>
+    <string name="about_fragment_licence_url">http://www.apache.org/licenses/LICENSE-2.0</string>
     <string name="about_fragment_version_header">Version</string>
     <string name="about_fragment_version">1.0</string>
 

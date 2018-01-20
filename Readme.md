@@ -88,5 +88,6 @@ Sonstige
 
 ## Lizenz
 
-**TODO Lizenz nennen**. 
+Apache License 2.0
+
 Genaue Bedingungen der Lizenz können in [LICENSE](LICENSE) nachgelesen werden.
