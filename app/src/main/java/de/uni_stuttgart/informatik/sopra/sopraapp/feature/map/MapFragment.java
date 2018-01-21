@@ -141,8 +141,7 @@ public class MapFragment
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
             Integer viewType = Integer.valueOf(preferencesString);
-//            sopraMap = new SopraMap(googleMap, getContext(), viewType);
-            sopraMap = new SopraMap(googleMap, getContext());
+            sopraMap = new SopraMap(googleMap, getContext(), viewType);
 
             getLifecycle().addObserver(sopraMap);
 
@@ -152,6 +151,16 @@ public class MapFragment
 
         });
 
+    }
+
+    private void updateMapView() {
+        if (sopraMap == null) return;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
+        Integer viewType = Integer.valueOf(preferencesString);
+
+        sopraMap.updateMapType(viewType);
     }
 
     @Override
@@ -254,6 +263,9 @@ public class MapFragment
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
+        // update SopraMap object after potential changes to the settings
+        updateMapView();
     }
 
     //##############################################################################################

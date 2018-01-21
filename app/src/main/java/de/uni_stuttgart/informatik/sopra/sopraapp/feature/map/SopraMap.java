@@ -101,20 +101,20 @@ public class SopraMap implements LifecycleObserver {
     private List<DamageCase> cachedDamageCases;
     private List<Contract> cachedContracts;
 
-    SopraMap(GoogleMap googleMap, Context context) {
+    SopraMap(GoogleMap googleMap, Context context, int viewType) {
         SopraApp.getAppComponent().inject(this);
 
         this.resources = context.getResources();
         this.gMap = googleMap;
 
         initResources(context);
-        initMap();
+        initMap(viewType);
     }
 
-    private void initMap() {
+    private void initMap(int viewType) {
         /* settings */
 
-        gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        gMap.setMapType(viewType);
         gMap.setIndoorEnabled(false);
 
         UiSettings uiSettings = gMap.getUiSettings();
@@ -331,6 +331,12 @@ public class SopraMap implements LifecycleObserver {
 
     public LiveData<Double> areaLiveData() {
         return currentArea;
+    }
+
+    public void updateMapType(int viewType) {
+        if (gMap == null) return;
+
+        gMap.setMapType(viewType);
     }
 
     public double getArea() {

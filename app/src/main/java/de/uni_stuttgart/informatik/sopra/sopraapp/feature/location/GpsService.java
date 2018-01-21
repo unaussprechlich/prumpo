@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class GpsService {
 
-    // TODO: implement selection of best provider possible!
+    private final Criteria criteria = new Criteria();
 
     private Context context;
 
@@ -32,6 +33,7 @@ public class GpsService {
     private LocationListener locationListener;
 
     private Location lastLocation;
+
     private boolean locationWasDisabled = true;
 
     private boolean hadPermission = false;
@@ -39,12 +41,16 @@ public class GpsService {
     private List<LocationCallbackListener> subscribers = new ArrayList<>();
 
     // to manage single location callbacks
-    private boolean callbackOver = false;
-
+    private boolean singleCallbackOver = false;
     public GpsService(Application app) {
+
         context = app;
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setPowerRequirement(Criteria.POWER_HIGH);
+        criteria.setCostAllowed(true);
     }
 
     /**
@@ -68,10 +74,10 @@ public class GpsService {
         hadPermission = true;
 
         // create fresh LocationListener
-        locationListener = new ServiceLocationListener();
+        locationListener = new LocationListenerService();
 
         // bind new gps callback
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(0, 0, criteria, locationListener, Looper.getMainLooper());
 
         return true;
     }
@@ -86,12 +92,13 @@ public class GpsService {
         // clear for accuracy reasons
         lastLocation = null;
 
-        // unbinding callback reduces battery-usage dramatically
+        /* unbinding callbacks reduces battery-usage dramatically */
         if (locationListener != null)
             locationManager.removeUpdates(locationListener);
 
-        // orphan object to disable callback ASAP
+        // orphan object to disable callbacks ASAP
         locationListener = null;
+
     }
 
     /**
@@ -99,7 +106,7 @@ public class GpsService {
      * won't run any supplied callbacks.
      */
     public void stopSingleCallback() {
-        callbackOver = true;
+        singleCallbackOver = true;
     }
 
     /**
@@ -127,10 +134,14 @@ public class GpsService {
         return locationWasDisabled;
     }
 
-    public LatLng lastKnownLocation() {
+    public LatLng lastKnownLatLng() {
         if (lastLocation == null) return null;
 
         return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+    }
+
+    public Location lastKnownLocation() {
+        return lastLocation;
     }
 
     public void ongoingLocationCallback(LocationCallbackListener listener) {
@@ -146,7 +157,7 @@ public class GpsService {
      *                  {@link LocationCallbackListener#onLocationNotFound()} is called.
      */
     public void singleLocationCallback(LocationCallbackListener callback, long failAfter) {
-        callbackOver = false;
+        singleCallbackOver = false;
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -156,7 +167,7 @@ public class GpsService {
         }
 
         locationManager.requestSingleUpdate(
-                LocationManager.GPS_PROVIDER,
+                criteria,
                 new LocationListener() {
 
                     {
@@ -165,17 +176,17 @@ public class GpsService {
                     }
 
                     private void fail() {
-                        if (callbackOver) return;
+                        if (singleCallbackOver) return;
 
-                        callbackOver = true;
+                        singleCallbackOver = true;
                         callback.onLocationNotFound();
                     }
 
                     @Override
                     public void onLocationChanged(Location location) {
-                        if (callbackOver) return;
+                        if (singleCallbackOver) return;
 
-                        callbackOver = true;
+                        singleCallbackOver = true;
                         callback.onLocationFound(location);
                     }
 
@@ -214,7 +225,7 @@ public class GpsService {
         return locationMode != Settings.Secure.LOCATION_MODE_OFF;
     }
 
-    private final class ServiceLocationListener implements LocationListener {
+    private final class LocationListenerService implements LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {
@@ -240,4 +251,5 @@ public class GpsService {
             locationWasDisabled = !isLocationEnabled();
         }
     }
+
 }
