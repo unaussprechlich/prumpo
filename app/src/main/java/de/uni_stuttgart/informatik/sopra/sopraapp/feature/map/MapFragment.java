@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
@@ -135,7 +137,13 @@ public class MapFragment
         }
 
         mMapView.getMapAsync(googleMap -> {
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
+            Integer viewType = Integer.valueOf(preferencesString);
+//            sopraMap = new SopraMap(googleMap, getContext(), viewType);
             sopraMap = new SopraMap(googleMap, getContext());
+
             getLifecycle().addObserver(sopraMap);
 
             sopraMap.areaLiveData().observe(this, area -> {

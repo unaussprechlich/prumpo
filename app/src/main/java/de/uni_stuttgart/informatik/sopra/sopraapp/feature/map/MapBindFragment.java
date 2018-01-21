@@ -35,6 +35,11 @@ public abstract class MapBindFragment extends DaggerFragment {
     @BindString(R.string.map_fab_messages_longitude)
     String strLongitude;
 
+    @BindString(R.string.preference_map_key)
+    String strPreferenceMapViewType;
+    @BindString(R.string.preferences_map_view_default_value)
+    String strPreferenceMapViewTypeDefault;
+
     @BindDrawable(R.drawable.ic_my_location_black_24dp)
     Drawable currentLocationKnownDrawable;
     @BindDrawable(R.drawable.ic_location_disabled_black_24dp)
