@@ -44,6 +44,9 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
@@ -66,6 +69,9 @@ public class SopraMap implements LifecycleObserver {
 
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
+
+    @Inject ContractRepository contractRepository;
+    @Inject ContractHandler contractHandler;
 
     @Inject Vibrator vibrator;
 
@@ -90,9 +96,10 @@ public class SopraMap implements LifecycleObserver {
 
     private PolygonContainer activePolygon;
     private LongSparseArray<PolygonContainer> damagePolygons = new LongSparseArray<>();
-    private LongSparseArray<PolygonContainer> insurancePolygons = new LongSparseArray<>();
+    private LongSparseArray<PolygonContainer> contractPolygons = new LongSparseArray<>();
 
     private List<DamageCase> cachedDamageCases;
+    private List<Contract> cachedContracts;
 
     SopraMap(GoogleMap googleMap, Context context) {
         SopraApp.getAppComponent().inject(this);
@@ -128,7 +135,7 @@ public class SopraMap implements LifecycleObserver {
 
             } else {
                 EventBus.getDefault()
-                        .post(new EventsPolygonSelected.InsuranceCoverage(polygon.uniqueId));
+                        .post(new EventsPolygonSelected.Contract(polygon.uniqueId));
             }
         });
 
@@ -198,7 +205,29 @@ public class SopraMap implements LifecycleObserver {
         damageCaseRepository.getAll().observe(damageCaseHandler, damageCases -> {
             if (damageCases == null) return;
 
-            synchronizeDamages(damageCases);
+
+            if (cachedDamageCases != null) {
+                cachedDamageCases.clear();
+            }
+
+            cachedDamageCases = new ArrayList<>(damageCases);
+
+            List<PolygonContainer> containersToSynchronize = new ArrayList<>();
+
+            for (DamageCase damageCase : cachedDamageCases) {
+                long polygonId = damageCase.getID();
+
+                PolygonContainer damageContainer =
+                        new PolygonContainer(
+                                polygonId, null,
+                                SopraPolygon.loadPolygon(damageCase.getCoordinates()),
+                                PolygonType.DAMAGE_CASE
+                        );
+
+                containersToSynchronize.add(damageContainer);
+            }
+
+            synchronizePolygon(containersToSynchronize);
         });
 
         damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
@@ -210,19 +239,54 @@ public class SopraMap implements LifecycleObserver {
                 if (damageCase.getID() == activePolygon.uniqueId) return;
             }
 
-            selectDamageCase(damageCase.getID());
+            selectPolygon(damageCase.getID(), PolygonType.DAMAGE_CASE);
         });
 
-        // always cache latest damage cases from database
-        damageCaseRepository.getAll().observe(damageCaseHandler, newDamageCases -> {
-            cachedDamageCases = newDamageCases;
+        /* repeat the same binding-pattern for contracts */
+
+        contractRepository.getAll().observe(contractHandler, contracts -> {
+            if (contracts == null) return;
+
+            if (cachedContracts != null) {
+                cachedContracts.clear();
+            }
+
+            cachedContracts = new ArrayList<>(contracts);
+
+            List<PolygonContainer> containersToSynchronize = new ArrayList<>();
+
+            for (Contract contract : cachedContracts) {
+                long polygonId = contract.getID();
+
+                PolygonContainer contractContainer =
+                        new PolygonContainer(
+                                polygonId, null,
+                                SopraPolygon.loadPolygon(contract.getCoordinates()),
+                                PolygonType.CONTRACT
+                        );
+
+                containersToSynchronize.add(contractContainer);
+            }
+
+            synchronizePolygon(containersToSynchronize);
         });
+
+        contractHandler.getLiveData().observe(contractHandler, contract -> {
+            if (contract == null) return;
+
+            if (activePolygon != null) {
+                if (contract.getID() == activePolygon.uniqueId) return;
+            }
+
+            selectPolygon(contract.getID(), PolygonType.CONTRACT);
+        });
+
     }
 
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {
         if (activePolygon == null) {
-            newPolygon(event.position, PolygonType.DAMAGE_CASE);
+            newPolygon(event.position, event.polygonType);
             return;
         }
 
@@ -247,6 +311,7 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onAbortBottomSheet(EventsBottomSheet.ForceClose event) {
+        // TODO: fix not removing newly created polygon on force close!
         System.out.println("ABORT");
         removeActivePolygon();
         reloadDamageCases();
@@ -417,8 +482,8 @@ public class SopraMap implements LifecycleObserver {
         return polygonMapObject;
     }
 
-    private void selectDamageCase(long uniqueId) {
-        PolygonContainer polygon = polygonFrom(uniqueId, PolygonType.DAMAGE_CASE);
+    private void selectPolygon(long uniqueId, PolygonType type) {
+        PolygonContainer polygon = polygonFrom(uniqueId, type);
         if (polygon == null) return;
 
         polygon.toggleHighlight();
@@ -494,7 +559,7 @@ public class SopraMap implements LifecycleObserver {
             return damagePolygons.get(uniqueId);
 
         } else {
-            return insurancePolygons.get(uniqueId);
+            return contractPolygons.get(uniqueId);
         }
     }
 
@@ -624,37 +689,44 @@ public class SopraMap implements LifecycleObserver {
         refreshAreaLivedata();
     }
 
-    private void synchronizeDamages(List<DamageCase> damageCases) {
+    private void synchronizePolygon(List<PolygonContainer> polygonContainers) {
         Set<Long> caseIds = new HashSet<>();
 
         PolygonContainer polygon;
 
-        for (DamageCase damageCase : damageCases) {
-            long damageCaseID = damageCase.getID();
-            caseIds.add(damageCaseID);
+        // determine which of the two LongSparseArrays we'll want to access
+        LongSparseArray<PolygonContainer> polygons = polygonContainers.get(0).storedIn();
 
-            polygon = damagePolygons.get(damageCaseID);
+        for (PolygonContainer polygonContainer : polygonContainers) {
+
+            long polygonID = polygonContainer.uniqueId;
+            PolygonType polygonType = polygonContainer.type;
+            List<LatLng> coordinates = polygonContainer.data.getPoints();
+
+            caseIds.add(polygonID);
+
+            polygon = polygons.get(polygonID);
 
             // polygon not displayed on the map yet, so that must change!
             if (polygon == null) {
                 loadPolygonOf(
-                        damageCase.getCoordinates(),
-                        PolygonType.DAMAGE_CASE,
-                        damageCaseID
+                        coordinates,
+                        polygonType,
+                        polygonID
                 );
 
                 continue;
             }
 
-            // assert damageCaseID == polygon.uniqueId
+            // assert polygonId == polygon.uniqueId
 
             /* polygon exists on the map, we update points */
             polygon.removeMapObject();
             polygon.mapObject =
                     drawPolygonOf(
-                            damageCase.getCoordinates(),
-                            PolygonType.DAMAGE_CASE,
-                            damageCaseID
+                            coordinates,
+                            polygonType,
+                            polygonID
                     );
 
             // and redraw highlights in case it was currently selected
@@ -664,13 +736,13 @@ public class SopraMap implements LifecycleObserver {
         }
 
         // ultimately, remove all remaining map-objects that weren't in the DB
-        for (int i = 0; i < damagePolygons.size(); ++i) {
-            long key = damagePolygons.keyAt(i);
-            polygon = damagePolygons.get(key);
+        for (int i = 0; i < polygons.size(); ++i) {
+            long key = polygons.keyAt(i);
+            polygon = polygons.get(key);
 
             if (!caseIds.contains(polygon.uniqueId)) {
                 polygon.removeMapObject();
-                damagePolygons.remove(key);
+                polygons.remove(key);
 
                 if (polygon == activePolygon) {
                     polygon.toggleHighlight();
@@ -705,7 +777,7 @@ public class SopraMap implements LifecycleObserver {
                 return damagePolygons;
 
             } else {
-                return insurancePolygons;
+                return contractPolygons;
             }
         }
 

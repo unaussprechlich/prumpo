@@ -14,8 +14,8 @@ public abstract class EventsPolygonSelected {
         }
     }
 
-    public static class InsuranceCoverage extends EventsPolygonSelected {
-        public InsuranceCoverage(long uniqueId) {
+    public static class Contract extends EventsPolygonSelected {
+        public Contract(long uniqueId) {
             super(uniqueId);
         }
     }

@@ -34,7 +34,7 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
     }
 
     @Subscribe
-    public void onDamageCaseSelected(EventsPolygonSelected.InsuranceCoverage event) {
+    public void onDamageCaseSelected(EventsPolygonSelected.Contract event) {
         loadFromDatabase(event.uniqueId);
     }
 
