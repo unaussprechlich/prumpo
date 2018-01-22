@@ -36,6 +36,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         SopraApp.getAppComponent().inject(this);
         getHandler().getLiveData().observe(this, contract -> Log.e("[Shit]", contract + " - null"));
         init();
+        iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###
@@ -55,6 +56,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
             e.showError();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
         }
+
         return contract;
     }
 
@@ -83,6 +85,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @Override
     public void displayCurrentAreaValue(Double area) {
+        if(area == null) return;
         toolbarContractArea.setText(calculateAreaValue(area));
     }
 

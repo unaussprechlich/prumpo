@@ -102,7 +102,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
      * Starts the Demo modus with a default user!
      */
     @OnClick(R.id.activity_authentication_demo_modus)
-    public void onDemoModus(){
+    public void onDemoMode(){
         try {
             User user = userRepository.getByEmailAsync("dummy@dummy.net");
             if(user == null) return;
