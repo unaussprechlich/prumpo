@@ -38,7 +38,7 @@
     </style>
 
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/black_overlay</item>
+        <item name="android:background">@color/greyblue_darker</item>
     </style>
 
     <style name="Spinner" parent="android:Widget.Spinner.DropDown">
@@ -56,7 +56,7 @@
     </style>
 
     <style name="ActionModeStyle" parent="Base.Widget.AppCompat.ActionMode">
-        <item name="background">@color/accent_light</item>
+        <item name="background">@color/coffee_1_light</item>
 
         <item name="titleTextStyle">@style/ActionModeTitleTextStyle</item>
         <item name="subtitleTextStyle">@style/ActionModeSubTitleTextStyle</item>

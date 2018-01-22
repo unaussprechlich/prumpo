@@ -2,7 +2,6 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contr
 
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -21,6 +20,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
@@ -34,7 +34,6 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     public BottomSheetContract(IBottomSheetOwner owner) {
         super(owner);
         SopraApp.getAppComponent().inject(this);
-        getHandler().getLiveData().observe(this, contract -> Log.e("[Shit]", contract + " - null"));
         init();
         iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
     }
@@ -42,19 +41,20 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
     @Override
-    protected Contract collectDataForSave(Contract contract) {
+    protected Contract collectDataForSave(Contract contract){
         try {
 
-            if (this.user == null) throw new EditFieldValueIsEmptyException(inputPolicyholder);
+            if (this.user == null && contract.getHolderID() == -1) throw new EditFieldValueIsEmptyException(inputPolicyholder);
+            else if(this.user != null) contract.setHolderID(user.getID());
 
             contract.setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
                     .setAreaCode(getIfNotEmptyElseThrow(inputLocation))
-                    .setDamageType(getIfNotEmptyElseThrow(inputDamages))
-                    .setHolderID(user.getID());
+                    .setDamageType(getIfNotEmptyElseThrow(inputDamages));
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
+            return null;
         }
 
         return contract;
@@ -87,6 +87,16 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     public void displayCurrentAreaValue(Double area) {
         if(area == null) return;
         toolbarContractArea.setText(calculateAreaValue(area));
+    }
+
+    @Override
+    public void onItemCountChanged(int newItemCount) {
+        super.onItemCountChanged(newItemCount);
+        try {
+            inputLocation.setText(iBottomSheetOwner.getSopraMap().getAddress());
+        } catch (LocationNotFound locationNotFound) {
+            locationNotFound.printStackTrace();
+        }
     }
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###

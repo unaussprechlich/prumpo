@@ -61,7 +61,7 @@ public class Converters {
         ArrayList<String> pointsAsString = gson.fromJson(value, new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<LatLng> points = new ArrayList<>();
         for(String str : pointsAsString){
-            String[] spl = str.split("-");
+            String[] spl = str.split("#");
             points.add(new LatLng(Double.valueOf(spl[0]), Double.valueOf(spl[1])));
         }
         return points;
@@ -72,7 +72,7 @@ public class Converters {
         if(value == null) return "";
         ArrayList<String> asString = new ArrayList<>();
         for(LatLng latLng : value){
-            asString.add(latLng.latitude + "-" + latLng.longitude);
+            asString.add(latLng.latitude + "#" + latLng.longitude);
         }
         return gson.toJson(asString);
     }

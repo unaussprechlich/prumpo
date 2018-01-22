@@ -4,6 +4,13 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
 import butterknife.BindColor;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -14,10 +21,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-import java.util.List;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase.calculateAreaValue;
 
@@ -30,7 +33,7 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
     @Inject
     ContractHandler contractHandler;
 
-    @BindColor(R.color.accent_15percent)
+    @BindColor(R.color.coffee_1_lighter)
     int selectedColor;
 
     @BindColor(R.color.white)

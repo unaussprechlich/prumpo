@@ -416,8 +416,8 @@ public class SopraMap implements LifecycleObserver {
                         .center(latLngOf(location))
                         .radius(radius)
                         .strokeWidth(4f)
-                        .strokeColor(resources.getColor(R.color.coffee_1_def, null))
-                        .fillColor(resources.getColor(R.color.accent_15percent, null))
+                        .strokeColor(resources.getColor(R.color.h_purple_darker, null))
+                        .fillColor(resources.getColor(R.color.purple_lighter_30, null))
                         .zIndex(0);
 
         userPositionIndicator = gMap.addCircle(options);
@@ -426,7 +426,7 @@ public class SopraMap implements LifecycleObserver {
                         options
                                 .radius(1)
                                 .strokeWidth(10)
-                                .fillColor(resources.getColor(R.color.coffee_1_def, null))
+                                .fillColor(resources.getColor(R.color.h_purple_darker, null))
                 );
     }
 
@@ -498,12 +498,12 @@ public class SopraMap implements LifecycleObserver {
         float strokeWidth = 10;
 
         if (type == PolygonType.DAMAGE_CASE) {
-            strokeColor = resources.getColor(R.color.orange, null);
-            fillColor = resources.getColor(R.color.orange_50percent, null);
+            strokeColor = resources.getColor(R.color.map_damagecase_stroke, null);
+            fillColor = resources.getColor(R.color.map_damagecase_fill, null);
 
         } else {
-            strokeColor = resources.getColor(R.color.white, null);
-            fillColor = resources.getColor(R.color.white_15percent, null);
+            strokeColor = resources.getColor(R.color.map_contract_stroke, null);
+            fillColor = resources.getColor(R.color.map_contract_fill, null);
             strokeWidth = 18;
         }
 
@@ -657,7 +657,7 @@ public class SopraMap implements LifecycleObserver {
             PolylineOptions lineOptions =
                     new PolylineOptions()
                             .width(3)
-                            .color(resources.getColor(R.color.contrastComplement, null));
+                            .color(resources.getColor(R.color.white, null));
 
             previewPolyline = gMap.addPolyline(lineOptions);
         }
@@ -898,7 +898,7 @@ public class SopraMap implements LifecycleObserver {
             List<LatLng> points = data.getPoints();
             CircleOptions options =
                     new CircleOptions()
-                            .fillColor(resources.getColor(R.color.contrastComplement, null))
+                            .fillColor(resources.getColor(R.color.coffee_1_def, null))
                             .strokeWidth(4)
                             .radius(3)
                             .zIndex(1)
@@ -908,7 +908,7 @@ public class SopraMap implements LifecycleObserver {
                 options.center(points.get(i));
 
                 if (i == points.size()-1) {
-                    options.fillColor(resources.getColor(R.color.coffee_1_def, null));
+                    options.fillColor(resources.getColor(R.color.coffee_1_light, null));
 
                 } else if (i == points.size()-2) {
                     options.fillColor(resources.getColor(R.color.coffee_1_lighter, null));

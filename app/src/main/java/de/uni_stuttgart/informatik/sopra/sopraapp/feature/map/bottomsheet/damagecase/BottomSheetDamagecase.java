@@ -46,7 +46,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public BottomSheetDamagecase(IBottomSheetOwner owner, Contract contract) {
+    public BottomSheetDamagecase(IBottomSheetOwner owner, Contract contract){
         super(owner);
         SopraApp.getAppComponent().inject(this);
         init();
@@ -75,7 +75,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    protected DamageCase collectDataForSave(DamageCase model) {
+    protected DamageCase collectDataForSave(DamageCase model){
         try {
 
             if (true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
@@ -88,10 +88,12 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
+            return null;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "ERROR!", Toast.LENGTH_SHORT).show();
             iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
+            return null;
         }
         return model;
     }

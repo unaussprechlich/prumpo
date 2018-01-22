@@ -106,7 +106,7 @@ public class MapFragment
     }
 
     @Subscribe
-    public void onOpenContract(EventsPolygonSelected.Contract event) {
+    public void onOpenContract(EventsPolygonSelected.Contract event){
         try {
             Log.e("OPEN", "contract");
             openBottomSheet(Contract.class, contractRepository.getAsync(event.uniqueId));
