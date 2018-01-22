@@ -9,6 +9,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.view.menu.ActionMenuItemView;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,14 +20,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
@@ -40,6 +33,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocatio
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -115,6 +113,10 @@ public abstract class AbstractBottomSheetBase<
         bottomSheetListAdapter.setAddButtonPressed(this::onBubbleListAddButtonPressed);
         getLifecycle().addObserver(bottomSheetListAdapter);
         bottomSheetListAdapter.notifyDataSetChanged();
+
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        animator.setChangeDuration(0);
+        viewBottomSheetBubbleList.setItemAnimator(animator);
 
         viewBottomSheetBubbleList.setAdapter(bottomSheetListAdapter);
         viewBottomSheetBubbleList.setLayoutManager(new

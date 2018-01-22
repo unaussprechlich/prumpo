@@ -9,16 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
@@ -161,7 +159,7 @@ public class BottomSheetListAdapter
         bubbleHolder.bubbleList.add(bubbleHolder.bubbleList.size(), new Bubble(counter.getAndIncrement()));
         if (itemCountListener != null && notify)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
-        notifyDataSetChanged();
+        notifyItemInserted(bubbleHolder.bubbleList.size());
 
         scrollToPosition(Math.max(getItemCount() - 1, 0));
     }
@@ -181,7 +179,12 @@ public class BottomSheetListAdapter
 
         if (itemCountListener != null)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
-        notifyDataSetChanged();
+
+        // Remove animation
+        notifyItemRemoved(position);
+
+        // Let all items refresh their listeners (else the wrong item would be removed)
+        notifyItemRangeChanged(0, bubbleHolder.bubbleList.size());
     }
 
     /**
