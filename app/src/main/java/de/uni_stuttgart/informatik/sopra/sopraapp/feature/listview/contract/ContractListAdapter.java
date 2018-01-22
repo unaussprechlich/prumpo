@@ -66,7 +66,8 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
         Contract contract = dataHolder.dataList.get(position);
 
         // set bindings
-        holder.contractName.setText(contract.toString());
+        // todo set correct identification
+        holder.contractIdentification.setText(String.format("#%s", contract.getID()));
         holder.damageTypes.setText(contract.getDamageType());
         holder.area.setText(calculateAreaValue(contract.getAreaSize()));
 

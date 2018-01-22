@@ -2,6 +2,7 @@
     <string name="app_name">Prumpo</string>
     <string name="action_search">Search</string>
     <string name="action_share">Share</string>
+    <string name="action_delete">Delete</string>
     <string name="title_activity_login">Login</string>
     <string name="profile_activity_logout">Logout</string>
 
@@ -156,6 +157,10 @@
     <string name="listview_contract_dialog_sharing_as_json">JSON-Datei</string>
     <string name="listview_contract_dialog_sharing_as_text">Text</string>
     <string name="listview_contract_dialog_sharing_abort">Abbrechen</string>
+    <string name="listview_contract_dialog_deleting_title">Verträge löschen</string>
+    <string name="listview_contract_dialog_deleting_message">Möchten Sie die Verträge und alle zugehörige Schadensfälle löschen?</string>
+    <string name="listview_contract_dialog_deleting_do_delete">Löschen</string>
+    <string name="listview_contract_dialog_deleting_do_not_delete">Abbrechen</string>
 
     <!-- list view - multi selection - sharing as text -->
     <string name="contract_export_util_format_1_long">-------------------------</string>

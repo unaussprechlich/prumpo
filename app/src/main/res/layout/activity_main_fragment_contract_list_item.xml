@@ -5,7 +5,7 @@
                                     android:layout_margin="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:foreground="?attr/selectableItemBackground">
+                                    >
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -24,13 +24,13 @@
 
 
             <TextView
-                    android:id="@+id/contract_name"
+                    android:id="@+id/contract_identification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Contract name"
-                    android:lines="2"
-                    android:layout_marginBottom="6dp"
-                    android:textSize="16sp" />
+                    android:layout_marginBottom="4dp"
+                    android:lines="1"
+                    android:textSize="18sp" />
 
             <TextView
                     android:id="@+id/contract_policyholder"

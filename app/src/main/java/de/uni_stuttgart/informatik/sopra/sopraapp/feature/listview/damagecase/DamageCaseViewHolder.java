@@ -16,8 +16,8 @@ class DamageCaseViewHolder
     @BindView(R.id.dc_card)
     CardView cardView;
 
-    @BindView(R.id.dc_name)
-    TextView damageCaseName;
+    @BindView(R.id.dc_identification)
+    TextView damageIdentification;
 
     @BindView(R.id.dc_policyholder)
     TextView policyHolder;

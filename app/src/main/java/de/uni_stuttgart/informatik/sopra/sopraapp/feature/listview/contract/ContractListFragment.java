@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -21,17 +22,18 @@ import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ActivityScope
 public class ContractListFragment
         extends ContractListMultiSelectionFragment {
-
-    @Inject
-    ContractRepository contractRepository;
 
     @BindView(R.id.contract_recycler_view)
     RecyclerView recyclerView;
@@ -48,6 +50,7 @@ public class ContractListFragment
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(createNewListContractListAdapter(contractList));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         getActivity().setTitle(toolbarTitle);
 
@@ -65,8 +68,7 @@ public class ContractListFragment
     private void setContractList(List<Contract> contractList) {
         this.contractList = contractList;
 
-        recyclerView.swapAdapter(createNewListContractListAdapter(contractList),
-                true);
+        recyclerView.setAdapter(createNewListContractListAdapter(contractList));
     }
 
     @Override
@@ -91,7 +93,7 @@ public class ContractListFragment
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        recyclerView.swapAdapter(createNewListContractListAdapter(contracts), true);
+        recyclerView.setAdapter(createNewListContractListAdapter(contracts));
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }
