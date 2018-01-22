@@ -38,7 +38,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
- * The Activity is started by the {@link UserHandler} whenever a {@link NoUserException}
+ * The Activity is started by the {@link UserHandler} whenever a {@link de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException}
  * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {

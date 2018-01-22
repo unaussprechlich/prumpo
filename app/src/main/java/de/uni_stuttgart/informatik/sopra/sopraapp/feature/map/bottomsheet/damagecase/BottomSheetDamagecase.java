@@ -42,8 +42,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     private Contract damageCaseContract = null;
 
-    @Inject
-    ContractHandler contractHandler;
+    @Inject ContractHandler contractHandler;
 
     // ### Constructor ################################################################################ Constructor ###
 
