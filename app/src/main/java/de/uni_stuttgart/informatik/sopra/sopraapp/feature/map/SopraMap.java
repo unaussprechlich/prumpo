@@ -379,7 +379,14 @@ public class SopraMap implements LifecycleObserver {
 
         Address address = addresses.get(0);
 
-        return String.format("%s %s", address.getLocality(), address.getSubLocality());
+        String postalCode = address.getPostalCode();
+        String locality = address.getLocality();
+
+        if (postalCode == null || locality == null) {
+            throw new LocationNotFound(message);
+        }
+
+        return String.format("%s %s", address.getPostalCode(), address.getLocality());
     }
 
     boolean hasActivePolygon() {
