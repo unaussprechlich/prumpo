@@ -72,7 +72,7 @@ public abstract class AbstractBottomSheetContractBindings
     @BindArray(R.array.damages)
     String[] allPossibleDamages;
 
-    @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message) //TODO
+    @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message)
             String strBottomSheetCloseDialogMessage;
 
     @Override
@@ -80,7 +80,7 @@ public abstract class AbstractBottomSheetContractBindings
         return strBottomSheetCloseDialogMessage;
     }
 
-    @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message) //TODO
+    @BindString(R.string.map_frag_bottomsheet_dc_delete_dialog_message)
             String strBottomSheetDeleteDialogMessage;
 
     @Override

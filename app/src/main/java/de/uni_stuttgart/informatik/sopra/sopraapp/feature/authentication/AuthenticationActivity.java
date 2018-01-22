@@ -38,7 +38,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
- * The Activity is started by the {@link UserHandler} whenever a {@link UserHandler.NoUserException}
+ * The Activity is started by the {@link UserHandler} whenever a {@link NoUserException}
  * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
@@ -195,15 +195,19 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                     final String passwordConfirm    = getFieldValueIfNotEmpty(signUpPasswordConfirm);
 
                     if(!password.equals(passwordConfirm))
-                        throw new EditFieldValueException(signUpPasswordConfirm, "Passwords do not match!");
+                        throw new EditFieldValueException(signUpPasswordConfirm, "Die Passwörter sind nicht identisch!");
 
                     if(!Pattern.matches(Constants.EMAIL_REGEX, email))
-                        throw new EditFieldValueException(signUpEmail, "Invalid mail address!");
+                        throw new EditFieldValueException(signUpEmail, "Das ist keine valida Email-Adresse!");
 
                     if(userRole == User.EnumUserRoles.NULL)
                         throw new IllegalArgumentException("Keine Benutzerrolle ausgewählt!");
 
-                    //TODO check if user exists
+
+                    User userAsync = userRepository.getByEmailAsync(email);
+
+                    if(userAsync != null && userAsync.getEmail().equals(email))
+                        throw new EditFieldValueException(signUpEmail, "Ein Benutzer mit dieser Email-Adresse existiert bereits!");
 
                     User user = new User.Builder()
                             .setEmail(email)
@@ -213,7 +217,6 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                             .create();
 
                     userRepository.insert(user);
-
                     onClickToLogin();
                 } catch(EditFieldValueException e) {
                     e.showError();

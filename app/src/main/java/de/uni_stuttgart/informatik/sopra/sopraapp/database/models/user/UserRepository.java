@@ -22,7 +22,6 @@ public class UserRepository  extends AbstractRepository<User, UserDao>{
 
     public void insertDummyIfNotExist(){
         try{
-            //TODO REMOVE THIS
 
             if(this.getByEmailAsync("dummy@dummy.net") == null){
                 Long test = this.insert(new User.Builder()

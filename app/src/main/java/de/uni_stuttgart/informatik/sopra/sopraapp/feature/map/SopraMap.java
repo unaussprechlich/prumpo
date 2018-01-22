@@ -65,8 +65,6 @@ import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper
  */
 public class SopraMap implements LifecycleObserver {
 
-    // TODO: pls refactor me, senpai!
-
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
 
@@ -77,7 +75,7 @@ public class SopraMap implements LifecycleObserver {
 
     private MutableLiveData<Double> currentArea = new MutableLiveData<>();
 
-    private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR; // TODO: extract
+    private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
 
     private Resources resources;
     private GoogleMap gMap;

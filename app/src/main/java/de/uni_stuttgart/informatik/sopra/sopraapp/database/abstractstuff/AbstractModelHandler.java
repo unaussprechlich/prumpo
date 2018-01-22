@@ -111,12 +111,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
      */
     public void loadFromDatabase(long id){
         if(modelDB != null)
-            //TODO
-//            if(damageCaseDB.getValue() != null && damageCaseDB.getValue().getID() == id) {
-//                return;
-//            } else {
             modelDB.removeObservers(this);
-//            }
 
         this.modelDB = getRepository().getById(id);
         modelDB.observe(this, this::set);

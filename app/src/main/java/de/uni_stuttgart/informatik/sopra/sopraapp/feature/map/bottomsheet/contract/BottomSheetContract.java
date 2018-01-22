@@ -72,9 +72,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         });
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
 
-        // todo set damageCasesOfThisContract
         buttonViewDamageCases.setEnabled(!damageCasesOfThisContract.isEmpty());
-
     }
 
     @Override
@@ -149,11 +147,6 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         if (!getHandler().hasValue()) return;
 
-        //TODO
-//        if (getHandler().getValue().isInitial() || getHandler().getValue().isChanged()) {
-//            Toast.makeText(getContext(), strToastPleaseSaveContractFirst, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
         Contract contract = getHandler().getValue();
 
         close();
@@ -167,10 +160,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         String[] items = damageCasesOfThisContract.stream().map(Object::toString).toArray(String[]::new);
         builder.setItems(items, (dialog, itemIdx) -> {
-
-            DamageCase damageCase = damageCasesOfThisContract.get(itemIdx);
-            // todo open that bottom sheet dc then
-
+            damageCasesOfThisContract.get(itemIdx);
         });
 
         AlertDialog dialog = builder.create();

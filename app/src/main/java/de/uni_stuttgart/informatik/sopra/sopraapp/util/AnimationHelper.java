@@ -55,7 +55,7 @@ public class AnimationHelper {
      */
     public static void slideOfTop(View view){
         view.animate()
-                .translationY(-3000)
+                .translationY(-2000)
                 .alpha(0)
                 .setDuration(2000)
                 .setInterpolator(new DecelerateInterpolator(5.f))
@@ -64,7 +64,7 @@ public class AnimationHelper {
 
     public static void slideOfBottom(View view, IOnAnimationEnd iOnAnimationEnd){
         view.animate()
-                .translationY(3000)
+                .translationY(2000)
                 .alpha(0)
                 .setDuration(2000)
                 .setInterpolator(new DecelerateInterpolator(5.f))
@@ -83,7 +83,7 @@ public class AnimationHelper {
      */
     public static void slideOfBottom(View view){
         view.animate()
-                .translationY(3000)
+                .translationY(2000)
                 .alpha(0)
                 .setDuration(2000)
                 .setInterpolator(new DecelerateInterpolator(5.f))
