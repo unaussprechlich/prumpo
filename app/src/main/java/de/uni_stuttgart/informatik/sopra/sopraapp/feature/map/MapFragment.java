@@ -27,7 +27,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -38,8 +38,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -49,6 +49,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.Lockab
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 
 @SuppressWarnings("unchecked")
@@ -57,17 +58,13 @@ public class MapFragment
         extends MapBindFragment
         implements FragmentBackPressed, LocationCallbackListener, IBottomSheetOwner {
 
-    @Inject
-    GpsService gpsService;
-
-
+    @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject DamageCaseHandler damageCaseHandler;
+    @Inject ContractRepository contractRepository;
+    //@Inject DamageCaseHandler damageCaseHandler;
 
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;
-
-    private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
     private SopraMap sopraMap;
     private View mRootView;
@@ -95,6 +92,35 @@ public class MapFragment
 
         return mRootView;
     }
+
+    //EVENT BUS ####################################################################################
+
+    @Subscribe
+    public void onOpenDamageCase(EventsPolygonSelected.DamageCase event){
+        try {
+            Log.e("OPEN", "damageCase");
+            openBottomSheet(DamageCase.class, damageCaseRepository.getAsync(event.uniqueId));
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Subscribe
+    public void onOpenContract(EventsPolygonSelected.DamageCase event){
+        try {
+            Log.e("OPEN", "contract");
+            openBottomSheet(Contract.class, contractRepository.getAsync(event.uniqueId));
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Subscribe
+    public void onBottomSheetCloseEvent(EventsBottomSheet.Close event){
+        currentBottomSheet = null;
+    }
+
+    //##############################################################################################
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -151,10 +177,6 @@ public class MapFragment
 
             getLifecycle().addObserver(sopraMap);
 
-            sopraMap.areaLiveData().observe(this, area -> {
-                currentBottomSheet.displayCurrentAreaValue(area);
-            });
-
         });
 
     }
@@ -164,7 +186,14 @@ public class MapFragment
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
+
+        if (preferencesString.equals("")) {
+            return;
+        }
+
         Integer viewType = Integer.valueOf(preferencesString);
+
+        if (sopraMap == null) return;
 
         sopraMap.updateMapType(viewType);
     }
@@ -197,19 +226,6 @@ public class MapFragment
         sopraMap.removeUserPositionIndicator();
     }
 
-    @Subscribe
-    public void onCloseBottomSheet(EventsBottomSheet.Close event) {
-        currentBottomSheet = null;
-    }
-
-    @Override
-    public BackButtonProceedPolicy onBackPressed() {
-        Log.i("onBackButtonPressed", "init");
-        if (currentBottomSheet != null && currentBottomSheet.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-            return BackButtonProceedPolicy.SKIP_ACTIVITY;
-        }
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
-    }
 
     @OnClick(R.id.fab_locate)
     void handelFloatingActionButtonLocateClick(FloatingActionButton floatingActionButton) {
@@ -338,10 +354,5 @@ public class MapFragment
 
     private void showCurrentBottomSheet() {
         new Handler().postDelayed(currentBottomSheet::show, 400);
-    }
-
-    @Subscribe
-    void onBottomSheetCloseEvent(EventsBottomSheet.Close event){
-        currentBottomSheet = null;
     }
 }

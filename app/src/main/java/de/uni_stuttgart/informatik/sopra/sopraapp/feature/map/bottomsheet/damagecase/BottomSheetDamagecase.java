@@ -52,6 +52,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         init();
         contractHandler.loadFromDatabase(contract.getID());
         contractHandler.getLiveData().observe(this, this::insertContract);
+        iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
     }
 
     private void insertContract(Contract contract) {
@@ -108,6 +109,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @Override
     public void displayCurrentAreaValue(Double area) {
+        if(area == null) return;
         toolbarDamagecaseArea.setText(calculateAreaValue(area));
     }
 
