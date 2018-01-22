@@ -50,6 +50,7 @@ public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
 
         holder.userName.setText(user.getName());
         holder.userEmail.setText(user.getEmail());
+        holder.userRole.setText(user.getRole().toString());
         holder.profileImage.setImageResource(profileImageResources[user.getProfilePicture()]);
 
         holder.contractImgBtn.setOnClickListener(v -> onContractButtonPressed(user));

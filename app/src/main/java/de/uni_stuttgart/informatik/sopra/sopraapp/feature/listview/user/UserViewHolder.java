@@ -23,6 +23,9 @@ public class UserViewHolder
     @BindView(R.id.view_user_email)
     TextView userEmail;
 
+    @BindView(R.id.view_user_role)
+    TextView userRole;
+
     @BindView(R.id.view_user_contract_btn)
     ImageButton contractImgBtn;
 

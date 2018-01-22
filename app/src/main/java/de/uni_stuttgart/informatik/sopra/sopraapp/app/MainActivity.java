@@ -13,19 +13,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.Subscribe;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.stream.Stream;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
@@ -41,6 +45,9 @@ public class MainActivity
     private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
 
+    /** OnClick listener for Header and Profile image */
+    private View.OnClickListener onHeaderIconPressed = v -> displayActivity(R.id.profile_layout);
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,15 +59,28 @@ public class MainActivity
 
         setSupportActionBar(toolbar);
 
+        // disable if current user is BAUER
+        try {
+            boolean enabled = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
+            MenuItem item = navigationView.getMenu().findItem(R.id.nav_users);
+            item.setEnabled(enabled);
+            item.setVisible(enabled);
+
+        } catch (NoUserException e) {
+            e.printStackTrace();
+        }
+
         // set navigation menu view
         navigationView.setNavigationItemSelectedListener(this);
 
         // set navigation menu header
         View headerView = navigationView.getHeaderView(0);
         LinearLayout header = headerView.findViewById(R.id.nav_header);
+        ImageButton imageButton = headerView.findViewById(R.id.nav_user_icon);
 
         // set navigation header listener to display profile view
-        header.setOnClickListener(view -> displayActivity(R.id.profile_layout));
+        Stream.of(header, imageButton)
+                .forEach(view -> view.setOnClickListener(onHeaderIconPressed));
 
         // set navigation menu drawer toggle
         drawerToggle = new ActionBarDrawerToggle(

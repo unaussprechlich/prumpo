@@ -256,7 +256,7 @@ public class ContractShareHelper extends ContractShareHelperBindings {
     }
 
     /**
-     * Will create a toast shoing information whether sharing was successfully.
+     * Will create a toast showing information whether sharing was successful.
      *
      * @param successful true if sharing was successful, false else
      */

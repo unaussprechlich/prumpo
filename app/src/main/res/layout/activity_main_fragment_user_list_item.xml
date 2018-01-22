@@ -15,9 +15,9 @@
         <LinearLayout
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp">
+                android:layout_marginEnd="8dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp">
 
             <ImageView
                     android:id="@+id/view_user_image"
@@ -30,7 +30,8 @@
         <LinearLayout
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:padding="8dp"
+                android:layout_margin="4dp"
+                android:padding="2dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -39,7 +40,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Username"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="0dp"
                     android:textSize="20sp"/>
 
             <TextView
@@ -48,8 +49,18 @@
                     android:layout_height="wrap_content"
                     android:text="Email"
                     android:lines="1"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginBottom="4dp"
                     android:textSize="14sp"/>
+
+            <TextView
+                    android:id="@+id/view_user_role"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rolle"
+                    android:textStyle="bold|italic"
+                    android:lines="1"
+                    android:layout_marginBottom="6dp"
+                    android:textSize="12sp"/>
 
         </LinearLayout>
 
@@ -64,7 +75,7 @@
                     android:id="@+id/view_user_contract_btn"
                     android:src="@drawable/ic_attach_money_black_24dp"
                     style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="56dp"
+                    android:layout_width="40dp"
                     android:layout_height="wrap_content"/>
 
             <LinearLayout
@@ -77,7 +88,7 @@
                         android:id="@+id/view_user_damages_btn"
                         android:src="@drawable/ic_menu_list"
                         style="?android:attr/borderlessButtonStyle"
-                        android:layout_width="56dp"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"/>
 
             </LinearLayout>

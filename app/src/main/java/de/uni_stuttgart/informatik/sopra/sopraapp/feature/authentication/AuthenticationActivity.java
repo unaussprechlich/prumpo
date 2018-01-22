@@ -9,19 +9,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-
+import android.widget.*;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,11 +18,17 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
+
+import javax.inject.Inject;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
@@ -78,6 +72,10 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
         ButterKnife.bind(this);
+
+        // toolbar elevation => 0
+        Optional.ofNullable(getSupportActionBar())
+                .ifPresent(i -> i.setElevation(0));
 
         //Set the Text from html, to display it in two different colors
         createNewAccount.setText(Html.fromHtml(createNewAccountString), TextView.BufferType.SPANNABLE);

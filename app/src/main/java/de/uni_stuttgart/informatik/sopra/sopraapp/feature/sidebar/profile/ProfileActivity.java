@@ -3,26 +3,12 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.support.design.widget.Snackbar;
+import android.view.*;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -34,6 +20,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+import org.greenrobot.eventbus.Subscribe;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 public class ProfileActivity extends ProfileActivityBindings {
@@ -240,6 +234,8 @@ public class ProfileActivity extends ProfileActivityBindings {
      */
     private void saveUserNow() {
 
+        boolean successful = true;
+
         try {
 
             User currentUser = userHandler.getCurrentUser();
@@ -257,8 +253,12 @@ public class ProfileActivity extends ProfileActivityBindings {
             editTextPasswordConfirm.getText().clear();
 
         } catch (NoUserException | InterruptedException | ExecutionException e) {
+            successful = false;
             e.printStackTrace();
         }
+
+        String message = successful ? strSavedSuccessfully : strSavedNotSuccessfully;
+        Snackbar.make(imageViewProfilePicture, message, Snackbar.LENGTH_SHORT).show();
     }
 
     /**
@@ -339,7 +339,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     /**
      * Checks whether the current state of the input fields is valid to save.
-     * Will show errors on the fields which are not.
+     * Will show errors on the fields which are not valid.
      *
      * @return true if all data from the input fields can be saved into the data base.
      */
