@@ -44,12 +44,8 @@
             android:name=".app.MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
-            android:parentActivityName=".feature.authentication.AuthenticationActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity" />
         </activity>
 
         <activity

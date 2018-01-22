@@ -3,35 +3,43 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
-import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
-import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
+
 
 public class ProfileActivity extends ProfileActivityBindings {
 
     @Inject
-    UserManager userManager;
+    UserHandler userHandler;
 
     private MenuItem menuSaveItem;
 
@@ -141,7 +149,7 @@ public class ProfileActivity extends ProfileActivityBindings {
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(adapter);
 
-        // Set layout and build
+        // Set layout and create
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(strChangeProfileImageHeader);
         builder.setView(inflate);
@@ -234,7 +242,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         try {
 
-            User currentUser = userManager.getCurrentUser();
+            User currentUser = userHandler.getCurrentUser();
 
             currentUser.setEmail(editTextEmailField.getText().toString());
             currentUser.setProfilePicture(lastSelectedImagePosition);
@@ -248,7 +256,7 @@ public class ProfileActivity extends ProfileActivityBindings {
             editTextPassword.getText().clear();
             editTextPasswordConfirm.getText().clear();
 
-        } catch (UserManager.NoUserException | InterruptedException | ExecutionException e) {
+        } catch (NoUserException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -260,7 +268,7 @@ public class ProfileActivity extends ProfileActivityBindings {
         new FixedDialog(ProfileActivity.this)
                 .setTitle(strLogoutDialogTitle)
                 .setMessage(hasUserChangedSomething() ? strLogoutDialogMessageOnChange : strLogoutDialogMessage)
-                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> userManager.logout())
+                .setPositiveButton(strLogoutDialogConfirmYes, (dialog, id) -> userHandler.logout())
                 .setNegativeButton(strLogoutDialogConfirmNo, (dialog, id) -> { /* Ignore */ })
                 .create()
                 .show();
@@ -315,14 +323,14 @@ public class ProfileActivity extends ProfileActivityBindings {
     private boolean hasUserChangedSomething() {
 
         try {
-            User currentUser = userManager.getCurrentUser();
+            User currentUser = userHandler.getCurrentUser();
 
             return !currentUser.getEmail().equals(editTextEmailField.getText().toString())
                     || currentUser.getProfilePicture() != lastSelectedImagePosition
                     || !editTextPassword.getText().toString().isEmpty()
                     || !editTextPasswordConfirm.getText().toString().isEmpty();
 
-        } catch (UserManager.NoUserException e) {
+        } catch (NoUserException e) {
             e.printStackTrace();
         }
 

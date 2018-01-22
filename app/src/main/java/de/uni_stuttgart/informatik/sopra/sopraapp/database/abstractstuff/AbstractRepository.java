@@ -7,17 +7,13 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 
 
 public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao<Model>> {
 
     protected final Dao dao;
-
-    @Inject
-    protected UserManager userManager;
 
     public AbstractRepository(@NonNull Dao dao){
         this.dao = dao;
@@ -40,11 +36,13 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     }
 
     protected long getUserId() {
+
         try {
-            return userManager.getCurrentUser().getID();
-        } catch (UserManager.NoUserException e) {
+            return CurrentUser.get().getID();
+        } catch ( NoUserException e) {
             e.printStackTrace();
         }
+
         return 0;
     }
 

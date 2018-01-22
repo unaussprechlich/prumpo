@@ -18,11 +18,12 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 
 
@@ -39,7 +40,7 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
     @Ignore @Inject DamageCaseRepository damageCaseRepository;
     @Ignore @Inject UserRepository userRepository;
     @Ignore @Inject ContractRepository contractRepository;
-    @Ignore @Inject UserManager userManager;
+    @Ignore @Inject UserHandler userHandler;
 
     /** The unique ID of the user. */
     @PrimaryKey(autoGenerate = true)
@@ -242,7 +243,7 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         private List<LatLng> coordinates = new ArrayList<>();
         private DateTime date = DateTime.now();
 
-        @Inject UserManager userManager;
+        @Inject UserHandler userHandler;
 
         Builder(){
             SopraApp.getAppComponent().inject(this);
@@ -283,8 +284,8 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
             return this;
         }
 
-        public DamageCase create() throws UserManager.NoUserException {
-            long ownerID = userManager.getCurrentUser().getID();
+        public DamageCase create() throws NoUserException {
+            long ownerID = userHandler.getCurrentUser().getID();
             return new DamageCase(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date, true);
         }
     }

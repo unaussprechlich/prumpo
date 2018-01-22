@@ -31,18 +31,21 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
+ * The {@link AuthenticationActivity} provides a UI for the user to Login :3
+ * The Activity is started by the {@link UserHandler} whenever a {@link UserHandler.NoUserException}
+ * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
 
     @Inject UserRepository userRepository;
-    @Inject UserManager userManager;
+    @Inject
+    UserHandler userHandler;
 
     @BindView(R.id.su_email)        EditText signUpEmail;
     @BindView(R.id.su_name_first)   EditText signUpFirstName;
@@ -100,7 +103,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         try {
             User user = userRepository.getByEmailAsync("dummy@dummy.net");
             if(user == null) return;
-            userManager.login(userRepository.getByEmail("dummy@dummy.net"));
+            userHandler.login(user);
             gotoMainActivity();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -145,7 +148,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                         if (!user.getPassword().equals(password))
                             throw new EditFieldValueException(loginPassword, "Password Incorrect!");
 
-                        userManager.login(userRepository.getByEmail(email));
+                        userHandler.login(user);
                         gotoMainActivity();
 
                     } catch (EditFieldValueException e) {
@@ -207,7 +210,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                             .setPassword(password)
                             .setName(nameFirst + " " + nameLast)
                             .setRole(userRole)
-                            .build();
+                            .create();
 
                     userRepository.insert(user);
 

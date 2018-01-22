@@ -6,8 +6,8 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
@@ -17,15 +17,15 @@ public class DamageCaseHandler extends AbstractModelHandler<DamageCase, DamageCa
     @Inject
     DamageCaseRepository damageCaseRepository;
 
-    public DamageCaseHandler(SopraApp sopraApp) {
-        super(sopraApp);
+    public DamageCaseHandler() {
+        super();
         SopraApp.getAppComponent().inject(this);
         EventBus.getDefault().register(this);
     }
 
 
     @Override
-    protected DamageCase createNewObject() throws UserManager.NoUserException  {
+    protected DamageCase createNewObject() throws NoUserException {
         return new DamageCase.Builder().setName("Unbenannter Schadensfall").create();
     }
 

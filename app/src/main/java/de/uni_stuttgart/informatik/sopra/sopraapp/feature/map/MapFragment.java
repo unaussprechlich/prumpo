@@ -26,7 +26,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
@@ -55,7 +54,6 @@ public class MapFragment
 
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
-    @Inject UserManager userManager;
 
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;

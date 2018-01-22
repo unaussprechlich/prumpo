@@ -8,8 +8,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 
 
 @SuppressWarnings("unchecked")
@@ -22,11 +21,10 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
 
     private Model model;
 
-    public AbstractModelHandler(SopraApp sopraApp) {
+    public AbstractModelHandler() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         modelLiveData.postValue(null);
     }
-
 
     @NonNull
     @Override
@@ -46,16 +44,16 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
         this.model = model;
     }
 
-    protected abstract Model createNewObject() throws UserManager.NoUserException ;
+    protected abstract Model createNewObject() throws NoUserException;
     protected abstract Repository getRepository();
 
     //##############################################################################################
 
     /**
      * Does create a temporary Model.
-     * @throws UserManager.NoUserException if there is no Logged in User
+     * @throws NoUserException if there is no Logged in User
      */
-    public void createNew() throws UserManager.NoUserException {
+    public void createTemporaryNew() throws NoUserException {
         if(modelDB != null){
             modelDB.removeObservers(this);
             modelDB = null;
@@ -84,7 +82,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
      * @return Model
      */
     @Nullable
-    public Model getValue(){
+    public Model getValue() {
         //return modelLiveData.getValue();
         return model;
     }

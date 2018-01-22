@@ -23,9 +23,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
 
 /**
@@ -262,7 +263,8 @@ public final class Contract implements ModelDB<ContractRepository> {
         private DateTime date = DateTime.now();
         private String damageType = "";
 
-        @Inject UserManager userManager;
+        @Inject
+        UserHandler userHandler;
 
         Builder(){
             SopraApp.getAppComponent().inject(this);
@@ -308,8 +310,8 @@ public final class Contract implements ModelDB<ContractRepository> {
             return this;
         }
 
-        public Contract create() throws UserManager.NoUserException {
-            long ownerID = userManager.getCurrentUser().getID();
+        public Contract create() throws NoUserException {
+            long ownerID = userHandler.getCurrentUser().getID();
             return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, damageType, true);
         }
     }

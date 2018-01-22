@@ -6,9 +6,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 
 import java.util.List;
+
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 
 public class ProfileImageGridViewAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
@@ -16,7 +17,7 @@ public class ProfileImageGridViewAdapter extends BaseAdapter implements AdapterV
      * Interface which returns the drawable and the position which was selected.
      */
     interface OnImageSelected {
-        void onImageClicked(Drawable drawable, int position) throws UserManager.NoUserException;
+        void onImageClicked(Drawable drawable, int position) throws NoUserException;
     }
 
     private OnImageSelected onImageSelected;
@@ -52,9 +53,10 @@ public class ProfileImageGridViewAdapter extends BaseAdapter implements AdapterV
 
             try {
                 onImageSelected.onImageClicked(imageList.get(position).getDrawable(), position);
-            } catch (UserManager.NoUserException e) {
+            } catch (NoUserException e) {
                 e.printStackTrace();
             }
+
 
         }
 

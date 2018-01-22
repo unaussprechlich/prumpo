@@ -162,7 +162,7 @@ public final class User implements ModelDB<UserRepository> {
             return this;
         }
 
-        public User build() {
+        public User create() {
             return new User(name, password, email, role, true);
         }
     }

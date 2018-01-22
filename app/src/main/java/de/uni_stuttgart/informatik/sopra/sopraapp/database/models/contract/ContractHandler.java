@@ -6,8 +6,8 @@ import org.greenrobot.eventbus.Subscribe;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
@@ -17,14 +17,14 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
     @Inject
     ContractRepository contractRepository;
 
-    public ContractHandler(SopraApp sopraApp) {
-        super(sopraApp);
+    public ContractHandler() {
+        super();
         SopraApp.getAppComponent().inject(this);
         EventBus.getDefault().register(this);
     }
 
     @Override
-    protected Contract createNewObject() throws UserManager.NoUserException  {
+    protected Contract createNewObject() throws NoUserException {
         return new Contract.Builder().setName("Unbenannter Vertrag").create();
     }
 

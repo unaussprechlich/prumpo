@@ -30,7 +30,7 @@ public class UserRepository  extends AbstractRepository<User, UserDao>{
                         .setPassword("dummy")
                         .setName("Mister Dummy")
                         .setRole(User.EnumUserRoles.ADMIN)
-                        .build());
+                        .create());
                 Log.e("UserRepository", "Dummy inserted!  " + test);
             }
 
@@ -43,7 +43,6 @@ public class UserRepository  extends AbstractRepository<User, UserDao>{
     // GET ASYNC ###################################################################################
 
     @SuppressWarnings("unchecked")
-    //@SafeVarargs is present in the actual async task .... so I don't care!
     public User getByEmailAsync(String email) throws ExecutionException, InterruptedException{
         return new GetAsyncTaskEmail(dao, getUserId()).execute(email).get();
     }

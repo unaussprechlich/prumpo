@@ -31,8 +31,8 @@ import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -148,9 +148,9 @@ public abstract class AbstractBottomSheetBase<
     protected void init() {
         if (!handler.hasValue()) {
             try {
-                handler.createNew();
+                handler.createTemporaryNew();
                 loadModelFromHandler();
-            } catch (UserManager.NoUserException e) {
+            } catch (NoUserException e) {
                 Toast.makeText(getContext(), "Bitte zuerst einloggen!", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }

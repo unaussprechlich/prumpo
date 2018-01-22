@@ -696,6 +696,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void synchronizePolygon(List<PolygonContainer> polygonContainers) {
+        if(polygonContainers.size() == 0) return; //TODO Hotfix
         Set<Long> caseIds = new HashSet<>();
 
         PolygonContainer polygon;

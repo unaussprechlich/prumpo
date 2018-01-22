@@ -25,10 +25,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
@@ -75,6 +76,8 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(DamageCaseHandler __);
     void inject(ContractHandler __);
+    void inject(UserHandler __);
+    void inject(NoUserException __);
 
     void inject(DamageCaseRepository __);
     void inject(ContractRepository __);
@@ -83,6 +86,8 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(BottomSheetContract __);
     void inject(BottomSheetDamagecase __);
+
+
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
@@ -101,13 +106,13 @@ abstract class AppModule {
     @ApplicationScope //TODO move this to a lower level
     @Provides
     public static DamageCaseHandler provideDamageCaseHandler(SopraApp app) {
-        return new DamageCaseHandler(app);
+        return new DamageCaseHandler();
     }
 
     @ApplicationScope //TODO move this to a lower level
     @Provides
     public static ContractHandler provideContractHandler(SopraApp app) {
-        return new ContractHandler(app);
+        return new ContractHandler();
     }
 
     @ApplicationScope
@@ -131,12 +136,6 @@ abstract class AppModule {
     @Provides
     static Vibrator provideVibrator(Application application) {
         return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
-    }
-
-    @Provides
-    @ApplicationScope
-    static UserManager userManager(SopraApp sopraApp) {
-        return new UserManager(sopraApp);
     }
 
     @NonNull
