@@ -9,7 +9,20 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,17 +31,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
-
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
@@ -38,34 +45,32 @@ import java.util.regex.Pattern;
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
 
     @Inject UserRepository userRepository;
-    @Inject
-    UserHandler userHandler;
+    @Inject UserHandler userHandler;
 
+    @BindView(R.id.signup_layout)   View signupView;
     @BindView(R.id.su_email)        EditText signUpEmail;
     @BindView(R.id.su_name_first)   EditText signUpFirstName;
     @BindView(R.id.su_name_last)    EditText signUpLastName;
     @BindView(R.id.su_password)     EditText signUpPassword;
     @BindView(R.id.su_password_confirm) EditText signUpPasswordConfirm;
+    @BindView(R.id.signup_progress) View progressViewSignUp;
 
-    private User.EnumUserRoles userRole;
-
+    @BindView(R.id.login_layout)   View loginView;
     @BindView(R.id.login_email)   EditText loginEmail;
     @BindView(R.id.login_password)EditText loginPassword;
+    @BindView(R.id.login_animation) View loginAnimation;
+    @BindView(R.id.login_progress) View progressViewLogin;
 
     @BindView(R.id.activity_authentication_create_new_account) TextView createNewAccount;
     @BindView(R.id.activity_authentication_back_to_login) TextView backToLogin;
 
-    @BindView(R.id.login_progress) View progressViewLogin;
-    @BindView(R.id.signup_progress) View progressViewSignUp;
-    @BindView(R.id.login_layout)   View loginView;
-    @BindView(R.id.signup_layout)   View signupView;
-
     @BindView(R.id.logo_image) ImageView logoImage;
-    @BindView(R.id.login_animation) View loginAnimation;
     @BindView(R.id.activity_authentication_demo_modus) View buttonDemoModus;
 
     @BindString(R.string.activity_authenticate_create_new_account) String createNewAccountString;
     @BindString(R.string.activity_authenticate_back_to_login) String backToLoginString;
+
+    private User.EnumUserRoles userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +247,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         AnimationHelper.slideOfBottom(buttonDemoModus);
         AnimationHelper.slideOfTop(logoImage);
         AnimationHelper.slideOfBottom(loginView, () ->{
+            //YEAH, FAKE LOADING TIME
             Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -264,6 +270,8 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         resetEditText(signUpPassword);
         resetEditText(signUpPasswordConfirm);
 
+        AnimationHelper.viewVisibilityHide(true, logoImage);
+        AnimationHelper.viewVisibilityHide(true, buttonDemoModus);
         AnimationHelper.viewVisibilityHide(false, signupView);
         AnimationHelper.viewVisibilityHide(true, loginView);
     }
@@ -276,6 +284,8 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         resetEditText(loginEmail);
         resetEditText(loginPassword);
 
+        AnimationHelper.viewVisibilityHide(false, logoImage);
+        AnimationHelper.viewVisibilityHide(false, buttonDemoModus);
         AnimationHelper.viewVisibilityHide(false, loginView);
         AnimationHelper.viewVisibilityHide(true, signupView);
     }
@@ -286,7 +296,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
      * position is different from the previously selected position or if
      * there was no selected item.</p>
      *
-     * Impelmenters can call getItemAtPosition(position) if they need to access the
+     * Implementers can call getItemAtPosition(position) if they need to access the
      * data associated with the selected item.
      *
      * @param parent The AdapterView where the selection happened

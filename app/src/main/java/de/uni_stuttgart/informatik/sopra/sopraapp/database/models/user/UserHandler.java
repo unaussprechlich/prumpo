@@ -9,22 +9,16 @@ import android.support.annotation.NonNull;
 
 import org.greenrobot.eventbus.EventBus;
 
-import javax.inject.Inject;
-
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 
-@ApplicationScope
 public class UserHandler extends AbstractModelHandler<User, UserRepository>{
 
     private Context context;
     private UserRepository userRepository;
 
-
-    @Inject
     public UserHandler(SopraApp sopraApp, UserRepository userRepository) {
         super();
         this.context = sopraApp;
@@ -52,7 +46,11 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
 
     public void logout(){
         EventBus.getDefault().removeAllStickyEvents();
-        EventBus.getDefault().postSticky(new EventsAuthentication.Logout(getValue()));
+        try {
+            EventBus.getDefault().postSticky(new EventsAuthentication.Logout(getCurrentUser()));
+        } catch (NoUserException e) {
+            e.printStackTrace();
+        }
         set(null);
 
         // restart app with first activity as default main activity

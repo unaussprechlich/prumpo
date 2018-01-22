@@ -58,7 +58,7 @@
 
     <string name="prompt_enable_localization">Bitte Lokalisierung über GPS oder Netzwerk aktivieren.</string>
 
-    <string name="title_activity_authentication">Willkommen</string>
+    <string name="title_activity_authentication"></string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 

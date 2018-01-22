@@ -29,6 +29,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserExc
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListAdapter;
@@ -105,14 +106,26 @@ abstract class AppModule {
 
     @ApplicationScope
     @Provides
-    public static DamageCaseHandler provideDamageCaseHandler(SopraApp app) {
+    public static DamageCaseHandler provideDamageCaseHandler() {
         return new DamageCaseHandler();
     }
 
     @ApplicationScope
     @Provides
-    public static ContractHandler provideContractHandler(SopraApp app) {
+    public static ContractHandler provideContractHandler() {
         return new ContractHandler();
+    }
+
+    @ApplicationScope
+    @Provides
+    public static UserHandler provideUserHandler(SopraApp app, UserRepository userRepository) {
+        return new UserHandler(app, userRepository);
+    }
+
+    @ApplicationScope
+    @Provides
+    public static UserRepository provideUserRepository(UserDao userDao) {
+        return new UserRepository(userDao);
     }
 
     @ApplicationScope

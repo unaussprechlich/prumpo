@@ -72,7 +72,7 @@
         <activity
             android:name=".feature.authentication.AuthenticationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_authentication"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait"/>
     </application>

@@ -57,7 +57,7 @@ public class AnimationHelper {
         view.animate()
                 .translationY(-2000)
                 .alpha(0)
-                .setDuration(2000)
+                .setDuration(1500)
                 .setInterpolator(new DecelerateInterpolator(5.f))
                 .start();
     }
@@ -66,7 +66,7 @@ public class AnimationHelper {
         view.animate()
                 .translationY(2000)
                 .alpha(0)
-                .setDuration(2000)
+                .setDuration(1500)
                 .setInterpolator(new DecelerateInterpolator(5.f))
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -85,7 +85,7 @@ public class AnimationHelper {
         view.animate()
                 .translationY(2000)
                 .alpha(0)
-                .setDuration(2000)
+                .setDuration(1500)
                 .setInterpolator(new DecelerateInterpolator(5.f))
                 .start();
     }
