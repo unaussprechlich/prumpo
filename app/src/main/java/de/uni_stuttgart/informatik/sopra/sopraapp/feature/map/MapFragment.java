@@ -1,7 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,26 +13,13 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-
-import com.google.android.gms.maps.MapsInitializer;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.concurrent.ExecutionException;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
@@ -51,6 +37,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -83,7 +74,6 @@ public class MapFragment
                 container,
                 false);
         ButterKnife.bind(this, mRootView);
-        setHasOptionsMenu(true);
         initMapView(savedInstanceState);
 
         onResume();
@@ -121,39 +111,6 @@ public class MapFragment
     }
 
     //##############################################################################################
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.map_toolbar_top, menu);
-
-        MenuItem addMenuItem = menu.findItem(R.id.action_add);
-        addMenuItem.setOnMenuItemClickListener(this::onAddButtonClicked);
-    }
-
-    private boolean onAddButtonClicked(MenuItem menuItem) {
-
-        final Dialog d = new Dialog(getContext());
-        d.setContentView(R.layout.activity_main_fragment_add_dialog);
-        d.setTitle("Custom Dialog");
-        Button addDc = d.findViewById(R.id.map_frag_dialog_add_dc);
-        Button addInsurance = d.findViewById(R.id.map_frag_dialog_add_insurance);
-        Button abortButton = d.findViewById(R.id.map_frag_dialog_abort);
-
-        addDc.setOnClickListener(v -> {
-            openBottomSheet(DamageCase.class);
-            d.dismiss();
-        });
-
-        addInsurance.setOnClickListener(v -> {
-            openBottomSheet(Contract.class);
-            d.dismiss();
-        });
-
-        abortButton.setOnClickListener(v -> d.dismiss());
-        d.show();
-        return true;
-    }
 
     private void initMapView(Bundle savedInstanceState) {
         Log.i("initMapView", "init");

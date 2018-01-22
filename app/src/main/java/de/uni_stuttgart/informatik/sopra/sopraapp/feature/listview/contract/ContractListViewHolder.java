@@ -16,8 +16,8 @@ class ContractListViewHolder
     @BindView(R.id.contract_card)
     CardView cardView;
 
-    @BindView(R.id.contract_name)
-    TextView contractName;
+    @BindView(R.id.contract_identification)
+    TextView contractIdentification;
 
     @BindView(R.id.contract_policyholder)
     TextView policyHolder;

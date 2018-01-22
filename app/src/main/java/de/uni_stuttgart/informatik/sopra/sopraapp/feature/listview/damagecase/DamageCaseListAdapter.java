@@ -54,7 +54,8 @@ public class DamageCaseListAdapter
         DamageCase damageCase = dataHolder.dataList.get(position);
 
         // set bindings
-        holder.damageCaseName.setText(damageCase.toString());
+        // todo set correct identification
+        holder.damageIdentification.setText(String.format("#%s", damageCase.getID()));
         holder.location.setText(String.valueOf(damageCase.getAreaCode()));
         holder.area.setText(calculateAreaValue(damageCase.getAreaSize()));
 
