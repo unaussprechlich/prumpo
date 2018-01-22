@@ -96,7 +96,7 @@ public class MapFragment
     //EVENT BUS ####################################################################################
 
     @Subscribe
-    public void onOpenDamageCase(EventsPolygonSelected.DamageCase event){
+    public void onOpenDamageCase(EventsPolygonSelected.DamageCase event) {
         try {
             Log.e("OPEN", "damageCase");
             openBottomSheet(DamageCase.class, damageCaseRepository.getAsync(event.uniqueId));
@@ -106,7 +106,7 @@ public class MapFragment
     }
 
     @Subscribe
-    public void onOpenContract(EventsPolygonSelected.DamageCase event){
+    public void onOpenContract(EventsPolygonSelected.Contract event) {
         try {
             Log.e("OPEN", "contract");
             openBottomSheet(Contract.class, contractRepository.getAsync(event.uniqueId));

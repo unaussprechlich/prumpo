@@ -10,6 +10,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +37,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +57,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.SopraPolygon;
@@ -99,11 +103,15 @@ public class SopraMap implements LifecycleObserver {
     private List<DamageCase> cachedDamageCases;
     private List<Contract> cachedContracts;
 
+    private Geocoder geocoder;
+
     SopraMap(GoogleMap googleMap, Context context, int viewType) {
         SopraApp.getAppComponent().inject(this);
 
         this.resources = context.getResources();
         this.gMap = googleMap;
+
+        geocoder = new Geocoder(context);
 
         initResources(context);
         initMap(viewType);
@@ -346,6 +354,32 @@ public class SopraMap implements LifecycleObserver {
         if (activePolygon == null) return 0;
 
         return activePolygon.data.getArea();
+    }
+
+    public String getAddress() throws LocationNotFound {
+        String message = "No valid address was found!";
+
+        if (lastUserLocation == null) throw new LocationNotFound(message);
+
+        List<Address> addresses;
+
+        try {
+            addresses =
+                    geocoder.getFromLocation(
+                            lastUserLocation.getLatitude(),
+                            lastUserLocation.getLongitude(),
+                            1
+                    );
+
+            if (addresses.size() == 0) throw new IOException();
+
+        } catch (IOException e) {
+            throw new LocationNotFound(message);
+        }
+
+        Address address = addresses.get(0);
+
+        return String.format("%s %s", address.getLocality(), address.getSubLocality());
     }
 
     boolean hasActivePolygon() {
