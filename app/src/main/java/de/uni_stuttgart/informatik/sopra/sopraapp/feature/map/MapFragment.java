@@ -151,9 +151,7 @@ public class MapFragment
 
             getLifecycle().addObserver(sopraMap);
 
-            sopraMap.areaLiveData().observe(this, area -> {
-                currentBottomSheet.displayCurrentAreaValue(area);
-            });
+            sopraMap.areaLiveData().observe(this, area -> currentBottomSheet.displayCurrentAreaValue(area));
 
         });
 
@@ -164,7 +162,14 @@ public class MapFragment
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
+
+        if (preferencesString.equals("")) {
+            return;
+        }
+
         Integer viewType = Integer.valueOf(preferencesString);
+
+        if (sopraMap == null) return;
 
         sopraMap.updateMapType(viewType);
     }

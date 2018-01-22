@@ -46,7 +46,8 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
             if (this.user == null) throw new EditFieldValueIsEmptyException(inputPolicyholder);
 
-            contract.setAreaCode(getIfNotEmptyElseThrow(inputLocation))
+            contract.setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
+                    .setAreaCode(getIfNotEmptyElseThrow(inputLocation))
                     .setDamageType(getIfNotEmptyElseThrow(inputDamages))
                     .setHolderID(user.getID());
 

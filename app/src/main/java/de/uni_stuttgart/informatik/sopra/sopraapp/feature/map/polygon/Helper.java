@@ -11,6 +11,74 @@ import java.util.List;
  */
 public class Helper {
 
+    public static boolean doesPolygonSelfIntersect(List<LatLng> points) {
+        if (points.size() == 3) return false;
+
+        ArrayList<Point2D> point2DS = projectAndNormalize(points);
+
+        for (int i = 0; i < point2DS.size(); ++i) {
+            for (int j = i+2; j < point2DS.size()+i-1; ++j) {
+
+                Point2D a = circularGet(i, point2DS);
+                Point2D b = circularGet(i+1, point2DS);
+
+                Point2D c = circularGet(j, point2DS);
+                Point2D d = circularGet(j+1, point2DS);
+
+                if (intersect(a, b, c, d)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean intersect(Point2D a, Point2D b, Point2D c, Point2D d) {
+
+        int orientABC = orientation(a, b, c);
+        int orientABD = orientation(a, b, d);
+        int orientCDA = orientation(c, d, a);
+        int orientCDB = orientation(c, d, b);
+
+        // the general case;
+        if (orientABC != orientABD && orientCDA != orientCDB)
+            return true;
+
+         /* special cases */
+
+        if (orientABC == 0 && onSegment(a, c, b)) return true;
+
+        if (orientABD == 0 && onSegment(a, d, b)) return true;
+
+        if (orientCDA == 0 && onSegment(c, a, d)) return true;
+
+        if (orientCDB == 0 && onSegment(c, b, d)) return true;
+
+        // neither of those cases hold, return false!
+        return false;
+
+    }
+
+    private static int orientation(Point2D a, Point2D b, Point2D c) {
+
+        double val = ( (b.y-a.y) * (c.x-b.x)
+                -(b.x-a.x) * (c.y-b.y));
+
+        // 0 ==> co-linear
+        if (val == 0) return 0;
+
+        return (val > 0)
+                ? 1  // clockwise or
+                : 2; // counter-clockwise otherwise
+
+    }
+
+    private static boolean onSegment(Point2D a, Point2D b, Point2D c) {
+        return b.x <= Math.max(a.x, c.x) && b.x >= Math.min(a.x, c.x)
+                && b.y <= Math.max(a.y, c.y) && b.y >= Math.min(a.y, c.y);
+    }
+
     // the radius of the earth is approximated in Kilometres (6371 km)
     private static final double RADIUS_EARTH_180TH_PI = Math.PI * 6371/180;
 
@@ -144,6 +212,7 @@ public class Helper {
             k = length + k;
         }
 
+//        System.out.println(k);
         return list.get(k);
     }
 
@@ -171,5 +240,4 @@ public class Helper {
             this.angle = angle;
         }
     }
-    
 }

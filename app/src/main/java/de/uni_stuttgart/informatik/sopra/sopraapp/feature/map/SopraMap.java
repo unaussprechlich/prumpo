@@ -256,6 +256,11 @@ public class SopraMap implements LifecycleObserver {
             for (Contract contract : cachedContracts) {
                 long polygonId = contract.getID();
 
+                //  TODO: this should in theory never occur
+                if (contract.getCoordinates().size() == 0) {
+                    continue;
+                }
+
                 PolygonContainer contractContainer =
                         new PolygonContainer(
                                 polygonId, null,
@@ -269,7 +274,7 @@ public class SopraMap implements LifecycleObserver {
             synchronizePolygon(containersToSynchronize);
         });
 
-        contractHandler.getLiveData().observeForever( contract -> {
+        contractHandler.getLiveData().observeForever(contract -> {
             if (contract == null) return;
 
             if (activePolygon != null) {
@@ -317,7 +322,8 @@ public class SopraMap implements LifecycleObserver {
     @Subscribe
     public void onCloseBottomSheet(EventsBottomSheet.Close event) {
         System.out.println("CLOSE");
-        deselectActivePolygon();
+        removeActivePolygon();
+        reloadDamageCases();
     }
 
    /* <----- exposed methods -----> */
@@ -693,7 +699,8 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void synchronizePolygon(List<PolygonContainer> polygonContainers) {
-        if(polygonContainers.size() == 0) return; //TODO Hotfix
+        if (polygonContainers.size() == 0) return; // TODO Hotfix
+
         Set<Long> caseIds = new HashSet<>();
 
         PolygonContainer polygon;
@@ -702,7 +709,6 @@ public class SopraMap implements LifecycleObserver {
         LongSparseArray<PolygonContainer> polygons = polygonContainers.get(0).storedIn();
 
         for (PolygonContainer polygonContainer : polygonContainers) {
-
             long polygonID = polygonContainer.uniqueId;
             PolygonType polygonType = polygonContainer.type;
             List<LatLng> coordinates = polygonContainer.data.getPoints();
