@@ -4,6 +4,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -42,6 +43,7 @@ public class DamageCaseListFragment
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(new DamageCaseListAdapter(damageCaseList));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         getActivity().setTitle(toolbarTitle);
 

@@ -7,8 +7,10 @@ import butterknife.BindString;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +21,9 @@ import java.util.Locale;
 public abstract class ContractListMultiSelectionFragment
         extends AbstractListFragment
         implements MultiSelectionController<Contract>, ActionMode.Callback {
+
+    @Inject
+    ContractRepository contractRepository;
 
     @BindString(R.string.listview_contract_multiselection_contract_singular)
     String strContractSingular;
@@ -31,6 +36,18 @@ public abstract class ContractListMultiSelectionFragment
 
     @BindString(R.string.listview_contract_dialog_sharing_header)
     String strSharingDialogHeader;
+
+//    @BindString(R.string.listview_contract_dialog_deleting_title)
+//    String strDeleteTitle;
+//
+//    @BindString(R.string.listview_contract_dialog_deleting_message)
+//    String strDeleteMessage;
+//
+//    @BindString(R.string.listview_contract_dialog_deleting_do_delete)
+//    String strDoDelete;
+//
+//    @BindString(R.string.listview_contract_dialog_deleting_do_not_delete)
+//    String strDoNotDelete;
 
     /**
      * Holder for the selected contracts.
@@ -53,18 +70,31 @@ public abstract class ContractListMultiSelectionFragment
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         MenuInflater menuInflater = mode.getMenuInflater();
         menuInflater.inflate(R.menu.list_fragment_menu_share, menu);
+
+//        try {
+//            boolean showDeleteButton = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
+//            MenuItem item = menu.findItem(R.id.action_delete);
+//            item.setEnabled(showDeleteButton);
+//            item.setVisible(showDeleteButton);
+//        } catch (NoUserException e) {
+//            e.printStackTrace();
+//        }
+
         return true;
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-
-        if (item.getItemId() == R.id.action_share) {
-            showSharingDialog();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                showSharingDialog();
+                break;
+//            case R.id.action_delete:
+//                showDeleteDialog();
+//                break;
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -154,5 +184,17 @@ public abstract class ContractListMultiSelectionFragment
         alertDialog.show();
 
     }
+
+//    private void showDeleteDialog() {
+//        new FixedDialog(getContext())
+//                .setTitle(strDeleteTitle)
+//                .setMessage(strDeleteMessage)
+//                .setPositiveButton(strDoDelete, (dialog, which) -> {
+//                    selectedContracts.forEach(contractRepository::delete);
+//                    actionMode.finish();
+//                })
+//                .setNegativeButton(strDoNotDelete, (dialog, which) -> actionMode.finish())
+//                .show();
+//    }
 
 }
