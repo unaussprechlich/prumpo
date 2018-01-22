@@ -7,20 +7,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+
+import java.util.Stack;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
-
-import javax.inject.Inject;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
@@ -53,19 +55,22 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     public void onBackPressed() {
 
         // if drawer is open -> close it
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-            return;
-        }
+        else if(fragmentStack.size() > 1){
+            fragmentStack.pop();
+            switchToFragment(fragmentStack.pop());
+        } else
+            super.onBackPressed();
 
         // if active fragment wants to override back button -> perform fragment back button action
-        FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
-        FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
+        //FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
+        //FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
 
-        if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
-            return;
+        //if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
+        //    return;
 
-        super.onBackPressed();
+
 
     }
 
@@ -123,7 +128,10 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
         navigationView.setCheckedItem(R.id.nav_about);
     }
 
+    private Stack<Fragment> fragmentStack = new Stack<>();
+
     protected void switchToFragment(Fragment fragment) {
+        fragmentStack.push(fragment);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.frag_enter,
@@ -131,12 +139,14 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
                 R.anim.frag_pop_enter,
                 R.anim.frag_pop_exit);
 
+
         transaction.replace(R.id.content_main_frame, fragment);
 
         transaction.commit();
 
         drawer.closeDrawer(GravityCompat.START);
         navigationView.setCheckedItem(fragment.getId());
+
     }
 
     /**

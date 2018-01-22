@@ -200,7 +200,7 @@ public class SopraMap implements LifecycleObserver {
     @Subscribe(sticky = true)
     public void onLogin(EventsAuthentication.Login event) {
         // the database tells us what shall exist!
-        damageCaseRepository.getAll().observe(damageCaseHandler, damageCases -> {
+        damageCaseRepository.getAll().observeForever(damageCases -> {
             if (damageCases == null) return;
 
 
@@ -228,7 +228,7 @@ public class SopraMap implements LifecycleObserver {
             synchronizePolygon(containersToSynchronize);
         });
 
-        damageCaseHandler.getLiveData().observe(damageCaseHandler, damageCase -> {
+        damageCaseHandler.getLiveData().observeForever(damageCase -> {
             if (damageCase == null) return;
 
 
@@ -242,7 +242,7 @@ public class SopraMap implements LifecycleObserver {
 
         /* repeat the same binding-pattern for contracts */
 
-        contractRepository.getAll().observe(contractHandler, contracts -> {
+        contractRepository.getAll().observeForever(contracts -> {
             if (contracts == null) return;
 
             if (cachedContracts != null) {
@@ -269,7 +269,7 @@ public class SopraMap implements LifecycleObserver {
             synchronizePolygon(containersToSynchronize);
         });
 
-        contractHandler.getLiveData().observe(contractHandler, contract -> {
+        contractHandler.getLiveData().observeForever( contract -> {
             if (contract == null) return;
 
             if (activePolygon != null) {
@@ -278,7 +278,6 @@ public class SopraMap implements LifecycleObserver {
 
             selectPolygon(contract.getID(), PolygonType.CONTRACT);
         });
-
     }
 
     @Subscribe

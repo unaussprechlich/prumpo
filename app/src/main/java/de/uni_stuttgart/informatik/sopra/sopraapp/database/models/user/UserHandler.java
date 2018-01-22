@@ -34,7 +34,7 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
 
     private void startAuthenticationActivity(){
         Intent intent = new Intent(context, AuthenticationActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         context.startActivity(intent);
     }
 

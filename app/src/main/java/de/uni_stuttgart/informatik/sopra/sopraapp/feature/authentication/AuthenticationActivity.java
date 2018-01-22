@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
- * The Activity is started by the {@link UserHandler} whenever a {@link NoUserException}
+ * The Activity is started by the {@link UserHandler} whenever a {@link de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException}
  * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
@@ -242,9 +242,13 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         AnimationHelper.slideOfBottom(buttonDemoModus);
         AnimationHelper.slideOfTop(logoImage);
         AnimationHelper.slideOfBottom(loginView, () ->{
-            Intent myIntent = new Intent(AuthenticationActivity.this, MainActivity.class);
-            myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            startActivity(myIntent);
+            Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
             finish();
         });
     }
