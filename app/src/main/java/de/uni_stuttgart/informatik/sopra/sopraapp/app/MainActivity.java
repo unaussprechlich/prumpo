@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
@@ -41,10 +40,6 @@ public class MainActivity
 
     private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
-
-    @Nullable @BindView(R.id.user_role_text) TextView userRoleTextView;
-    @Nullable @BindView(R.id.user_name_text) TextView userNameTextView;
-    @Nullable @BindView(R.id.nav_user_icon)  ImageView navUserIconImageView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,7 +94,7 @@ public class MainActivity
         View headerView = navigationView.getHeaderView(0);
         ((TextView) headerView.findViewById(R.id.user_role_text)).setText(event.user.getRole().toString());
         ((TextView) headerView.findViewById(R.id.user_name_text)).setText(event.user.getName());
-        ((ImageView) headerView.findViewById(R.id.user_name_text)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[event.user.getProfilePicture()]);
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[event.user.getProfilePicture()]);
     }
 
     /**
