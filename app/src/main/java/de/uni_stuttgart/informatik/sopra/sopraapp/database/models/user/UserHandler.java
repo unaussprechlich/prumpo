@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+
+import org.greenrobot.eventbus.EventBus;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
-import org.greenrobot.eventbus.EventBus;
 
 public class UserHandler extends AbstractModelHandler<User, UserRepository>{
 
@@ -39,7 +41,7 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
     public void login(@NonNull User user){
         loadFromDatabase(user.id);
         EventBus.getDefault().removeAllStickyEvents();
-        EventBus.getDefault().postSticky(new EventsAuthentication.Login());
+        EventBus.getDefault().postSticky(new EventsAuthentication.Login(user));
     }
 
     public void logout(){

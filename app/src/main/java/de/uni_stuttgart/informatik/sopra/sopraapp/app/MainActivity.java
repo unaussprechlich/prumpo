@@ -18,22 +18,22 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.stream.Stream;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.stream.Stream;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
@@ -45,9 +45,6 @@ public class MainActivity
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker {
-
-    @Inject
-    UserHandler userHandler;
 
     private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
@@ -62,16 +59,19 @@ public class MainActivity
         try {
             super.onCreate(savedInstanceState);
 
+            boolean enabled = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
+
             // set main layout
             setContentView(R.layout.activity_main);
+
             ButterKnife.bind(this);
+
             setSupportActionBar(toolbar);
 
-            boolean hasMoreAccessRights = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
             // disable if current user is BAUER
             MenuItem item = navigationView.getMenu().findItem(R.id.nav_users);
-            item.setEnabled(hasMoreAccessRights);
-            item.setVisible(hasMoreAccessRights);
+            item.setEnabled(enabled);
+            item.setVisible(enabled);
 
             // set navigation menu view
             navigationView.setNavigationItemSelectedListener(this);
@@ -123,15 +123,10 @@ public class MainActivity
 
     @Subscribe(sticky = true)
     public void handleLogin(EventsAuthentication.Login event) {
-        try {
-            User currentUser = userHandler.getCurrentUser();
-            View headerView = navigationView.getHeaderView(0);
-            ((TextView) headerView.findViewById(R.id.user_role_text)).setText(currentUser.getRole().toString());
-            ((TextView) headerView.findViewById(R.id.user_name_text)).setText(currentUser.getName());
-            ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[currentUser.getProfilePicture()]);
-        } catch (NoUserException e) {
-            e.printStackTrace();
-        }
+        View headerView = navigationView.getHeaderView(0);
+        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(event.user.getRole().toString());
+        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(event.user.getName());
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[event.user.getProfilePicture()]);
     }
 
     /**

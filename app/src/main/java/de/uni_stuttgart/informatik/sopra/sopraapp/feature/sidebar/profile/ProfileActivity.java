@@ -1,15 +1,29 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -21,42 +35,22 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
-import org.greenrobot.eventbus.Subscribe;
 
-import javax.inject.Inject;
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-/**
- * Profile activity. The user is able to change email, password and profile image.
- * Logout also is supported.
- */
 public class ProfileActivity extends ProfileActivityBindings {
 
-    /** User handler to obtain the current logged in user */
-    @Inject UserHandler userHandler;
+    @Inject
+    UserHandler userHandler;
 
-    /** The menu item for saving the changed profile */
     private MenuItem menuSaveItem;
 
-    /** Email pattern compiled only once for performance reasons */
     private static final Pattern PATTERN_EMAIL = Pattern.compile(Constants.EMAIL_REGEX);
-
-    /** List to keep ImageViews to improve performance on reentry of this activity */
-    private static List<ImageView> imageList;
-
-    /** Text watcher for each input text field to invoke actions on change */
     private CustomEditTextWatcher textWatcher = s -> onUserChangedSomething();
 
-    /** Index of the selected image of the image dialog */
+    private AlertDialog userProfileSelectionDialog;
+    private List<ImageView> imageList;
     private int lastSelectedImagePosition = 0;
 
-    /** Variable used as a blocker. */
     private boolean loggedIn = false;
 
 
@@ -70,8 +64,7 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         setTitle(strProfileAppBarTitle);
 
-        new LoadProfileImagesTask(new WeakReference<>(getApplicationContext()))
-                .execute(Constants.PROFILE_IMAGE_RESOURCES);
+        new LoadProfileImagesTask().execute(Constants.PROFILE_IMAGE_RESOURCES);
     }
 
     @Override
@@ -120,21 +113,16 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         loggedIn = true;
 
-        try {
-            User currentUser = userHandler.getCurrentUser();
-            textViewUserName.setText(currentUser.toString());
-            textViewUserRole.setText(currentUser.getRole().toString());
+        textViewUserName.setText(event.user.toString());
+        textViewUserRole.setText(event.user.getRole().toString());
 
-            lastSelectedImagePosition = currentUser.getProfilePicture();
-            imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[lastSelectedImagePosition]);
-            editTextEmailField.setText(currentUser.getEmail());
+        lastSelectedImagePosition = event.user.getProfilePicture();
+        imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[lastSelectedImagePosition]);
+        editTextEmailField.setText(event.user.getEmail());
 
-            editTextEmailField.addTextChangedListener(textWatcher);
-            editTextPassword.addTextChangedListener(textWatcher);
-            editTextPasswordConfirm.addTextChangedListener(textWatcher);
-        } catch (NoUserException e) {
-            e.printStackTrace();
-        }
+        editTextEmailField.addTextChangedListener(textWatcher);
+        editTextPassword.addTextChangedListener(textWatcher);
+        editTextPasswordConfirm.addTextChangedListener(textWatcher);
 
     }
 
@@ -145,21 +133,17 @@ public class ProfileActivity extends ProfileActivityBindings {
     public void onProfileImagePressed(ImageButton imageButton) {
         if (imageList == null) return;
 
-        /* To dodge lambda final issue. This variable is used to keep a reference of the dialog */
-        final AlertDialog[] imageListDialog = {null};
-
         // Grid adapter
         ProfileImageGridViewAdapter adapter = new ProfileImageGridViewAdapter(imageList);
         adapter.setOnImageSelected((drawable, position) -> {
             imageViewProfilePicture.setImageDrawable(drawable);
             lastSelectedImagePosition = position;
             onUserChangedSomething();
-
-            if (imageListDialog[0] != null)
-                imageListDialog[0].dismiss();
+            userProfileSelectionDialog.dismiss();
+            userProfileSelectionDialog = null;
         });
 
-        // Inflate Dialog: layout, view, adapter & listener
+        // Inflate Dialog layout & Grid view & adapter
         LayoutInflater layoutInflater = getLayoutInflater();
         View inflate = layoutInflater.inflate(R.layout.activity_profile_input_img_dialog, null);
         GridView gridView = inflate.findViewById(R.id.gridview);
@@ -170,8 +154,8 @@ public class ProfileActivity extends ProfileActivityBindings {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(strChangeProfileImageHeader);
         builder.setView(inflate);
-        imageListDialog[0] = builder.create();
-        imageListDialog[0].show();
+        userProfileSelectionDialog = builder.create();
+        userProfileSelectionDialog.show();
     }
 
     @OnClick(R.id.profile_input_email)
@@ -209,8 +193,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     // ### Helper #####################################################################################################
 
     /**
-     * Invoked when user hits the save button in the menu bar
-     * (This method should only be invoked when the save button is enabled).
+     * Invoked when user hits the enabled save button in the menu bar.
      *
      * @param __ the menu item
      * @return true if action event consumed in this activity, false else
@@ -378,16 +361,8 @@ public class ProfileActivity extends ProfileActivityBindings {
 
     /**
      * Task for loading profile images asynchronously.
-     * Static class in order to prevent memory leaks.
      */
-    private static class LoadProfileImagesTask extends AsyncTask<Integer, Void, List<ImageView>> {
-
-        /** Using a weak reference to prevent memory leaks. */
-        private WeakReference<Context> context;
-
-        LoadProfileImagesTask(WeakReference<Context> context) {
-            this.context = context;
-        }
+    private class LoadProfileImagesTask extends AsyncTask<Integer, Void, List<ImageView>> {
 
         @Override
         protected List<ImageView> doInBackground(Integer... integers) {
@@ -395,29 +370,22 @@ public class ProfileActivity extends ProfileActivityBindings {
 
             return Arrays.stream(integers)
                     .map(this::mapToImageView)
-                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         }
 
         @Override
         protected void onPostExecute(List<ImageView> imageViews) {
             imageList = imageViews;
-            context = null;
         }
 
         /**
-         * Will transform a image layout to an imageView.
+         * Will transform a image layout to and imageView.
          *
          * @param layoutID the id
          * @return the imageView found by the given id
          */
         private ImageView mapToImageView(int layoutID) {
-            Context context = this.context.get();
-
-            if (context == null)
-                return null;
-
-            ImageView imageView = new ImageView(context);
+            ImageView imageView = new ImageView(getApplicationContext());
             imageView.setLayoutParams(new GridView.LayoutParams(320, 320));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setPadding(15, 15, 15, 15);
