@@ -107,7 +107,7 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
 
     /**
      * Loads the Model from the database and observes the given LiveData.
-     * @param id the ID of the DamageCase
+     * @param id the ID of the DamageCase/Contract
      */
     public void loadFromDatabase(long id){
         if(modelDB != null)

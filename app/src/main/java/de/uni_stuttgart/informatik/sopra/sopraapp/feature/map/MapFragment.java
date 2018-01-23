@@ -127,9 +127,11 @@ public class MapFragment
 
         mMapView.getMapAsync(googleMap -> {
 
+            /* determine map-type variant */
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
             Integer viewType = Integer.valueOf(preferencesString);
+
             sopraMap = new SopraMap(googleMap, getContext(), viewType);
 
             getLifecycle().addObserver(sopraMap);

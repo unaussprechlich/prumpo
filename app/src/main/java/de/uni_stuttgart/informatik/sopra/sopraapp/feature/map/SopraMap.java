@@ -290,7 +290,6 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {
-        //TODO USE PolygonType ;)
         if (activePolygon == null) {
             newPolygon(event.position, event.polygonType);
             return;
@@ -527,6 +526,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void selectPolygon(long uniqueId, PolygonType type) {
+
         PolygonContainer polygon = polygonFrom(uniqueId, type);
         if (polygon == null) return;
 
@@ -831,7 +831,11 @@ public class SopraMap implements LifecycleObserver {
         Polygon mapObject;
         SopraPolygon data;
 
-        PolygonContainer(long uniqueId, Polygon polygonMapObject, SopraPolygon polygonData, PolygonType type) {
+        PolygonContainer(long uniqueId,
+                         Polygon polygonMapObject,
+                         SopraPolygon polygonData,
+                         PolygonType type) {
+
             this.uniqueId = uniqueId;
 
             this.mapObject = polygonMapObject;
