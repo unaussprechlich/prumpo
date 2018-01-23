@@ -175,6 +175,7 @@ public class SopraMap implements LifecycleObserver {
         // to KILL g-maps native single-click functionality
         gMap.setOnMarkerClickListener(marker -> true);
 
+        // TODO: insert moving to last contract polygon here!
     }
 
     /* <----- lifecycle events -----> */
@@ -241,6 +242,7 @@ public class SopraMap implements LifecycleObserver {
 
 
             if (activePolygon != null) {
+                if (activePolygon.type == PolygonType.CONTRACT) return;
                 // avoid deselecting the polygon again, when called twice in a row
                 if (damageCase.getID() == activePolygon.uniqueId) return;
             }
@@ -281,6 +283,7 @@ public class SopraMap implements LifecycleObserver {
             if (contract == null) return;
 
             if (activePolygon != null) {
+                if (activePolygon.type == PolygonType.DAMAGE_CASE) return;
                 if (contract.getID() == activePolygon.uniqueId) return;
             }
 
@@ -292,6 +295,13 @@ public class SopraMap implements LifecycleObserver {
     public void onVertexCreated(EventsVertex.Created event) {
         if (activePolygon == null) {
             newPolygon(event.position, event.polygonType);
+            return;
+        }
+
+        if (activePolygon.type == PolygonType.CONTRACT
+                && event.polygonType == PolygonType.DAMAGE_CASE) {
+            activePolygon.toggleHighlight();
+            newPolygon(event.position, PolygonType.DAMAGE_CASE);
             return;
         }
 
@@ -469,7 +479,6 @@ public class SopraMap implements LifecycleObserver {
      * @param type          determines color (and implies behaviour according to {@link PolygonType})
      */
     private void newPolygon(LatLng startPoint, PolygonType type) {
-
         SopraPolygon sopraPolygon = new SopraPolygon();
         sopraPolygon.addPoint(startPoint);
 
@@ -484,20 +493,35 @@ public class SopraMap implements LifecycleObserver {
         activePolygon.toggleHighlight();
     }
 
+    private void newPolygon(PolygonType type) {
+        SopraPolygon sopraPolygon = new SopraPolygon();
+
+        activePolygon =
+                new PolygonContainer(
+                        -1,
+                        null,
+                        sopraPolygon,
+                        type
+                );
+    }
+
     private Polygon drawPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
 
         int strokeColor;
         int fillColor;
+        float zIndex;
         float strokeWidth = 10;
 
         if (type == PolygonType.DAMAGE_CASE) {
             strokeColor = resources.getColor(R.color.map_damagecase_stroke, null);
             fillColor = resources.getColor(R.color.map_damagecase_fill, null);
+            zIndex = 2;
 
         } else {
             strokeColor = resources.getColor(R.color.map_contract_stroke, null);
             fillColor = resources.getColor(R.color.map_contract_fill, null);
             strokeWidth = 18;
+            zIndex = 1;
         }
 
         PolygonOptions rectOptions =
@@ -508,7 +532,8 @@ public class SopraMap implements LifecycleObserver {
                         .strokeJointType(JointType.ROUND)
                         .strokeColor(strokeColor)
                         .strokeWidth(strokeWidth)
-                        .fillColor(fillColor);
+                        .fillColor(fillColor)
+                        .zIndex(zIndex);
 
         Polygon polygonMapObject = gMap.addPolygon(rectOptions);
 
@@ -600,6 +625,7 @@ public class SopraMap implements LifecycleObserver {
 
     private void deselectActivePolygon() {
         if (activePolygon == null || !isHighlighted) return;
+        System.out.println("DESELECT ACTIVE");
 
         activePolygon.toggleHighlight();
     }
@@ -670,7 +696,8 @@ public class SopraMap implements LifecycleObserver {
             PolylineOptions lineOptions =
                     new PolylineOptions()
                             .width(3)
-                            .color(resources.getColor(R.color.white, null));
+                            .color(resources.getColor(R.color.white, null))
+                    .zIndex(5);
 
             previewPolyline = gMap.addPolyline(lineOptions);
         }
@@ -680,7 +707,7 @@ public class SopraMap implements LifecycleObserver {
                     new MarkerOptions()
                             .position(circlePosition)
                             .draggable(true)
-                            .zIndex(2)
+                            .zIndex(4)
                             .anchor(0.5f, 0.98f)
                             .icon(ROOM_ACCENT_BITMAP_DESCRIPTOR);
 
@@ -742,7 +769,7 @@ public class SopraMap implements LifecycleObserver {
 
         if (!activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition())) {
             vibrator.vibrate(300);
-        };
+        }
 
         previewPolyline.remove();
         previewPolyline = null;
@@ -755,7 +782,6 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void synchronizePolygon(List<PolygonContainer> polygonContainers) {
-        if (polygonContainers.size() == 0) return; // TODO Hotfix
 
         Set<Long> caseIds = new HashSet<>();
 
@@ -922,7 +948,7 @@ public class SopraMap implements LifecycleObserver {
                             .fillColor(resources.getColor(R.color.coffee_1_def, null))
                             .strokeWidth(4)
                             .radius(3)
-                            .zIndex(1)
+                            .zIndex(3)
                             .clickable(true);
 
             for (int i = 0; i < points.size(); ++i) {

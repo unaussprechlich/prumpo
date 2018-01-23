@@ -185,6 +185,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         try {
             damageCaseHandler.createTemporaryNew(contract);
+
         } catch (NoUserException e) {
             e.printStackTrace();
         }

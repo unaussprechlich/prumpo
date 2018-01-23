@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
+import android.location.Location;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -188,7 +189,28 @@ public abstract class AbstractBottomSheetBase<
     private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
         AnimationHelper.showProgress(getProgressBar());
-        LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone, typePolygon());
+
+        LocationCallbackListener executeAfter = new LocationCallbackListener() {
+            @Override
+            public void onLocationFound(Location location) {
+                // hide progress
+                getProgressBar().setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLocationNotFound() {
+                // hide progress
+                getProgressBar().setVisibility(View.GONE);
+            }
+        };
+
+        LocationCallbackListener lcl =
+                new OnAddButtonLocationCallback(
+                        getContext(),
+                        callbackDone,
+                        typePolygon(),
+                        executeAfter
+                );
 
         if (callbackDone.get()) {
             callbackDone.set(false);
@@ -230,8 +252,6 @@ public abstract class AbstractBottomSheetBase<
 
     @Override
     public void onItemCountChanged(int newItemCount) {
-        //Hide Progress
-        getProgressBar().setVisibility(View.GONE);
 
         //Vibrate
         long[] pattern = {50, 100, 50, 100};
