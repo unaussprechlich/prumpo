@@ -139,11 +139,16 @@
     <string name="map_frag_bs_contract_input_button_view_dcs">Schadensliste anzeigen</string>
     <string name="map_frag_bs_toast_input_button_add_but_contract_not_saved">Bitte den Vertrag zuerst speichern … </string>
 
+    <!-- https://www.transparent-beraten.de/agrarversicherung/ -->
     <string-array name="damages">
-        <item>Feuer</item>
-        <item>Sturm</item>
-        <item>Hochwasser</item>
-        <item>Schädlinge</item>
+        <item>Betriebshaft</item>
+        <item>Gebäude</item>
+        <item>Hagel</item>
+        <item>Maschinen</item>
+        <item>Inhalt</item>
+        <item>Ertragsschaden</item>
+        <item>Ertragsausfall</item>
+        <item>Erntehelfer</item>
     </string-array>
 
     <!-- list view - multi selection - title bar -->

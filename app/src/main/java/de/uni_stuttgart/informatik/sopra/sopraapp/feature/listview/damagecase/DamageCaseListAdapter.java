@@ -59,6 +59,7 @@ public class DamageCaseListAdapter
         holder.location.setText(String.valueOf(damageCase.getAreaCode()));
         holder.area.setText(calculateAreaValue(damageCase.getAreaSize()));
 
+        // todo is null
         String policyholder = Optional.ofNullable(damageCase.getContract())
                 .map(LiveData::getValue)
                 .map(Contract::getHolder)
