@@ -7,13 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-
-import java.util.Stack;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
@@ -24,14 +17,25 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFra
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
 
+import javax.inject.Inject;
+import java.util.Stack;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
 abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
-    @Inject MapFragment mapFragment;
-    @Inject ContractListFragment contractListFragment;
-    @Inject DamageCaseListFragment damageCaseListFragment;
-    @Inject UserListFragment userListFragment;
-    @Inject SettingsFragment settingsFragment;
-    @Inject AboutFragment aboutFragment;
+    @Inject
+    MapFragment mapFragment;
+    @Inject
+    ContractListFragment contractListFragment;
+    @Inject
+    DamageCaseListFragment damageCaseListFragment;
+    @Inject
+    UserListFragment userListFragment;
+    @Inject
+    SettingsFragment settingsFragment;
+    @Inject
+    AboutFragment aboutFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -57,7 +61,7 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
         // if drawer is open -> close it
         if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        else if(fragmentStack.size() > 1){
+        else if (fragmentStack.size() > 1) {
             fragmentStack.pop();
             switchToFragment(fragmentStack.pop());
         } else
@@ -69,8 +73,6 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
         //if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
         //    return;
-
-
 
     }
 
@@ -100,36 +102,35 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
     public void displayMapFragment() {
         switchToFragment(mapFragment);
-        navigationView.setCheckedItem(R.id.nav_map);
     }
 
     public void displayDamageCaseListFragment() {
         switchToFragment(damageCaseListFragment);
-        navigationView.setCheckedItem(R.id.nav_damageCases);
     }
 
     public void displayContractFragment() {
         switchToFragment(contractListFragment);
-        navigationView.setCheckedItem(R.id.nav_contract);
     }
 
     public void displayUserFragment() {
         switchToFragment(userListFragment);
-        navigationView.setCheckedItem(R.id.nav_users);
     }
 
     public void displaySettingsFragment() {
         switchToFragment(settingsFragment);
-        navigationView.setCheckedItem(R.id.nav_settings);
     }
 
     public void displayAboutFragment() {
         switchToFragment(aboutFragment);
-        navigationView.setCheckedItem(R.id.nav_about);
     }
 
     private Stack<Fragment> fragmentStack = new Stack<>();
 
+    /**
+     * Method which actually switches the fragment.
+     * This method will automatically select the navigation item.
+     * @param fragment the new fragment to display
+     */
     protected void switchToFragment(Fragment fragment) {
         fragmentStack.push(fragment);
 
@@ -145,7 +146,7 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
         transaction.commit();
 
         drawer.closeDrawer(GravityCompat.START);
-        navigationView.setCheckedItem(fragment.getId());
+        navigationView.setCheckedItem(getNavigationItemFor(fragment));
 
     }
 
@@ -159,6 +160,21 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
                 .filter(Fragment::isVisible)
                 .findFirst()
                 .orElse(mapFragment);
+    }
+
+    private int getNavigationItemFor(Fragment fragment) {
+        if (fragment == damageCaseListFragment)
+            return R.id.nav_damageCases;
+        else if (fragment == contractListFragment)
+            return R.id.nav_contract;
+        else if (fragment == mapFragment)
+            return R.id.nav_map;
+        else if (fragment == userListFragment)
+            return R.id.nav_users;
+        else if (fragment == settingsFragment)
+            return R.id.nav_settings;
+        else
+            return R.id.nav_about;
     }
 
     public ContractListFragment getContractListFragment() {

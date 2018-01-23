@@ -184,7 +184,7 @@
     <string name="about_fragment_contributor_3">Elias Müller</string>
     <string name="about_fragment_contact_header">Kontakt</string>
     <string name="about_fragment_contact_message">Sie haben Fragen oder brauchen Hilfe?</string>
-    <string name="about_fragment_contact_chooser_title">Send Feedback/Help</string>
+    <string name="about_fragment_contact_chooser_title">Send Feedback/Help (Email)</string>
     <string name="about_fragment_contact_email_subject">Feedback/Help</string>
     <string name="about_fragment_contact_address">st108477@stud.uni-stuttgart.de</string>
     <string name="about_fragment_licence_header">Lizenz</string>

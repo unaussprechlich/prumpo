@@ -18,11 +18,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.Subscribe;
-
-import java.util.stream.Stream;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
@@ -34,6 +29,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.stream.Stream;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
@@ -96,7 +94,6 @@ public class MainActivity
             drawerToggle.syncState();
 
             displayMapFragment();
-            navigationView.setCheckedItem(R.id.nav_map);
 
             checkPermissions();
         } catch (NoUserException e) {
