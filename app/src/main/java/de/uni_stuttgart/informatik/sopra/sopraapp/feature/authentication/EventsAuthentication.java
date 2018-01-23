@@ -10,11 +10,7 @@ public class EventsAuthentication {
     }
 
     public static class Login {
-        public final User user;
 
-        public Login(User user) {
-            this.user = user;
-        }
     }
 
     public static class Logout {
