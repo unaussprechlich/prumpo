@@ -181,7 +181,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         Contract contract = getHandler().getValue();
 
-        close();
+        close(); //TODO replace with showCloseAlert()
 
         try {
             damageCaseHandler.createTemporaryNew(contract);
