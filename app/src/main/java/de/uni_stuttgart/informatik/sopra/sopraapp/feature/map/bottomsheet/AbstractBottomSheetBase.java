@@ -4,7 +4,6 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -236,7 +235,7 @@ public abstract class AbstractBottomSheetBase<
 
         //Vibrate
         long[] pattern = {50, 100, 50, 100};
-        vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1));
+        vibrator.vibrate(50);
 
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
         boolean enabled = newItemCount > 3;
