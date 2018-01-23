@@ -9,20 +9,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-
+import android.widget.*;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +23,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandl
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
+
+import javax.inject.Inject;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 /**
  * The {@link AuthenticationActivity} provides a UI for the user to Login :3
@@ -250,7 +242,6 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
             //YEAH, FAKE LOADING TIME
             Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
