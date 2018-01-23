@@ -9,14 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
 import com.google.gson.GsonBuilder;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
+
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -28,6 +23,14 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -123,7 +126,6 @@ public class ContractShareHelper extends ContractShareHelperBindings {
 
         Formatter formatter = new Formatter(stringBuilder);
         formatter.format("%s %d:%n", strContractHeader, c.getID());
-        formatter.format("%s: %s%n", strContractName, c.getName());
         formatter.format("%s%s%n", strContractPolicyholder, policyholder);
         formatter.format("%s: %s%n", strContractDamagetypes, c.getDamageType());
         formatter.format("%s: %s%n", strContractLocation, c.getAreaCode());

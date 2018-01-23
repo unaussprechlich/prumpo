@@ -23,14 +23,16 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
@@ -48,6 +50,8 @@ public class MainActivity
 
     private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
+
+    @Inject UserHandler userHandler;
 
     /**
      * OnClick listener for Header and Profile image
@@ -95,9 +99,11 @@ public class MainActivity
             drawerToggle.setDrawerSlideAnimationEnabled(true);
             drawerToggle.syncState();
 
-            displayMapFragment();
+            userHandler.getLiveData().observe(this, this::updateUserProfileHeaderView);
 
+            displayMapFragment();
             checkPermissions();
+
         } catch (NoUserException e) {
             Intent intent = new Intent(this, AuthenticationActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -120,13 +126,13 @@ public class MainActivity
                     400);
     }
 
+    private void updateUserProfileHeaderView(User user){
+        if(user == null) return;
 
-    @Subscribe(sticky = true)
-    public void handleLogin(EventsAuthentication.Login event) {
         View headerView = navigationView.getHeaderView(0);
-        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(event.user.getRole().toString());
-        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(event.user.getName());
-        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[event.user.getProfilePicture()]);
+        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(user.getRole().toString());
+        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(user.getName());
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[user.getProfilePicture()]);
     }
 
     /**

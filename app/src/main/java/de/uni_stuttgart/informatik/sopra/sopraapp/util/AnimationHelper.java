@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ProgressBar;
 
 public class AnimationHelper {
 
@@ -26,6 +27,18 @@ public class AnimationHelper {
         view.animate().setDuration(1000)
                 .alpha(1)
                 .setListener(animatorListenerAdapter)
+                .start();
+    }
+
+    /**
+     * Shows progress below the signup/login button
+     * @param view the progress bar
+     */
+    public static void showProgress(ProgressBar view ) {
+        view.setVisibility(View.VISIBLE);
+        view.setAlpha(0);
+        view.animate().setDuration(1000)
+                .alpha(1)
                 .start();
     }
 

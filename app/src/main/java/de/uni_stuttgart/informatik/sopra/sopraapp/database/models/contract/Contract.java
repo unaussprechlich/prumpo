@@ -6,6 +6,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
@@ -59,10 +60,6 @@ public final class Contract implements ModelDB<ContractRepository> {
     long holderID;
     @Ignore LiveData<User> holder;
 
-    @ColumnInfo(index = true)
-    @Expose
-    String name;
-
     @Expose
     String damageType;
 
@@ -84,7 +81,6 @@ public final class Contract implements ModelDB<ContractRepository> {
     DateTime date;
 
     public Contract(
-            String name,
             String areaCode,
             double areaSize,
             long ownerID,
@@ -93,12 +89,11 @@ public final class Contract implements ModelDB<ContractRepository> {
             DateTime date,
             String damageType,
             boolean intial) {
-        this(name, areaCode, areaSize, ownerID, holderID, coordinates, date, damageType);
+        this(areaCode, areaSize, ownerID, holderID, coordinates, date, damageType);
         this.initial = intial;
     }
 
     public Contract(
-            String name,
             String areaCode,
             double areaSize,
             long ownerID,
@@ -107,7 +102,6 @@ public final class Contract implements ModelDB<ContractRepository> {
             DateTime date,
             String damageType) {
         SopraApp.getAppComponent().inject(this);
-        this.name = name;
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.ownerID = ownerID;
@@ -115,6 +109,8 @@ public final class Contract implements ModelDB<ContractRepository> {
         this.coordinates = coordinates;
         this.date = date;
         this.damageType = damageType;
+
+        Log.e("CONTRACT", toString());
     }
 
     public boolean isChanged() {
@@ -139,10 +135,6 @@ public final class Contract implements ModelDB<ContractRepository> {
     @Override
     public ContractRepository getRepository() {
         return contractRepository;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDamageType() {
@@ -206,12 +198,6 @@ public final class Contract implements ModelDB<ContractRepository> {
 
     // SETTER ######################################################################################
 
-    public Contract setName(String name) {
-        isChanged = true;
-        this.name = name;
-        return this;
-    }
-
     public Contract setCoordinates(List<LatLng> coordinates) {
         isChanged = true;
         this.coordinates = coordinates;
@@ -255,7 +241,6 @@ public final class Contract implements ModelDB<ContractRepository> {
     }
 
     public static final class Builder {
-        private String name = "";
         private String areaCode = "";
         private double areaSize = 0;
         private long holderID = -1;
@@ -270,10 +255,6 @@ public final class Contract implements ModelDB<ContractRepository> {
             SopraApp.getAppComponent().inject(this);
         }
 
-        public Builder setName(String name) {
-            this.name = name;
-            return this;
-        }
 
         public Builder setDamageType(String damageType) {
             this.damageType = damageType;
@@ -312,7 +293,7 @@ public final class Contract implements ModelDB<ContractRepository> {
 
         public Contract create() throws NoUserException {
             long ownerID = userHandler.getCurrentUser().getID();
-            return new Contract(name, areaCode, areaSize, ownerID, holderID, coordinates, date, damageType, true);
+            return new Contract(areaCode, areaSize, ownerID, holderID, coordinates, date, damageType, true);
         }
     }
 
@@ -331,7 +312,13 @@ public final class Contract implements ModelDB<ContractRepository> {
     }
 
     @Override
+    public int hashCode() {
+        return ("CONTRACT_" + id).hashCode();
+    }
+
+    @Override
     public String toString() {
-        return name + " #" + id;
+        if(isInitial()) return "";
+        return "#" + Math.abs(hashCode());
     }
 }

@@ -58,8 +58,17 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     private void insertContract(Contract contract) {
         if (contract == null) return;
         damageCaseContract = contract;
-        contentPolicyholder.setText(contract.getHolderID() + "");
+
         contentContractName.setText(contract.toString());
+        toolbarDamagecaseLocation.setText(contract.getAreaCode());
+
+        try {
+            String holder = contract.getHolderAsync().toString();
+            contentPolicyholder.setText(holder);
+            toolbarDamagecaseName.setText(holder);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -107,6 +116,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     protected void insertExistingData(DamageCase damageCase) {
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
         setDate(damageCase.getDate());
+        toolbarDamagecaseNr.setText(damageCase.toString());
     }
 
     @Override
@@ -153,7 +163,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
             Log.e("USER", user.toString());
 
-            identifierView.setText("#" + user.getID());
+            identifierView.setText(user.toString());
             emailView.setText(user.getEmail());
             nameView.setText(user.getName());
 
@@ -181,11 +191,10 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         TextView damagetypesView = inflate.findViewById(R.id.bs_dc_detail_contract_damagetypes);
         TextView areaView = inflate.findViewById(R.id.bs_dc_detail_contract_area);
 
-        // todo
-        identifierView.setText("TODO vermerkt");
-        dateView.setText(DateTime.now().toString(strSimpleDateFormatPattern, Locale.GERMAN));
-        damagetypesView.setText("TODO vermerkt");
-        areaView.setText("TODO vermerkt");
+        identifierView.setText(damageCaseContract.toString());
+        dateView.setText(damageCaseContract.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+        damagetypesView.setText(damageCaseContract.getDamageType());
+        areaView.setText(damageCaseContract.getAreaCode());
 
         builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */ });
         builder.create().show();
@@ -199,6 +208,5 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
         String dateString = dateTime.toString(strSimpleDateFormatPattern, Locale.GERMAN);
         contentInputDate.setText(dateString);
-
     }
 }

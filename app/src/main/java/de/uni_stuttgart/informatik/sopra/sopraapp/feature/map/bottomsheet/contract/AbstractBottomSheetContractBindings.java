@@ -2,6 +2,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contr
 
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import butterknife.BindArray;
 import butterknife.BindString;
@@ -46,6 +47,9 @@ public abstract class AbstractBottomSheetContractBindings
     @BindView(R.id.bs_contract_toolbar_date)
     TextView toolbarContractDate;
 
+    @BindView(R.id.bc_contract_progress)
+    ProgressBar progressBar;
+
     // ### Strings ######################################################################################## Strings ###
 
     @BindString(R.string.map_frag_bottomsheet_inp_dialog_contract_policyholder_header)
@@ -88,12 +92,18 @@ public abstract class AbstractBottomSheetContractBindings
         return strBottomSheetDeleteDialogMessage;
     }
 
+    @Override
+    protected ProgressBar getProgressBar() {
+        return progressBar;
+    }
 
     // ### Constructor ################################################################################ Constructor ###
 
     public AbstractBottomSheetContractBindings(IBottomSheetOwner owner) {
         super(owner);
     }
+
+
 
 
 }

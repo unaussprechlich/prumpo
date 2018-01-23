@@ -4,6 +4,14 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.inject.Inject;
+
 import butterknife.BindColor;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -14,10 +22,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-import java.util.List;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase.calculateAreaValue;
 
@@ -62,15 +66,16 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
     public void onBindViewHolder(ContractListViewHolder holder, int position) {
         Contract contract = dataHolder.dataList.get(position);
 
-        // set bindings
-        // todo set correct identification
-        holder.contractIdentification.setText(String.format("#%s", contract.getID()));
+        holder.contractIdentification.setText(contract.toString());
         holder.damageTypes.setText(contract.getDamageType());
         holder.area.setText(calculateAreaValue(contract.getAreaSize()));
 
-        // todo is null
-        User user = contract.getHolder().getValue();
-        holder.policyHolder.setText(user != null ? user.getName() : "");
+        try {
+            User user = contract.getHolderAsync();
+            holder.policyHolder.setText(user != null ? user.toString() : "");
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // background color
         holder.cardView.setCardBackgroundColor(

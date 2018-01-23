@@ -1,6 +1,7 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase;
 
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindString;
@@ -30,7 +31,6 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
     @BindView(R.id.bs_dc_toolbar_location)
     TextView toolbarDamagecaseLocation;
 
-
     @BindView(R.id.bs_dc_editText_inputDate)
     EditText contentInputDate;
 
@@ -39,6 +39,9 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
 
     @BindView(R.id.bs_dc_textView_inputContractName)
     TextView contentContractName;
+
+    @BindView(R.id.bc_damagecase_progress)
+    ProgressBar progressBar;
 
     // ### Strings ######################################################################################## Strings ###
 
@@ -56,6 +59,11 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
     @Override
     protected String getDeleteMessage() {
         return strBottomSheetDeleteDialogMessage;
+    }
+
+    @Override
+    public ProgressBar getProgressBar() {
+        return progressBar;
     }
 
     // ### Constructor ################################################################################ Constructor ###

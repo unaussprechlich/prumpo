@@ -3,12 +3,13 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseEventBusActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 
-public abstract class ProfileActivityBindings extends BaseEventBusActivity {
+public abstract class ProfileActivityBindings extends BaseActivity {
 
     @BindString(R.string.profile_title_app_bar)
     String strProfileAppBarTitle;

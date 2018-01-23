@@ -8,6 +8,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -67,16 +68,23 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @Override
     protected void insertExistingData(Contract contract) {
-        inputLocation.setText(contract.getAreaCode());
-        displayCurrentAreaValue(contract.getAreaSize());
-        setSelectedDamageTypes(contract.getDamageType());
+
         contract.getHolder().observe(this, holder -> {
-            if (holder != null) inputPolicyholder.setText(holder.toString());
+            if (holder == null) return;
+            inputPolicyholder.setText(holder.toString());
+            toolbarContractName.setText(holder.toString());
         });
+
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
 
+        displayCurrentAreaValue(contract.getAreaSize());
+        setSelectedDamageTypes(contract.getDamageType());
+        inputLocation.setText(contract.getAreaCode());
+        toolbarContractNr.setText(contract.toString());
         buttonViewDamageCases.setEnabled(!damageCasesOfThisContract.isEmpty());
+        toolbarContractDate.setText(contract.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
     }
+
 
     @Override
     public int getLayoutResourceFile() {

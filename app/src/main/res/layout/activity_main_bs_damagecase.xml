@@ -1,6 +1,7 @@
 <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/bottom_sheet_container_all"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_sheet_container_all"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -30,6 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bs_dc_bubblelist"
                 />
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

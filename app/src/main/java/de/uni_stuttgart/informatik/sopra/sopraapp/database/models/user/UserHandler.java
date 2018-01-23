@@ -45,12 +45,6 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
     }
 
     public void logout(){
-        EventBus.getDefault().removeAllStickyEvents();
-        try {
-            EventBus.getDefault().postSticky(new EventsAuthentication.Logout(getCurrentUser()));
-        } catch (NoUserException e) {
-            e.printStackTrace();
-        }
         set(null);
 
         // restart app with first activity as default main activity

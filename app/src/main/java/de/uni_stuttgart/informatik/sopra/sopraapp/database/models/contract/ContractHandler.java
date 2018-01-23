@@ -25,7 +25,7 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
 
     @Override
     protected Contract createNewObject() throws NoUserException {
-        return new Contract.Builder().setName("Unbenannter Vertrag").create();
+        return new Contract.Builder().create();
     }
 
     @Override

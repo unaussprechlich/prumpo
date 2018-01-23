@@ -4,6 +4,8 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,6 +44,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocatio
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -66,13 +70,12 @@ public abstract class AbstractBottomSheetBase<
 
     // ### Injected ###################################################################################### Injected ###
 
-    @Inject
-    UserRepository userRepository;
-    @Inject
-    GpsService gpsService;
+    @Inject UserRepository userRepository;
+    @Inject GpsService gpsService;
+    @Inject ModelHandler handler;
+    @Inject Vibrator vibrator;
+
     protected BottomSheetListAdapter bottomSheetListAdapter;
-    @Inject
-    ModelHandler handler;
 
     //You can't inject into protected fields, just add some protected getters
     protected GpsService getGpsService() {
@@ -85,6 +88,10 @@ public abstract class AbstractBottomSheetBase<
 
     protected UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    protected Context getContext() {
+        return iBottomSheetOwner.getContext();
     }
 
     // LIFECYLE ####################################################################################
@@ -175,16 +182,13 @@ public abstract class AbstractBottomSheetBase<
 
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-    protected Context getContext() {
-        return iBottomSheetOwner.getContext();
-    }
-
     private NestedScrollView getNestedScrollView() {
         return iBottomSheetOwner.getNestedScrollView();
     }
 
     private void onBubbleListAddButtonPressed() {
         Log.i("addVertexToAcPoly", "init");
+        AnimationHelper.showProgress(getProgressBar());
         LocationCallbackListener lcl = new OnAddButtonLocationCallback(getContext(), callbackDone, typePolygon());
 
         if (callbackDone.get()) {
@@ -212,6 +216,8 @@ public abstract class AbstractBottomSheetBase<
 
     protected abstract PolygonType typePolygon();
 
+    protected abstract ProgressBar getProgressBar();
+
     // ### Implemented Methods ################################################################ Implemented Methods ###
 
 
@@ -225,6 +231,13 @@ public abstract class AbstractBottomSheetBase<
 
     @Override
     public void onItemCountChanged(int newItemCount) {
+        //Hide Progress
+        getProgressBar().setVisibility(View.GONE);
+
+        //Vibrate
+        long[] pattern = {50, 100, 50, 100};
+        vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1));
+
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_COLLAPSED);
         boolean enabled = newItemCount > 3;
 

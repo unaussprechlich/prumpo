@@ -131,8 +131,15 @@ public final class User implements ModelDB<UserRepository> {
     }
 
     @Override
+    public int hashCode() {
+        return ("USER_" + id).hashCode();
+    }
+
+
+    @Override
     public String toString() {
-        return name + " #" + id;
+        if(isInitial()) return name;
+        return name + " #" + Math.abs(hashCode());
     }
 
     public static class Builder {

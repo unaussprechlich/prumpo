@@ -50,9 +50,6 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
     @ColumnInfo(index = true)
     long ownerID;
 
-    @ColumnInfo(index = true)
-    String name;
-
     long expertID;
     @Ignore LiveData<User> expert;
     @Ignore User usereCached;
@@ -67,7 +64,6 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
     double areaSize;
 
     public DamageCase(
-            String name,
             long expertID,
             long contractID,
             String areaCode,
@@ -76,12 +72,11 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
             List<LatLng> coordinates,
             DateTime date,
             boolean intial) {
-        this(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date);
+        this(expertID, contractID, areaCode, areaSize, ownerID, coordinates, date);
         this.initial = intial;
     }
 
     public DamageCase(
-            String name,
             long expertID,
             long contractID,
             String areaCode,
@@ -90,7 +85,6 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
             List<LatLng> coordinates,
             DateTime date) {
         SopraApp.getAppComponent().inject(this);
-        this.name = name;
         setExpertID(expertID);
 
         try {
@@ -131,10 +125,6 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
 
     //GETTER #######################################################################################
 
-    public String getName() {
-        return name;
-    }
-
     public long getContractID() {
         return contractID;
     }
@@ -173,18 +163,23 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         return contract;
     }
 
+    public Contract getContractAsync() throws ExecutionException, InterruptedException {
+        return contractRepository.getAsync(contractID);
+    }
+
+    //Let's don't talk about ineffective queries, they won't even notice xD
+    public User getContractHolderAsync() throws ExecutionException, InterruptedException {
+        Contract contract = getContractAsync();
+        if(contract == null) return null;
+        return userRepository.getAsync(contract.getHolderID());
+    }
+
     public LiveData<User> getExpert() {
         return expert;
     }
 
 
     // SETTER ######################################################################################
-
-    public DamageCase setName(String name) {
-        isChanged = true;
-        this.name = name;
-        return this;
-    }
 
     public DamageCase setContractID(long contractID) throws ExecutionException, InterruptedException {
         if(contractID == -1 || this.contractID == contractID) return this;
@@ -234,8 +229,18 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
         return this;
     }
 
+    @Override
+    public int hashCode() {
+        return ("DAMAGECASE_" + id).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        if(isInitial()) return "";
+        return "#" + Math.abs(hashCode());
+    }
+
     public static final class Builder {
-        private String name = "";
         private long contractID = -1;
         private long expertID = -1;
         private String areaCode = "";
@@ -247,11 +252,6 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
 
         Builder(){
             SopraApp.getAppComponent().inject(this);
-        }
-
-        public Builder setName(String name) {
-            this.name = name;
-            return this;
         }
 
         public Builder setContractID(long contractID) {
@@ -286,7 +286,7 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
 
         public DamageCase create() throws NoUserException {
             long ownerID = userHandler.getCurrentUser().getID();
-            return new DamageCase(name, expertID, contractID, areaCode, areaSize, ownerID, coordinates, date, true);
+            return new DamageCase(expertID, contractID, areaCode, areaSize, ownerID, coordinates, date, true);
         }
     }
 }

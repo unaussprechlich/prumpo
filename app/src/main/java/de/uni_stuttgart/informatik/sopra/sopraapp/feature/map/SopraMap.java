@@ -290,6 +290,7 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onVertexCreated(EventsVertex.Created event) {
+        //TODO USE PolygonType ;)
         if (activePolygon == null) {
             newPolygon(event.position, event.polygonType);
             return;
@@ -409,7 +410,7 @@ public class SopraMap implements LifecycleObserver {
                         .center(latLngOf(location))
                         .radius(radius)
                         .strokeWidth(4f)
-                        .strokeColor(resources.getColor(R.color.h_purple_darker, null))
+                        .strokeColor(resources.getColor(R.color.h_purple_lighter, null))
                         .fillColor(resources.getColor(R.color.purple_lighter_30, null))
                         .zIndex(0);
 
@@ -419,7 +420,7 @@ public class SopraMap implements LifecycleObserver {
                         options
                                 .radius(1)
                                 .strokeWidth(10)
-                                .fillColor(resources.getColor(R.color.h_purple_darker, null))
+                                .fillColor(resources.getColor(R.color.h_purple_lighter, null))
                 );
     }
 
