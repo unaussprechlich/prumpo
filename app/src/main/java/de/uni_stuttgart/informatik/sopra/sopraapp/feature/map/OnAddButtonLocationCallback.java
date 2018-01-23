@@ -21,6 +21,7 @@ public class OnAddButtonLocationCallback implements LocationCallbackListener {
     public OnAddButtonLocationCallback(Context context, AtomicBoolean callbackDone, PolygonType polygonType) {
         this.context = context;
         this.callbackDone = callbackDone;
+        this.polygonType = polygonType;
     }
 
     @Override
