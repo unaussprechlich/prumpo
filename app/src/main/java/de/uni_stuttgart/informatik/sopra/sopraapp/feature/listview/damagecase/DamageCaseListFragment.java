@@ -67,6 +67,8 @@ public class DamageCaseListFragment
     public boolean onQueryTextChange(String newText) {
 
         ArrayList<DamageCase> damageCases = damageCaseList.stream()
+
+                // todo -> wirft noch nullpointer
                 .filter(damageCase -> compareBothUpper(damageCase.getContract().getValue().getHolder().getValue().toString(), newText))
                 .collect(Collectors.toCollection(ArrayList::new));
 
