@@ -209,7 +209,7 @@ public class SopraMap implements LifecycleObserver {
     public void onLogin(EventsAuthentication.Login event) {
         // the database tells us what shall exist!
         damageCaseRepository.getAll().observeForever(damageCases -> {
-            if (damageCases == null) return;
+            if (damageCases == null || damageCases.size() == 0) return;
 
 
             if (cachedDamageCases != null) {
@@ -251,7 +251,7 @@ public class SopraMap implements LifecycleObserver {
         /* repeat the same binding-pattern for contracts */
 
         contractRepository.getAll().observeForever(contracts -> {
-            if (contracts == null) return;
+            if (contracts == null || contracts.size() == 0) return;
 
             if (cachedContracts != null) {
                 cachedContracts.clear();
@@ -263,11 +263,6 @@ public class SopraMap implements LifecycleObserver {
 
             for (Contract contract : cachedContracts) {
                 long polygonId = contract.getID();
-
-                //  TODO: this should in theory never occur
-                if (contract.getCoordinates().size() == 0) {
-                    continue;
-                }
 
                 PolygonContainer contractContainer =
                         new PolygonContainer(
@@ -321,17 +316,15 @@ public class SopraMap implements LifecycleObserver {
 
     @Subscribe
     public void onAbortBottomSheet(EventsBottomSheet.ForceClose event) {
-        // TODO: fix not removing newly created polygon on force close!
-        System.out.println("ABORT");
         removeActivePolygon();
+
         reloadDamageCases();
+        reloadContracts();
     }
 
     @Subscribe
     public void onCloseBottomSheet(EventsBottomSheet.Close event) {
-        System.out.println("CLOSE");
-        removeActivePolygon();
-        reloadDamageCases();
+        deselectActivePolygon();
     }
 
    /* <----- exposed methods -----> */
@@ -545,17 +538,13 @@ public class SopraMap implements LifecycleObserver {
 
     void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
         PolygonContainer polygon =
-                (PolygonContainer)
-                        drawPolygonOf(coordinates, type, uniqueId)
-                                .getTag();
+                (PolygonContainer) drawPolygonOf(coordinates, type, uniqueId).getTag();
 
         polygon.storedIn().put(uniqueId, polygon);
     }
 
     private void reloadDamageCases() {
-        if (cachedDamageCases == null) {
-            return;
-        }
+        if (cachedDamageCases == null)  return;
 
         clearAllDamages();
 
@@ -568,9 +557,20 @@ public class SopraMap implements LifecycleObserver {
         }
     }
 
-    private void clearAllDamages() {
+    private void reloadContracts() {
+        if (cachedContracts == null) return;
 
-        removeActivePolygon();
+        clearAllContracts();
+
+        for (Contract contract : cachedContracts) {
+            loadPolygonOf(
+                    contract.getCoordinates(),
+                    PolygonType.CONTRACT,
+                    contract.getID()
+            );
+        }
+    }
+    private void clearAllDamages() {
 
         PolygonContainer polygon;
 
@@ -582,6 +582,19 @@ public class SopraMap implements LifecycleObserver {
         }
 
         damagePolygons.clear();
+    }
+
+    private void clearAllContracts() {
+        PolygonContainer polygon;
+
+        for (int i = 0; i < contractPolygons.size(); ++i) {
+            long key = contractPolygons.keyAt(i);
+
+            polygon = contractPolygons.get(key);
+            polygon.removeMapObject();
+        }
+
+        contractPolygons.clear();
     }
 
     private void deselectActivePolygon() {
@@ -600,7 +613,6 @@ public class SopraMap implements LifecycleObserver {
 
         activePolygon.removeMapObject();
         activePolygon.toggleHighlight();
-        activePolygon = null;
     }
 
     private PolygonContainer polygonFrom(long uniqueId, PolygonType type) {
@@ -727,7 +739,9 @@ public class SopraMap implements LifecycleObserver {
         // TODO: this should be an assertion
         if (indexActiveVertex < 0) return;
 
-        activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition());
+        if (!activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition())) {
+            vibrator.vibrate(300);
+        };
 
         previewPolyline.remove();
         previewPolyline = null;
@@ -750,6 +764,7 @@ public class SopraMap implements LifecycleObserver {
         LongSparseArray<PolygonContainer> polygons = polygonContainers.get(0).storedIn();
 
         for (PolygonContainer polygonContainer : polygonContainers) {
+
             long polygonID = polygonContainer.uniqueId;
             PolygonType polygonType = polygonContainer.type;
             List<LatLng> coordinates = polygonContainer.data.getPoints();
@@ -788,6 +803,7 @@ public class SopraMap implements LifecycleObserver {
 
         // ultimately, remove all remaining map-objects that weren't in the DB
         for (int i = 0; i < polygons.size(); ++i) {
+
             long key = polygons.keyAt(i);
             polygon = polygons.get(key);
 
@@ -864,7 +880,7 @@ public class SopraMap implements LifecycleObserver {
 
                 activePolygon.removeHighlightCircles();
 
-                // deselect (and unhighlight) polygon if clicked twice in a row
+                // deselect (and unhighlight) polygon if called twice in a row
                 if (this == activePolygon) {
                     activePolygon = null;
                     isHighlighted = false;

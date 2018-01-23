@@ -94,6 +94,7 @@ public class SopraPolygon {
     // TODO: implement intersection check
     private boolean notIntersecting() {
         return true;
+//        return !Helper.doesPolygonSelfIntersect(vertices);
     }
 
 }

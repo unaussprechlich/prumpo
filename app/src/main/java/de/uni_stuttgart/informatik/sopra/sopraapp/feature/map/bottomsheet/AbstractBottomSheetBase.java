@@ -189,7 +189,7 @@ public abstract class AbstractBottomSheetBase<
 
         if (callbackDone.get()) {
             callbackDone.set(false);
-            getGpsService().singleLocationCallback(lcl, 10000);
+            getGpsService().singleLocationCallback(lcl, 5000);
         }
     }
 

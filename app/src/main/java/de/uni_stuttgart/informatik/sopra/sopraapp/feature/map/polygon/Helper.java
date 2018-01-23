@@ -11,6 +11,23 @@ import java.util.List;
  */
 public class Helper {
 
+    public static final double EPSILON = 0.001;
+
+    private static boolean equals(final double a, final double b) {
+
+        if (a == b) return true;
+
+        return Math.abs(a-b) < EPSILON;
+    }
+
+    private static int compare(final double a, final double b) {
+        return equals(a, b)
+                    ? 0
+                    : (a < b)
+                        ? -1
+                        : + 1;
+    }
+
     public static boolean doesPolygonSelfIntersect(List<LatLng> points) {
         if (points.size() == 3) return false;
 
@@ -35,42 +52,47 @@ public class Helper {
     }
 
     private static boolean intersect(Point2D a, Point2D b, Point2D c, Point2D d) {
+//
+//        int orientABC = isCCw(a, b, c);
+//        int orientABD = isCCw(a, b, d);
+//        int orientCDA = isCCw(c, d, a);
+//        int orientCDB = isCCw(c, d, b);
+//
+//        // the general case;
+//        if (orientABC != orientABD && orientCDA != orientCDB)
+//            return true;
+//
+//         /* special cases */
+//
+////        if (orientABC == 0 && onSegment(a, c, b)) return true;
+////
+////        if (orientABD == 0 && onSegment(a, d, b)) return true;
+////
+////        if (orientCDA == 0 && onSegment(c, a, d)) return true;
+////
+////        if (orientCDB == 0 && onSegment(c, b, d)) return true;
+//
+//        // neither of those cases hold, return false!
+//        return false;
 
-        int orientABC = orientation(a, b, c);
-        int orientABD = orientation(a, b, d);
-        int orientCDA = orientation(c, d, a);
-        int orientCDB = orientation(c, d, b);
-
-        // the general case;
-        if (orientABC != orientABD && orientCDA != orientCDB)
-            return true;
-
-         /* special cases */
-
-        if (orientABC == 0 && onSegment(a, c, b)) return true;
-
-        if (orientABD == 0 && onSegment(a, d, b)) return true;
-
-        if (orientCDA == 0 && onSegment(c, a, d)) return true;
-
-        if (orientCDB == 0 && onSegment(c, b, d)) return true;
-
-        // neither of those cases hold, return false!
-        return false;
+        return isCCw(a, c, d) != isCCw(b, c, d)
+                && isCCw(a, b, c) != isCCw(a, b, d);
 
     }
 
-    private static int orientation(Point2D a, Point2D b, Point2D c) {
+    private static boolean isCCw(Point2D a, Point2D b, Point2D c) {
 
-        double val = ( (b.y-a.y) * (c.x-b.x)
-                -(b.x-a.x) * (c.y-b.y));
+//        double val = ( (b.y-a.y) * (c.x-b.x)
+//                      -(b.x-a.x) * (c.y-b.y));
+//
+//        // 0 ==> co-linear
+//        if (equals(val, 0)) return 0;
+//
+//        return (compare(val, 0) > 0)
+//                ? 1  // clockwise or
+//                : 2; // counter-clockwise otherwise
 
-        // 0 ==> co-linear
-        if (val == 0) return 0;
-
-        return (val > 0)
-                ? 1  // clockwise or
-                : 2; // counter-clockwise otherwise
+        return compare((c.y - a.y) * (b.x - a.x), (b.y - a.y) * (c.x - a.x)) > 1;
 
     }
 
@@ -212,7 +234,6 @@ public class Helper {
             k = length + k;
         }
 
-//        System.out.println(k);
         return list.get(k);
     }
 

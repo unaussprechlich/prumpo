@@ -179,7 +179,13 @@ public class GpsService {
                         if (singleCallbackOver) return;
 
                         singleCallbackOver = true;
-                        callback.onLocationNotFound();
+
+                        if (lastLocation == null) {
+                            callback.onLocationNotFound();
+                            return;
+                        }
+
+                        callback.onLocationFound(lastLocation);
                     }
 
                     @Override
