@@ -46,29 +46,11 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     // ### Constructor ################################################################################ Constructor ###
 
-    public BottomSheetDamagecase(IBottomSheetOwner owner, Contract contract){
+    public BottomSheetDamagecase(IBottomSheetOwner owner){
         super(owner);
         SopraApp.getAppComponent().inject(this);
         init();
-        contractHandler.loadFromDatabase(contract.getID());
-        contractHandler.getLiveData().observe(this, this::insertContract);
         iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
-    }
-
-    private void insertContract(Contract contract) {
-        if (contract == null) return;
-        damageCaseContract = contract;
-
-        contentContractName.setText(contract.toString());
-        toolbarDamagecaseLocation.setText(contract.getAreaCode());
-
-        try {
-            String holder = contract.getHolderAsync().toString();
-            contentPolicyholder.setText(holder);
-            toolbarDamagecaseName.setText(holder);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -117,6 +99,25 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
         setDate(damageCase.getDate());
         toolbarDamagecaseNr.setText(damageCase.toString());
+        contractHandler.loadFromDatabase(damageCase.getContractID());
+        contractHandler.getLiveData().observe(this, this::insertContract);
+    }
+
+    private void insertContract(Contract contract) {
+        if (contract == null) return;
+        damageCaseContract = contract;
+
+
+        contentContractName.setText(contract.toString());
+        toolbarDamagecaseLocation.setText(contract.getAreaCode());
+
+        try {
+            String holder = contract.getHolderAsync().toString();
+            contentPolicyholder.setText(holder);
+            toolbarDamagecaseName.setText(holder);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

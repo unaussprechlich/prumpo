@@ -184,9 +184,10 @@ public final class DamageCase implements ModelDB<DamageCaseRepository> {
     public DamageCase setContractID(long contractID) throws ExecutionException, InterruptedException {
         if(contractID == -1 || this.contractID == contractID) return this;
 
-        if(this.contractID >= 0){
+        if(this.contractID > 0){
             Contract contract = contractRepository.getAsync(this.contractID);
-            contract.removeDamageCase(this).save();
+            if(contract != null)
+                contract.removeDamageCase(this).save();
         }
 
         isChanged = true;

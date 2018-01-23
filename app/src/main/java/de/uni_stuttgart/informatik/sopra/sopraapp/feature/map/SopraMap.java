@@ -137,7 +137,7 @@ public class SopraMap implements LifecycleObserver {
 
             if (polygon.type == PolygonType.DAMAGE_CASE) {
                 EventBus.getDefault()
-                        .post(new EventsPolygonSelected.DamageCase(polygon.uniqueId));
+                        .postSticky(new EventsPolygonSelected.DamageCase(polygon.uniqueId));
 
             } else {
                 EventBus.getDefault()

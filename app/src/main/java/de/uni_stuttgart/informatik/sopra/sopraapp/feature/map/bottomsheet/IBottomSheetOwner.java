@@ -13,7 +13,6 @@ public interface IBottomSheetOwner{
     SopraMap getSopraMap();
     Context getContext();
     LockableBottomSheetBehaviour getLockableBottomSheetBehaviour();
-    void openBottomSheet(Class clazz);
-    <Model extends ModelDB> void  openBottomSheet(Class clazz, Model model);
+    <Model extends ModelDB> void openBottomSheet(Class<Model> clazz);
 
 }

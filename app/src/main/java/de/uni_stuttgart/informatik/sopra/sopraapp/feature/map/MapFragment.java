@@ -16,16 +16,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+
+import com.google.android.gms.maps.MapsInitializer;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
@@ -37,11 +47,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -52,7 +57,8 @@ public class MapFragment
     @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject ContractRepository contractRepository;
-    //@Inject DamageCaseHandler damageCaseHandler;
+    @Inject DamageCaseHandler damageCaseHandler;
+    @Inject ContractHandler contractHandler;
 
     @BindView(R.id.bottom_sheet_container)
     NestedScrollView nestedScrollView;
@@ -85,24 +91,16 @@ public class MapFragment
 
     //EVENT BUS ####################################################################################
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onOpenDamageCase(EventsPolygonSelected.DamageCase event) {
-        try {
-            Log.e("OPEN", "damageCase");
-            openBottomSheet(DamageCase.class, damageCaseRepository.getAsync(event.uniqueId));
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        damageCaseHandler.loadFromDatabase(event.uniqueId);
+        new Handler().postDelayed(() -> openBottomSheet(DamageCase.class), 400);
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onOpenContract(EventsPolygonSelected.Contract event){
-        try {
-            Log.e("OPEN", "contract");
-            openBottomSheet(Contract.class, contractRepository.getAsync(event.uniqueId));
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        contractHandler.loadFromDatabase(event.uniqueId);
+        new Handler().postDelayed(() -> openBottomSheet(Contract.class), 400);
     }
 
     @Subscribe
@@ -286,11 +284,7 @@ public class MapFragment
 
     private AbstractBottomSheetBase currentBottomSheet = null;
 
-    public void openBottomSheet(Class clazz ){
-        openBottomSheet(clazz, null);
-    }
-
-    public <Model extends ModelDB> void openBottomSheet(Class clazz, Model model){
+    public <Model extends ModelDB> void openBottomSheet(Class<Model> clazz){
 
         if(currentBottomSheet != null) {
             currentBottomSheet.close();
@@ -298,7 +292,7 @@ public class MapFragment
         }
 
         if(clazz == DamageCase.class){
-            currentBottomSheet = new BottomSheetDamagecase(this, (Contract) model);
+            currentBottomSheet = new BottomSheetDamagecase(this);
             showCurrentBottomSheet();
         } else if(clazz == Contract.class){
             currentBottomSheet = new BottomSheetContract(this);

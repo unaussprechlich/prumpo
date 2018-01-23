@@ -12,12 +12,15 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
@@ -30,7 +33,14 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     protected List<String> selectedDamageTypes = new ArrayList<>();
     protected List<DamageCase> damageCasesOfThisContract = new ArrayList<>();
 
+    @Inject
+    DamageCaseHandler damageCaseHandler;
+
     // ### Constructor ################################################################################ Constructor ###
+
+    public BottomSheetContract(IBottomSheetOwner owner, Contract contract) {
+        this(owner);
+    }
 
     public BottomSheetContract(IBottomSheetOwner owner) {
         super(owner);
@@ -172,7 +182,13 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         Contract contract = getHandler().getValue();
 
         close();
-        iBottomSheetOwner.openBottomSheet(DamageCase.class, contract);
+
+        try {
+            damageCaseHandler.createTemporaryNew(contract);
+        } catch (NoUserException e) {
+            e.printStackTrace();
+        }
+        iBottomSheetOwner.openBottomSheet(DamageCase.class);
     }
 
     @OnClick(R.id.bs_contract_view_damagecases)
