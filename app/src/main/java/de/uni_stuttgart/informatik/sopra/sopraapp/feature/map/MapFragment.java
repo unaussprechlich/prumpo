@@ -16,18 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import com.google.android.gms.maps.MapsInitializer;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.google.android.gms.maps.MapsInitializer;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
@@ -47,6 +39,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import javax.inject.Inject;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -307,5 +304,14 @@ public class MapFragment
 
     private void showCurrentBottomSheet() {
         new Handler().postDelayed(currentBottomSheet::show, 400);
+    }
+
+    @Override
+    public BackButtonProceedPolicy onBackPressed() {
+
+        /* Consume BackPress if bottom sheet is shown */
+        return currentBottomSheet != null
+                ? BackButtonProceedPolicy.SKIP_ACTIVITY
+                : BackButtonProceedPolicy.WITH_ACTIVITY;
     }
 }

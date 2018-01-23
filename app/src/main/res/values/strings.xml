@@ -151,6 +151,7 @@
         <item>Erntehelfer</item>
     </string-array>
 
+    <string name="listview_damagecase_item_location">Ort:</string>
     <!-- list view - multi selection - title bar -->
     <string name="listview_contract_multiselection_contract_singular">Vertrag</string>
     <string name="listview_contract_multiselection_contract_plural">Verträge</string>
@@ -176,7 +177,7 @@
     <string name="contract_export_location">Ort</string>
     <string name="contract_export_date">Datum</string>
     <string name="contract_export_size">Versicherungsfläche</string>
-    <string name="contract_export_damagetypes">Versicherte Schäden</string>
+    <string name="contract_export_damagetypes">Versichert:</string>
 
     <!-- list view - multi selection - sharing as json -->
     <string name="contract_export_json_file_name_date_pattern">yyyyMMddHHmmss.SSS</string>

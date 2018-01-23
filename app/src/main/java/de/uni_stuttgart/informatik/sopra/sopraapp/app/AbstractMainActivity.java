@@ -13,6 +13,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.Cont
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
@@ -58,22 +59,28 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
     @Override
     public void onBackPressed() {
 
-        // if drawer is open -> close it
-        if (drawer.isDrawerOpen(GravityCompat.START))
+        // 1: If drawer open -> Close -> Consume BackPress
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        else if (fragmentStack.size() > 1) {
+            return;
+        }
+
+        // Invoke active fragments BackPress
+        FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
+        FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
+
+        // 2: If fragment consumed BackPress -> Stop
+        if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
+            return;
+
+        // 3: Switch to recent Fragment
+        if (fragmentStack.size() > 1) {
             fragmentStack.pop();
             switchToFragment(fragmentStack.pop());
-        } else
-            super.onBackPressed();
+            return;
+        }
 
-        // if active fragment wants to override back button -> perform fragment back button action
-        //FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
-        //FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
-
-        //if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
-        //    return;
-
+        super.onBackPressed();
     }
 
     // ### Activity navigation ########################################################################################

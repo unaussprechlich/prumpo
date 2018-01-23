@@ -9,15 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -89,6 +80,7 @@ public class ContractListFragment
         ArrayList<Contract> contracts = contractList.stream()
                 .filter(contract -> {
                     User value = contract.getHolder().getValue();
+                    // todo -> value ist noch null
                     return compareBothUpper(value != null ? value.getName() : null, newText);
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
