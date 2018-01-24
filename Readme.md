@@ -1,6 +1,6 @@
 # Prumpo
 
-<img src="doc/images/header.png"  width="360" height="640" />
+<img src="doc/images/header.png" />
 
 Für Landwirtinnen und Landwirte, die viele Bodenflächen für den Anbau von
 Nutzpflanzen ihr Eigen nennen, sind Schäden auf den Feldern nicht nur lästig,
