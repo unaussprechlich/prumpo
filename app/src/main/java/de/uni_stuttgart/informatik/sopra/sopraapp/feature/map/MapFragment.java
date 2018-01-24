@@ -134,7 +134,7 @@ public class MapFragment
 
         mMapView.getMapAsync(googleMap -> {
 
-            /* determine map-type variant */
+            /* determine map-polygonType variant */
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
 

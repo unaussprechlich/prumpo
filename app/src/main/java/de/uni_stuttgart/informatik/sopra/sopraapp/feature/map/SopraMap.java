@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,9 +42,9 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -55,6 +56,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.EventVertexLocationReceived;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
@@ -71,12 +73,11 @@ import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper
  */
 public class SopraMap implements LifecycleObserver {
 
-    @Inject
-    DamageCaseEntityRepository damageCaseRepository;
+    @Inject DamageCaseEntityRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
 
-    @Inject
-    ContractEntityRepository contractRepository;
+
+    @Inject ContractEntityRepository contractRepository;
     @Inject ContractHandler contractHandler;
 
     @Inject Vibrator vibrator;
@@ -86,6 +87,7 @@ public class SopraMap implements LifecycleObserver {
     private static BitmapDescriptor ROOM_ACCENT_BITMAP_DESCRIPTOR;
 
     private Resources resources;
+    private Geocoder geocoder;
     private GoogleMap gMap;
 
     private List<Circle> polygonHighlightVertex = new ArrayList<>();
@@ -94,23 +96,26 @@ public class SopraMap implements LifecycleObserver {
     private Circle userPositionIndicatorCenter;
     private Location lastUserLocation;
 
-    private Polyline previewPolyline;
-    private Marker dragMarker;
+
+    @Nullable private Polyline previewPolyline;
+    @Nullable private Marker dragMarker;
 
     private boolean isHighlighted;
     private int indexActiveVertex = -1;
+    @Nullable private PolygonContainer activePolygon;
 
-    private PolygonContainer activePolygon;
-
+    /* LSAs for polygon look-up */
     private LongSparseArray<PolygonContainer> damageCases = new LongSparseArray<>();
     private LongSparseArray<PolygonContainer> contracts = new LongSparseArray<>();
 
+    /* very similar cache for redrawing/reloading polygons */
     private List<PolygonContainer> cacheDamageCase;
     private List<PolygonContainer> cacheContracts;
 
-    private Geocoder geocoder;
+    private long lastHighlightedContractId;
 
     SopraMap(GoogleMap googleMap, Context context, int viewType) {
+
         SopraApp.getAppComponent().inject(this);
         this.resources = context.getResources();
         this.gMap = googleMap;
@@ -128,7 +133,7 @@ public class SopraMap implements LifecycleObserver {
         gMap.setMapType(viewType);
         gMap.setIndoorEnabled(false);
 
-        // ball-park centroid of germany
+        // cut camera towards a ball-parked centroid of germany
         mapCameraJump(GERMANY_ROUGH_CENTROID, 5.5f);
 
         UiSettings uiSettings = gMap.getUiSettings();
@@ -271,6 +276,9 @@ public class SopraMap implements LifecycleObserver {
                 if (damageCase.getID() == activePolygon.uniqueId) return;
             }
 
+
+            lastHighlightedContractId = damageCase.getContract().getID();
+
             selectPolygon(damageCase.getID(), PolygonType.DAMAGE_CASE);
         });
 
@@ -301,7 +309,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     @Subscribe
-    public void onVertexCreated(EventsVertex.Created event) {
+    public void onVertexLocationReceived(EventVertexLocationReceived event) {
 
         if (activePolygon == null) {
             newPolygon(event.position, event.polygonType);
@@ -315,10 +323,42 @@ public class SopraMap implements LifecycleObserver {
             return;
         }
 
+        // not a valid position for damage case vertices!
+        if (!activeContractContains(event)) {
+            vibrator.vibrate(500);
+            showVertexInvalidToast();
+            return;
+        }
+
+
         activePolygon.addAndDisplay(event.position);
         activePolygon.redrawHighlightCircles();
 
         refreshAreaLivedata();
+
+        EventBus.getDefault().post(new EventsVertex.Created(event.position, event.polygonType));
+    }
+
+    private void showVertexInvalidToast() {
+    }
+
+    private boolean activeContractContains(EventVertexLocationReceived event) {
+        if (activePolygon == null) return false;
+
+        return (event.polygonType == PolygonType.DAMAGE_CASE
+                && activePolygon.data.size() > 2
+                && activePolygon.data.containsPoint(event.position));
+    }
+
+    private boolean activeContractContains(LatLng point) {
+        if (activePolygon == null) return false;
+
+        PolygonContainer lastContract = contracts.get(lastHighlightedContractId);
+
+        if (lastContract == null) return false;
+
+        return (activePolygon.type == PolygonType.DAMAGE_CASE
+                && lastContract.data.containsPoint(point));
     }
 
     @Subscribe
@@ -507,10 +547,10 @@ public class SopraMap implements LifecycleObserver {
     }
 
     /**
-     * Must only be called, when a *new* polygon with a single starting point
+     * Must only be called, when a *new* polygon with a single starting position
      * is to be created;
      *
-     * @param startPoint    the initial point on the Map
+     * @param startPoint    the initial position on the Map
      * @param type          determines color (and implies behaviour according to {@link PolygonType})
      */
     private void newPolygon(LatLng startPoint, PolygonType type) {
@@ -581,6 +621,10 @@ public class SopraMap implements LifecycleObserver {
         mapCameraMove(polygon.data.getCentroid());
 
         refreshAreaLivedata();
+
+        if (type == PolygonType.CONTRACT) {
+            lastHighlightedContractId = polygon.uniqueId;
+        }
     }
 
     void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
@@ -785,8 +829,10 @@ public class SopraMap implements LifecycleObserver {
         // TODO: this should be an assertion
         if (indexActiveVertex < 0) return;
 
+        // not a valid position for damage case vertices!
         if (!activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition())) {
-            vibrator.vibrate(300);
+            vibrator.vibrate(500);
+            showVertexInvalidToast();
         }
 
         previewPolyline.remove();
@@ -832,7 +878,7 @@ public class SopraMap implements LifecycleObserver {
         }
 
         boolean moveAndDisplay(int index, LatLng point) {
-            if (!data.movePoint(index, point)) return false;
+            if (!data.movePoint(index, point, activeContractContains(point))) return false;
 
             mapObject.setPoints(data.getPoints());
             return true;

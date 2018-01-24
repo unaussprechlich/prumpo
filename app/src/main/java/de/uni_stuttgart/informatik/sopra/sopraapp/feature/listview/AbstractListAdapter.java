@@ -64,7 +64,7 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
      * Specifies what should be done when userEntity presses list item
      *
      * @param view     the view which got pressed
-     * @param position the position in the current list
+     * @param position the polygonType in the current list
      */
     protected abstract void onCardViewPressed(View view, int position);
 
@@ -76,7 +76,7 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
      * </p>
      *
      * @param view     the view which got pressed
-     * @param position the position in the current list
+     * @param position the polygonType in the current list
      */
     protected void onCardViewLongPressed(View view, int position) { }
 

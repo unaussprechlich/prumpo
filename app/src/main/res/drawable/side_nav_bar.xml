@@ -5,7 +5,7 @@
     <!--android:centerColor="#009688"-->
     <!--android:endColor="#00695C"-->
     <!--android:startColor="#4DB6AC"-->
-    <!--android:type="linear" />-->
+    <!--andrpolygonTypetype="linear" />-->
     <gradient
         android:angle="0"
         android:centerColor="@color/greyblue_def"

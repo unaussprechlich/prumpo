@@ -355,7 +355,7 @@ public abstract class AbstractBottomSheetBase<
     // ### Abstract Functions ################################################################## Abstract Functions ###
 
     /**
-     * Should return the theme color of this bottom sheet type.
+     * Should return the theme color of this bottom sheet polygonType.
      * @return main color
      */
     protected abstract int getThemeColor();
