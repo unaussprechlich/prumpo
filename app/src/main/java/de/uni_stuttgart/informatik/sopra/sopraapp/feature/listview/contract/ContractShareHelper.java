@@ -10,7 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import org.joda.time.DateTime;
 
@@ -30,6 +35,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -120,18 +126,31 @@ public class ContractShareHelper extends ContractShareHelperBindings {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        String policyholder = c.getHolder() != null
-                ? String.format(Locale.GERMAN, ": %s", c.getHolder().getName())
-                : String.format(Locale.GERMAN, "-ID: %d", c.getEntity().getHolderID());
-
         Formatter formatter = new Formatter(stringBuilder);
-        formatter.format("%s %d:%n", strContractHeader, c.getEntity().getID());
-        formatter.format("%s%s%n", strContractPolicyholder, policyholder);
-        formatter.format("%s: %s%n", strContractDamagetypes, c.getEntity().getDamageType());
+        formatter.format("= %s #%d =%n", strContractHeader, Math.abs(c.getEntity().hashCode()));
+        formatter.format("%s: %s%n", strContractPolicyholder, c.getHolder().toString());
+        formatter.format("%s: %s%n", "Versichert", c.getEntity().getDamageType());
         formatter.format("%s: %s%n", strContractLocation, c.getEntity().getAreaCode());
-        formatter.format("%s: %s%n", strContractDate, c.getEntity().getDate()
-                .toString(strSimpleDateFormatPattern, Locale.GERMAN));
+        formatter.format("%s: %n", "Koordinaten");
+
+        for (LatLng latLng : c.getEntity().getCoordinates()) {
+            formatter.format("> Lat:%s Lng:%s%n", latLng.latitude, latLng.latitude);
+        }
+
+        formatter.format("%s: %s%n", strContractDate, c.getEntity().getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
         formatter.format("%s: %s%n", strContractSize, AbstractBottomSheetBase.calculateAreaValue(c.getEntity().getAreaSize()));
+
+        for (DamageCaseEntity d : c.getDamageCaseEntities()) {
+            formatter.format("-- Schadensfall #%d --%n", Math.abs(d.hashCode()));
+            formatter.format("%s: %n", "Koordinaten");
+
+            for (LatLng latLng : c.getEntity().getCoordinates()) {
+                formatter.format("> Lat:%s Lng:%s%n", latLng.latitude, latLng.latitude);
+            }
+
+            formatter.format("%s: %s%n", strContractDate, d.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+            formatter.format("%s: %s%n", strContractSize, AbstractBottomSheetBase.calculateAreaValue(d.getAreaSize()));
+        }
 
         return plainText
                 ? stringBuilder.toString()
@@ -170,6 +189,42 @@ public class ContractShareHelper extends ContractShareHelperBindings {
                 Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
     }
 
+    private static Gson gson = new GsonBuilder()
+                        .excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC)
+                        .excludeFieldsWithoutExposeAnnotation()
+                        .serializeNulls()
+                        .setPrettyPrinting()
+                        .registerTypeAdapter(DateTime.class, new DateTimeAdapter())
+                        .registerTypeAdapter(LatLng.class, new LatLngTypeAdapter())
+                        .create();
+
+    static class DateTimeAdapter extends TypeAdapter<DateTime> {
+
+        @Override
+        public void write(JsonWriter writer, DateTime dateTime) throws IOException {
+            writer.value(dateTime.toString());
+        }
+
+        @Override
+        public DateTime read(JsonReader in) throws IOException {
+            return DateTime.now(); // is not needed
+        }
+    }
+
+    static class LatLngTypeAdapter extends TypeAdapter<LatLng> {
+
+        @Override
+        public void write(JsonWriter writer, LatLng latLng) throws IOException {
+            writer.beginObject().name("lat").value(latLng.latitude).name("lng").value(latLng.longitude).endObject();
+        }
+
+        @Override
+        public LatLng read(JsonReader in) throws IOException {
+            return null;
+        }
+    }
+
+
     /**
      * Will write the given contract list to file.
      * Each contract will be written into a separate file.
@@ -185,19 +240,15 @@ public class ContractShareHelper extends ContractShareHelperBindings {
                                  c.getEntity().getID(),
                                  getDateStringReadyForExport()))) {
 
-                String json = new GsonBuilder()
-                        .excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC)
-                        .excludeFieldsWithoutExposeAnnotation()
-                        .serializeNulls()
-                        .setPrettyPrinting()
-                        .create()
-                        .toJson(c);
+                String json = gson.toJson(c);
 
                 json = plainText ? json : String.valueOf(encrypt(2, json.toCharArray()));
 
                 writer.write(json);
             }
     }
+
+
 
     /**
      * Returns true if write permission was granted already.

@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.Expose;
 
 import org.joda.time.DateTime;
 
@@ -38,6 +39,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
 
     /** The unique ID of the userEntity. */
     @PrimaryKey(autoGenerate = true)
+    @Expose
     @ColumnInfo(index = true, name = BaseColumns._ID)
     public long id;
 
@@ -47,16 +49,20 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
     @ColumnInfo(index = true, name = "holder_id")
     long holderID;
 
+    @Expose
     @ColumnInfo(index = true,  name = "created_by_id")
     long createdByID;
 
+    @Expose
     List<LatLng> coordinates = new ArrayList<>();
 
     /**When the damage occurred*/
+    @Expose
     @ColumnInfo(index = true)
     DateTime date;
 
     /**Size of the damaged area*/
+    @Expose
     double areaSize;
 
     //##############################################################################################

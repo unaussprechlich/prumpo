@@ -3,6 +3,8 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +15,19 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntit
 
 public class Contract implements ModelDB<ContractEntity>{
 
+    @Expose
     @Embedded
     ContractEntity contractEntity;
 
+    @Expose
     @Relation(parentColumn = "holder_id", entityColumn = "_id", entity = UserEntity.class)
     List<UserEntity> holder = new ArrayList<>();
 
+    @Expose
     @Relation(parentColumn = "expert_id", entityColumn = "_id", entity = UserEntity.class)
     List<UserEntity> expert = new ArrayList<>();
 
+    @Expose
     @Relation(parentColumn = "_id", entityColumn = "contract_id", entity = DamageCaseEntity.class)
     List<DamageCaseEntity> damageCaseEntities = new ArrayList<>();
 

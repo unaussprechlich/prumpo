@@ -6,6 +6,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -31,13 +33,16 @@ public final class UserEntity implements ModelEntityDB<UserEntityRepository> {
 
     /** The unique ID of the userEntity. */
     @PrimaryKey(autoGenerate = true)
+    @Expose
     @ColumnInfo(index = true, name = BaseColumns._ID)
     public long id;
 
     // Don't change the names without updating the queries, they are used as column name!
+    @Expose
     @ColumnInfo(index = true)
     String name;
 
+    @Expose
     @ColumnInfo(index = true)
     String email;
 
@@ -45,6 +50,7 @@ public final class UserEntity implements ModelEntityDB<UserEntityRepository> {
 
     public int profilePicture = 0;
 
+    @Expose
     @ColumnInfo(index = true)
     EnumUserRoles role;
 
