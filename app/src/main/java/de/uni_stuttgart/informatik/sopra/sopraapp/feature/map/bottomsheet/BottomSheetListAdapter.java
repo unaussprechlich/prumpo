@@ -30,7 +30,7 @@ public class BottomSheetListAdapter
     private RecyclerView recyclerViewAttached;
 
     /**
-     * Save the selected view position.
+     * Save the selected view polygonType.
      */
     private int selectedViewIndex = -1;
 
@@ -96,7 +96,7 @@ public class BottomSheetListAdapter
      * Inflates the layout of the list item.
      *
      * @param parent   The parent view group
-     * @param viewType The view type of the new view.
+     * @param viewType The view polygonType of the new view.
      */
     @Override
     public BottomSheetItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -120,11 +120,11 @@ public class BottomSheetListAdapter
     }
 
     /**
-     * Binds the view holder to the item at the {@code position}.
+     * Binds the view holder to the item at the {@code polygonType}.
      * Method gets called when called {@code notifyDataSetChanged} or when scrolled.
      *
-     * @param holder   The holder at {@code position} of the recycler view.
-     * @param position The position in the recycler view
+     * @param holder   The holder at {@code polygonType} of the recycler view.
+     * @param position The polygonType in the recycler view
      */
     @Override
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
@@ -191,7 +191,7 @@ public class BottomSheetListAdapter
      * Method called after a click.
      *
      * @param view     The view which got clicked
-     * @param position The current position in the visible list.
+     * @param position The current polygonType in the visible list.
      */
     public void onClick(View view, int position) {
         if (position == bubbleHolder.bubbleList.size() - 1) {
@@ -203,10 +203,10 @@ public class BottomSheetListAdapter
 
     /**
      * Method called after a long click.
-     * position
+     * polygonType
      *
      * @param view     The view which got clicked
-     * @param position The current position in the visible list.
+     * @param position The current polygonType in the visible list.
      * @return true if this adapter handled the click, false else
      */
     public boolean onLongClick(View view, int position) {
@@ -260,7 +260,7 @@ public class BottomSheetListAdapter
      * Updates the selected view index.
      * Calls to refresh recycler view.
      *
-     * @param position The new position of the selected item.
+     * @param position The new polygonType of the selected item.
      */
     private void updateSelectedViewIndex(int position) {
         if (selectedViewIndex == position)

@@ -5,6 +5,7 @@ import android.location.Location;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.EventVertexLocationReceived;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
@@ -39,7 +40,7 @@ public class OnAddButtonLocationCallback implements LocationCallbackListener {
             optionalTask.onLocationFound(location);
         }
 
-        EventBus.getDefault().post(new EventsVertex.Created(Helper.latLngOf(location), polygonType));
+        EventBus.getDefault().post(new EventVertexLocationReceived(Helper.latLngOf(location), polygonType));
     }
 
     @Override

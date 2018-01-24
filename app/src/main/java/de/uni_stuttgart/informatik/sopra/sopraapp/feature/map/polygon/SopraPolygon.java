@@ -5,12 +5,20 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper.contains;
+
 /**
  * Polygon model-class containing application specific logic.
  */
 public class SopraPolygon {
 
     private List<LatLng> vertices = new ArrayList<>();
+
+    public boolean containsPoint(LatLng point) {
+        return contains(vertices, point);
+    }
 
     public boolean addPoint(LatLng point) {
         vertices.add(point);
@@ -26,15 +34,18 @@ public class SopraPolygon {
     }
 
     public LatLng getPoint(int index) {
-
         return vertices.get(index);
     }
 
-    public boolean movePoint(int index, LatLng target) {
+    public int size() {
+        return vertices.size();
+    }
+
+    public boolean movePoint(int index, LatLng target, boolean isValidMove) {
         LatLng oldPoint = vertices.get(index);
         vertices.set(index, target);
 
-        if (isValidPolygon()) return true;
+        if (isValidPolygon() && isValidMove) return true;
 
         /* polygon was invalid; reverting changes! */
 
@@ -93,8 +104,8 @@ public class SopraPolygon {
 
     // TODO: implement intersection check
     private boolean notIntersecting() {
-       // return true;
-        return !Helper.doesPolygonSelfIntersect(vertices);
+        return true;
+//        return !Helper.doesPolygonSelfIntersect(vertices);
     }
 
 }

@@ -14,7 +14,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserExc
 public class ProfileImageGridViewAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     /**
-     * Interface which returns the drawable and the position which was selected.
+     * Interface which returns the drawable and the polygonType which was selected.
      */
     interface OnImageSelected {
         void onImageClicked(Drawable drawable, int position) throws NoUserException;
