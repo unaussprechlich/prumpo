@@ -25,6 +25,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
                       '**/*Lambda*.class',
                       '**/*Lambda*.*',
                       '**/*Builder.*',
+                      '**/*_MembersInjector**',
                       '**/*_MembersInjector.class',  //Dagger2 generated code
                       '**/*_MembersInjector*.*',  //Dagger2 generated code
                       '**/*_*Factory*.*', //Dagger2 generated code
@@ -33,6 +34,10 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
     ]
     def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/app/src/main/java"
+
+    afterEvaluate {
+        classDirectories = files(dir: it, excludes: fileFilter)
+    }
 
     sourceDirectories = files([mainSrc])
     classDirectories = files([debugTree])
