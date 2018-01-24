@@ -244,6 +244,8 @@ public class SopraMap implements LifecycleObserver {
                                                 .collect(Collectors.toList());
 
             reloadPolygons(polygons, PolygonType.CONTRACT);
+            polygons.forEach(PolygonContainer::printPoints);
+
 
             cacheContracts = polygons;
         });
@@ -336,6 +338,8 @@ public class SopraMap implements LifecycleObserver {
         removeActivePolygon();
         reloadPolygons(cacheContracts, PolygonType.CONTRACT);
         reloadPolygons(cacheDamageCase, PolygonType.DAMAGE_CASE);
+
+        cacheContracts.forEach(PolygonContainer::printPoints);
     }
 
    /* <----- exposed methods -----> */
@@ -564,7 +568,6 @@ public class SopraMap implements LifecycleObserver {
                         SopraPolygon.loadPolygon(coordinates),
                         type
                 );
-        polygon.printPoints();
         polygonMapObject.setTag(polygon);
 
         return polygonMapObject;
@@ -582,17 +585,21 @@ public class SopraMap implements LifecycleObserver {
     }
 
     void loadPolygonOf(List<LatLng> coordinates, PolygonType type, long uniqueId) {
+        System.out.println("PRE LOAD");
         if (coordinates.size() == 0) {
             return;
         }
+        System.out.println("POST LOAD");
         isStoredIn(type).put(uniqueId,
                 (PolygonContainer) drawPolygonOf(coordinates, type, uniqueId).getTag());
     }
 
     private void reloadPolygons(List<PolygonContainer> polygons, PolygonType type) {
+        System.out.println("PRE RELOAD");
         if (polygons == null) {
             return;
         }
+        System.out.println("POST RELOAD");
 
         clearCache(type);
         PolygonContainer polygon;

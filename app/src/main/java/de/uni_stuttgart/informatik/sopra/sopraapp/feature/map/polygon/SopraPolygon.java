@@ -86,7 +86,7 @@ public class SopraPolygon {
     }
 
     private boolean setPoints(List<LatLng> points) {
-        vertices = points;
+        vertices = new ArrayList<>(points);
 
         return isValidPolygon();
     }
