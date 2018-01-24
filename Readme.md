@@ -30,7 +30,7 @@ oder für Erkundungszwecke einfach auf den Demo-Modus zurückgreifen.
 
 ### Benutzerkontrollzentrum und -customization
 Nutzer können einige ihrer Daten (Profilbild, Email und Passwort) im Benutzerkontrollzetrum nach Belieben editieren.
-Auch ein Loggout von hieraus ist möglich.
+Auch ein Logout von hieraus ist möglich.
 
 <img src="doc/images/feature_profile_1.png"  width="360" height="640" />
 <img src="doc/images/feature_profile_2.png"  width="360" height="640" />
