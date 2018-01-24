@@ -15,7 +15,7 @@ public class NoUserException extends Exception{
     @Inject Context context;
 
     public NoUserException() {
-        super("There is currently no User logged in!");
+        super("There is currently no UserEntity logged in!");
         SopraApp.getAppComponent().inject(this);
         startAuthenticationActivity();
     }

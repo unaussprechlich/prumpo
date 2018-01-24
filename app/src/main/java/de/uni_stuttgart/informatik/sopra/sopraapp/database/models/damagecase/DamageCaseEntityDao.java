@@ -3,11 +3,10 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase;
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
 
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.IDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.IDaoEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
 
 
@@ -17,7 +16,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
  * Sadly copy&paste has to be your friend here :(
  */
 @Dao
-public interface DamageCaseDao extends IDao<DamageCase> {
+public interface DamageCaseEntityDao extends IDaoEntity<DamageCaseEntity> {
 
 // #################################################################################################
 
@@ -26,31 +25,28 @@ public interface DamageCaseDao extends IDao<DamageCase> {
 
 // Standard Queries ################################################################################
 
-    @Transaction
+    @Override
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE created_by_id = :user OR contract_id IN (SELECT _id FROM " + TABLE_NAME_CONTRACT +
             " WHERE ( holder_id = :user OR expert_id = :user  OR created_by_id = :user))")
-    LiveData<List<DamageCase>> getAll(long user);
+    LiveData<List<DamageCaseEntity>> getAll(long user);
 
-    @Transaction
     @Query("SELECT * FROM " + TABLE_NAME)
-    LiveData<List<DamageCase>> getAllBypass();
+    LiveData<List<DamageCaseEntity>> getAllBypass();
 
-    @Transaction
+    @Override
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE _id = :id AND (created_by_id = :user OR contract_id IN (SELECT _id FROM " + TABLE_NAME_CONTRACT +
             " WHERE ( holder_id = :user OR expert_id = :user  OR created_by_id = :user)))")
-    LiveData<DamageCase> getById(long id, long user);
+    LiveData<DamageCaseEntity> getById(long id, long user);
 
-    @Transaction
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE _id = :id")
-    LiveData<DamageCase> getByIdBypass(long id);
+    LiveData<DamageCaseEntity> getByIdBypass(long id);
 
-    @Transaction
+    @Override
     @Query("SELECT * FROM " + TABLE_NAME + " WHERE _id = :id AND (created_by_id = :user OR contract_id IN (SELECT _id FROM " + TABLE_NAME_CONTRACT +
             " WHERE ( holder_id = :user OR expert_id = :user  OR created_by_id = :user)))")
-    DamageCase getByIdDirect(long id, long user);
+    DamageCaseEntity getByIdDirect(long id, long user);
 
-    @Transaction
-    @Query("SELECT * FROM " + TABLE_NAME  + " WHERE _id = :id" )
-    DamageCase getByIdDirectBypass(long id);
+    @Query("SELECT * FROM " + TABLE_NAME + " WHERE _id = :id" )
+    DamageCaseEntity getByIdDirectBypass(long id);
 
 }

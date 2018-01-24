@@ -10,23 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.joda.time.DateTime;
+
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
-import org.joda.time.DateTime;
-
-import javax.inject.Inject;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -37,7 +40,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     protected DamageCaseHandler damageCaseHandler;
     private AtomicBoolean callbackDone = new AtomicBoolean(true);
 
-    private Contract damageCaseContract = null;
+    private Contract contract = null;
 
     @Inject ContractHandler contractHandler;
 
@@ -71,7 +74,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    protected DamageCase collectDataForSave(DamageCase model){
+    protected DamageCaseEntity collectDataForSave(DamageCaseEntity model){
         try {
 
             if (true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
@@ -79,7 +82,7 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
             model.setDate(dateTime)
                     .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
                     .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
-                    .setContractID(damageCaseContract.getID());
+                    .setContractID(contract.getID());
 
         } catch (EditFieldValueIsEmptyException e) {
             e.showError();
@@ -100,29 +103,27 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    protected void insertExistingData(DamageCase damageCase) {
-        damageCase.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
-        setDate(damageCase.getDate());
-        toolbarDamagecaseNr.setText(damageCase.toString());
-        contractHandler.loadFromDatabase(damageCase.getContractID());
+    protected void insertExistingData(DamageCaseEntity damageCaseEntity) {
+        damageCaseEntity.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
+        setDate(damageCaseEntity.getDate());
+        toolbarDamagecaseNr.setText(damageCaseEntity.toString());
+        contractHandler.loadFromDatabase(damageCaseEntity.getContractID());
         contractHandler.getLiveData().observe(this, this::insertContract);
     }
 
     private void insertContract(Contract contract) {
         if (contract == null) return;
-        damageCaseContract = contract;
+        this.contract = contract;
 
 
         contentContractName.setText(contract.toString());
-        toolbarDamagecaseLocation.setText(contract.getAreaCode());
+        toolbarDamagecaseLocation.setText(contract.getEntity().getAreaCode());
 
-        try {
-            String holder = contract.getHolderAsync().toString();
-            contentPolicyholder.setText(holder);
-            toolbarDamagecaseName.setText(holder);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        String holder = contract.getHolder().toString();
+        contentPolicyholder.setText(holder);
+        toolbarDamagecaseName.setText(holder);
+
     }
 
     @Override
@@ -153,35 +154,26 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
 
     @OnClick(R.id.bs_dc_policyHolder_moreDatailsButton)
     public void onPolicyholderMoreDetailsButtonPressed(View view) {
-        try {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
+        View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_policyholder, null);
 
-            View inflate = inflater.inflate(R.layout.activity_main_bs_damagecase_detail_policyholder, null);
+        TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_policyholder_identifier);
+        TextView emailView = inflate.findViewById(R.id.bs_dc_detail_policyholder_email);
+        TextView nameView = inflate.findViewById(R.id.bs_dc_detail_policyholder_name);
 
-            TextView identifierView = inflate.findViewById(R.id.bs_dc_detail_policyholder_identifier);
-            TextView emailView = inflate.findViewById(R.id.bs_dc_detail_policyholder_email);
-            TextView nameView = inflate.findViewById(R.id.bs_dc_detail_policyholder_name);
+        UserEntity userEntity = contract.getHolder();
 
-            User user = damageCaseContract.getHolderAsync();
+        Log.e("USER", userEntity.toString());
 
-            Log.e("USER", user.toString());
+        identifierView.setText(userEntity.toString());
+        emailView.setText(userEntity.getEmail());
+        nameView.setText(userEntity.getName());
 
-            identifierView.setText(user.toString());
-            emailView.setText(user.getEmail());
-            nameView.setText(user.getName());
-
-            builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */});
-            builder.create().show();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
+        builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */});
+        builder.create().show();
     }
 
     @OnClick(R.id.bs_dc_contract_moreDatailsButton)
@@ -197,10 +189,10 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         TextView damagetypesView = inflate.findViewById(R.id.bs_dc_detail_contract_damagetypes);
         TextView areaView = inflate.findViewById(R.id.bs_dc_detail_contract_area);
 
-        identifierView.setText(damageCaseContract.toString());
-        dateView.setText(damageCaseContract.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
-        damagetypesView.setText(damageCaseContract.getDamageType());
-        areaView.setText(damageCaseContract.getAreaCode());
+        identifierView.setText(contract.toString());
+        dateView.setText(contract.getEntity().getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+        damagetypesView.setText(contract.getEntity().getDamageType());
+        areaView.setText(contract.getEntity().getAreaCode());
 
         builder.setView(inflate).setPositiveButton(strBottomSheetDialogPositive, (dialog, which) -> { /* Ignore */ });
         builder.create().show();

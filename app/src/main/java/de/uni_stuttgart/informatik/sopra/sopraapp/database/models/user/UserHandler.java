@@ -14,15 +14,17 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.Abstrac
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 
-public class UserHandler extends AbstractModelHandler<User, UserRepository>{
+public class UserHandler extends AbstractModelHandler<User, UserEntity, UserRepository, UserEntityRepository>{
 
     private Context context;
     private UserRepository userRepository;
+    private UserEntityRepository userEntityRepository;
 
-    public UserHandler(SopraApp sopraApp, UserRepository userRepository) {
+    public UserHandler(SopraApp sopraApp, UserRepository userRepository, UserEntityRepository userEntityRepository) {
         super();
         this.context = sopraApp;
         this.userRepository = userRepository;
+        this.userEntityRepository = userEntityRepository;
         startAuthenticationActivity();
     }
 
@@ -35,13 +37,13 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
     @Override
     protected void set(User user) {
         super.set(user);
-        CurrentUser.set(user);
+        CurrentUser.set(user.getEntity());
     }
 
-    public void login(@NonNull User user){
-        loadFromDatabase(user.id);
+    public void login(@NonNull UserEntity userEntity){
+        loadFromDatabase(userEntity.id);
         EventBus.getDefault().removeAllStickyEvents();
-        EventBus.getDefault().postSticky(new EventsAuthentication.Login(user));
+        EventBus.getDefault().postSticky(new EventsAuthentication.Login(userEntity));
     }
 
     public void logout(){
@@ -89,6 +91,10 @@ public class UserHandler extends AbstractModelHandler<User, UserRepository>{
         return userRepository;
     }
 
+    @Override
+    protected UserEntityRepository getEntityRepository() {
+        return userEntityRepository;
+    }
 
 
 }

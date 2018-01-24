@@ -4,32 +4,35 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 import android.widget.EditText;
-import butterknife.OnClick;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
-import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
+import butterknife.OnClick;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
+
 public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     protected List<String> selectedDamageTypes = new ArrayList<>();
-    protected List<DamageCase> damageCasesOfThisContract = new ArrayList<>();
+    protected List<DamageCaseEntity> damageCasesOfThisContract = new ArrayList<>();
 
     @Inject
     DamageCaseHandler damageCaseHandler;
@@ -54,10 +57,10 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     protected Contract collectDataForSave(Contract contract){
         try {
 
-            if (this.user == null && contract.getHolderID() == -1) throw new EditFieldValueIsEmptyException(inputPolicyholder);
-            else if(this.user != null) contract.setHolderID(user.getID());
+            if (this.userEntity == null && contract.getEntity().getHolderID() == -1) throw new EditFieldValueIsEmptyException(inputPolicyholder);
+            else if(this.userEntity != null) contract.getEntity().setHolderID(userEntity.getID());
 
-            contract.setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
+            contract.getEntity().setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
                     .setAreaCode(getIfNotEmptyElseThrow(inputLocation))
                     .setDamageType(getIfNotEmptyElseThrow(inputDamages));
 
@@ -78,21 +81,27 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     @Override
     protected void insertExistingData(Contract contract) {
 
-        contract.getHolder().observe(this, holder -> {
-            if (holder == null) return;
-            inputPolicyholder.setText(holder.toString());
-            toolbarContractName.setText(holder.toString());
-        });
 
-        contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
-        // todo elias: DialogList of damagecases -> fill related damagecases into "damageCasesOfThisContract"
+        inputPolicyholder.setText(contract.getHolder().toString());
+        toolbarContractName.setText(contract.getHolder().toString());
 
-        displayCurrentAreaValue(contract.getAreaSize());
-        setSelectedDamageTypes(contract.getDamageType());
-        inputLocation.setText(contract.getAreaCode());
-        toolbarContractNr.setText(contract.toString());
+        ContractEntity entity = contract.getEntity();
+
+
+        entity.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
+
+        displayCurrentAreaValue(entity.getAreaSize());
+        setSelectedDamageTypes(entity.getDamageType());
+        inputLocation.setText(entity.getAreaCode());
+        toolbarContractNr.setText(entity.toString());
+
+        damageCasesOfThisContract = contract.getDamageCaseEntities();
         buttonViewDamageCases.setEnabled(!damageCasesOfThisContract.isEmpty());
-        toolbarContractDate.setText(contract.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+
+        toolbarContractDate.setText(entity.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
+
+
+
     }
 
     @Override
@@ -123,7 +132,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###
 
-    private User user = null;
+    private UserEntity userEntity = null;
 
     @OnClick(R.id.bs_contract_editText_inputPolicyholder)
     public void onInputPolicyholderPressed(EditText editText) {
@@ -137,9 +146,9 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
                     .withAutocompletion(users)
                     .onSelection(o -> {
                         if (o != null) {
-                            User user = (User) o;
-                            this.user = user;
-                            toolbarContractName.setText(user.toString());
+                            UserEntity userEntity = (UserEntity) o;
+                            this.userEntity = userEntity;
+                            toolbarContractName.setText(userEntity.toString());
                         }
                     })
                     .withTitle(strBottomSheetInpDialogPolicyholderHeader)
@@ -162,8 +171,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
                 .setCancelable(false)
                 .setPositiveButton(strBottomSheetDialogPositive, (dialog, which) ->
                         setSelectedDamageTypes(temporaryList.stream().reduce((t, u) -> t + ", " + u).orElse("")))
-                .setNegativeButton(strBottomSheetDialogNegative, (dialog, which) -> {
-                })
+                .setNegativeButton(strBottomSheetDialogNegative, (dialog, which) -> {})
                 .create().show();
     }
 
@@ -183,7 +191,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         if (!getHandler().hasValue()) return;
 
-        Contract contract = getHandler().getValue();
+        ContractEntity contract = getHandler().getEntityValue();
 
         close(); //TODO replace with showCloseAlert()
 
@@ -193,7 +201,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         } catch (NoUserException e) {
             e.printStackTrace();
         }
-        iBottomSheetOwner.openBottomSheet(DamageCase.class);
+        iBottomSheetOwner.openBottomSheet(DamageCaseEntity.class);
     }
 
     @OnClick(R.id.bs_contract_view_damagecases)

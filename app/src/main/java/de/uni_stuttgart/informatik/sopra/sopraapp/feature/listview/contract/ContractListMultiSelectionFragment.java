@@ -13,17 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class handles all the multi selection stuff in the contract fragment.
@@ -62,7 +60,7 @@ public abstract class ContractListMultiSelectionFragment
     /**
      * Holder for the selected contracts.
      */
-    private List<Contract> selectedContracts = new ArrayList<>();
+    private List<Contract> selectedContractEntities = new ArrayList<>();
 
     /**
      * The list adapter: Used to notify if item got selected.
@@ -82,7 +80,7 @@ public abstract class ContractListMultiSelectionFragment
         menuInflater.inflate(R.menu.list_fragment_menu_share, menu);
 
 //        try {
-//            boolean showDeleteButton = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
+//            boolean showDeleteButton = CurrentUser.get().getRole() != UserEntity.EnumUserRoles.BAUER;
 //            MenuItem item = menu.findItem(R.id.action_delete);
 //            item.setEnabled(showDeleteButton);
 //            item.setVisible(showDeleteButton);
@@ -110,23 +108,23 @@ public abstract class ContractListMultiSelectionFragment
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         actionMode = null;
-        selectedContracts.forEach(c -> c.setSelected(false));
-        selectedContracts.clear();
+        selectedContractEntities.forEach(c -> c.getEntity().setSelected(false));
+        selectedContractEntities.clear();
         contractListAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void selectItem(Contract contract) {
+    public void selectItem(Contract contractEntity) {
 
-        if (contract.isSelected()) {
-            contract.setSelected(false);
-            selectedContracts.remove(contract);
+        if (contractEntity.getEntity().isSelected()) {
+            contractEntity.getEntity().setSelected(false);
+            selectedContractEntities.remove(contractEntity);
         } else {
-            contract.setSelected(true);
-            selectedContracts.add(contract);
+            contractEntity.getEntity().setSelected(true);
+            selectedContractEntities.add(contractEntity);
         }
 
-        if (selectedContracts.isEmpty())
+        if (selectedContractEntities.isEmpty())
             actionMode.finish();
         else {
             updateTitlebar();
@@ -136,10 +134,10 @@ public abstract class ContractListMultiSelectionFragment
     }
 
     @Override
-    public void startActionMode(Contract firstLongPressedContract) {
+    public void startActionMode(Contract firstLongPressedContractEntity) {
         if (actionMode == null) {
             actionMode = getActivity().startActionMode(this);
-            selectItem(firstLongPressedContract);
+            selectItem(firstLongPressedContractEntity);
         }
     }
 
@@ -154,7 +152,7 @@ public abstract class ContractListMultiSelectionFragment
      */
     private void updateTitlebar() {
 
-        int amount = selectedContracts.size();
+        int amount = selectedContractEntities.size();
         String header = amount == 1 ? strContractSingular : strContractPlural;
         String chosen = strContractChosen;
 
@@ -171,7 +169,7 @@ public abstract class ContractListMultiSelectionFragment
 
         View shareView = inflater.inflate(R.layout.activity_main_fragment_contract_dialog_share, null);
 
-        ContractShareHelper shareHelper = new ContractShareHelper(shareView, selectedContracts, getActivity());
+        ContractShareHelper shareHelper = new ContractShareHelper(shareView, selectedContractEntities, getActivity());
 
         AlertDialog alertDialog = new Builder(getActivity())
                 .setView(shareView)
@@ -200,7 +198,7 @@ public abstract class ContractListMultiSelectionFragment
 //                .setTitle(strDeleteTitle)
 //                .setMessage(strDeleteMessage)
 //                .setPositiveButton(strDoDelete, (dialog, which) -> {
-//                    selectedContracts.forEach(contractRepository::delete);
+//                    selectedContractEntities.forEach(contractRepository::delete);
 //                    actionMode.finish();
 //                })
 //                .setNegativeButton(strDoNotDelete, (dialog, which) -> actionMode.finish())

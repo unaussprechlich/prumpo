@@ -23,6 +23,14 @@ import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
@@ -37,11 +45,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDial
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
-import org.greenrobot.eventbus.EventBus;
-
-import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -139,7 +142,7 @@ public abstract class AbstractBottomSheetBase<
         tbCloseButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_close);
         tbCloseButton.setOnMenuItemClickListener(i ->
                 returnThisAfter(true, () -> {
-                    if ((getHandler().getValue() != null && getHandler().getValue().isChanged())) showCloseAlert();
+                    if ((getHandler().getValue() != null && getHandler().getEntityValue().isChanged())) showCloseAlert();
                     else close();
                 }));
 
@@ -171,7 +174,7 @@ public abstract class AbstractBottomSheetBase<
 
     private void loadModelFromHandler() {
         Model model = (Model) handler.getValue();
-        if (!model.isInitial()) tbDeleteButton.setVisible(true);
+        if (!model.getEntity().isInitial()) tbDeleteButton.setVisible(true);
         insertExistingData(model);
     }
 
@@ -221,7 +224,7 @@ public abstract class AbstractBottomSheetBase<
             if (handler.hasValue()){
                 Model model =  collectDataForSave((Model) handler.getValue());
                 if(model == null) return;
-                else model.save();
+                else model.getEntity().save();
             }
             close();
         } catch (InterruptedException | ExecutionException e) {
@@ -366,7 +369,7 @@ public abstract class AbstractBottomSheetBase<
 
     protected abstract String getCloseMessage();
 
-    protected void showCloseAlert() {
+    public void showCloseAlert() {
         new FixedDialog(getContext())
                 .setTitle(strBottomSheetCloseDialogHeader)
                 .setMessage(getCloseMessage())
@@ -375,8 +378,7 @@ public abstract class AbstractBottomSheetBase<
                     EventBus.getDefault().post(new EventsBottomSheet.ForceClose());
                     close();
                 })
-                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {
-                })
+                .setNegativeButton(strBottomSheetCloseDialogCancel, (dialog, id) -> {})
                 .create()
                 .show();
     }

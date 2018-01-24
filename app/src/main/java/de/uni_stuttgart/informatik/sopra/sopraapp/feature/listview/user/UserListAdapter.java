@@ -4,6 +4,9 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
+
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
@@ -14,8 +17,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListA
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavMenuBlocker;
-
-import java.util.List;
 
 public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
 
@@ -49,9 +50,9 @@ public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
         User user = dataHolder.dataList.get(position);
 
         holder.userName.setText(user.getName());
-        holder.userEmail.setText(user.getEmail());
-        holder.userRole.setText(user.getRole().toString());
-        holder.profileImage.setImageResource(profileImageResources[user.getProfilePicture()]);
+        holder.userEmail.setText(user.getEntity().getEmail());
+        holder.userRole.setText(user.getEntity().getRole().toString());
+        holder.profileImage.setImageResource(profileImageResources[user.getEntity().getProfilePicture()]);
 
         holder.contractImgBtn.setOnClickListener(v -> onContractButtonPressed(user));
         holder.damageImgBtn.setOnClickListener(v -> onDamageCaseButtonPressed(user));

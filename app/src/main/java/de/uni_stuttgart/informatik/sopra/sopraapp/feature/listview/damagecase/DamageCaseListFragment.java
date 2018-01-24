@@ -8,6 +8,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -15,12 +22,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.Dam
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListFragment;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @ActivityScope
 public class DamageCaseListFragment
@@ -67,18 +68,10 @@ public class DamageCaseListFragment
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        ArrayList<DamageCase> damageCases = damageCaseList.stream().filter(damageCase -> {
-                    try {
-                        return compareBothUpper(damageCase.getContractAsync().getHolderAsync().toString(),
-                                newText);
-                    } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return false;
-                })
+        ArrayList<DamageCase> damageCaseEntities = damageCaseList.stream().filter(damageCase -> compareBothUpper(damageCase.getContract().getHolderID(), newText))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCases), true);
+        recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseEntities), true);
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }

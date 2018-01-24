@@ -17,17 +17,21 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.Converters;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntityDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
@@ -68,12 +72,12 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 
     void inject(EditFieldValueException __);
 
-    void inject(DamageCase.Builder __);
-    void inject(Contract.Builder __);
+    void inject(DamageCaseEntity.Builder __);
+    void inject(ContractEntity.Builder __);
 
-    void inject(DamageCase __);
-    void inject(Contract __);
-    void inject(User __);
+    void inject(DamageCaseEntity __);
+    void inject(ContractEntity __);
+    void inject(UserEntity __);
 
     void inject(DamageCaseHandler __);
     void inject(ContractHandler __);
@@ -81,7 +85,7 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
     void inject(NoUserException __);
 
     void inject(DamageCaseRepository __);
-    void inject(ContractRepository __);
+    void inject(ContractEntityRepository __);
 
     void inject(BottomSheetListAdapter __);
 
@@ -118,8 +122,8 @@ abstract class AppModule {
 
     @ApplicationScope
     @Provides
-    public static UserHandler provideUserHandler(SopraApp app, UserRepository userRepository) {
-        return new UserHandler(app, userRepository);
+    public static UserHandler provideUserHandler(SopraApp app, UserRepository userRepository, UserEntityRepository userEntityRepository) {
+        return new UserHandler(app, userRepository, userEntityRepository);
     }
 
     @ApplicationScope
@@ -177,6 +181,24 @@ abstract class AppModule {
     @ApplicationScope
     static UserDao provideUserDao(DatabaseManager db) {
         return db.userDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static DamageCaseEntityDao provideDamageCaseEntityDao(DatabaseManager db) {
+        return db.damageCaseEntityDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static ContractEntityDao provideContractEntityDao(DatabaseManager db) {
+        return db.contractEntityDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static UserEntityDao provideUserEntityDao(DatabaseManager db) {
+        return db.userEntityDao();
     }
 
     @Provides

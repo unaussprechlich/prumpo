@@ -4,6 +4,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import butterknife.BindArray;
 import butterknife.BindColor;
 import butterknife.BindString;
@@ -80,7 +81,7 @@ public abstract class AbstractBottomSheetContractBindings
     @BindArray(R.array.damages)
     String[] allPossibleDamages;
 
-    @BindString(R.string.map_frag_bottomsheet_dc_close_dialog_message)
+    @BindString(R.string.map_frag_bottomsheet_insurance_close_dialog_message)
             String strBottomSheetCloseDialogMessage;
 
     @Override
