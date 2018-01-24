@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -17,9 +16,10 @@ import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 
@@ -29,7 +29,7 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
 
 
     @Inject
-    ContractRepository contractRepository;
+    ContractEntityRepository contractEntityRepository;
 
     @Inject
     ContractHandler contractHandler;
@@ -67,19 +67,15 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
         Contract contract = dataHolder.dataList.get(position);
 
         holder.contractIdentification.setText(contract.toString());
-        holder.damageTypes.setText(contract.getDamageType());
-        holder.area.setText(calculateAreaValue(contract.getAreaSize()));
+        holder.damageTypes.setText(contract.getEntity().getDamageType());
+        holder.area.setText(calculateAreaValue(contract.getEntity().getAreaSize()));
 
-        try {
-            User user = contract.getHolderAsync();
-            holder.policyHolder.setText(user != null ? user.toString() : "");
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        UserEntity userEntity = contract.getHolder();
+        holder.policyHolder.setText(userEntity != null ? userEntity.toString() : "");
 
         // background color
         holder.cardView.setCardBackgroundColor(
-                contract.isSelected() ? selectedColor : unselectedColor
+                contract.getEntity().isSelected() ? selectedColor : unselectedColor
         );
     }
 
@@ -90,8 +86,8 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
         if (multiSelectionController.isActionModeStarted())
             multiSelectionController.selectItem(contract);
         else {
-            contractHandler.loadFromDatabase(contract.getID());
-            EventBus.getDefault().post(new EventOpenMapFragment(Contract.class));
+            contractHandler.loadFromDatabase(contract.getEntity().getID());
+            EventBus.getDefault().post(new EventOpenMapFragment(ContractEntity.class));
         }
     }
 
@@ -107,7 +103,7 @@ public class ContractListAdapter extends AbstractListAdapter<Contract, ContractL
 
     @Override
     public long getItemId(int position) {
-        return dataHolder.dataList.get(position).getID();
+        return dataHolder.dataList.get(position).getEntity().getID();
     }
 
 }

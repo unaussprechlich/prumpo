@@ -30,6 +30,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
@@ -63,7 +64,7 @@ public class MainActivity
         try {
             super.onCreate(savedInstanceState);
 
-            boolean enabled = CurrentUser.get().getRole() != User.EnumUserRoles.BAUER;
+            boolean enabled = CurrentUser.get().getRole() != UserEntity.EnumUserRoles.BAUER;
 
             // set main layout
             setContentView(R.layout.activity_main);
@@ -72,7 +73,7 @@ public class MainActivity
 
             setSupportActionBar(toolbar);
 
-            // disable if current user is BAUER
+            // disable if current userEntity is BAUER
             MenuItem item = navigationView.getMenu().findItem(R.id.nav_users);
             item.setEnabled(enabled);
             item.setVisible(enabled);
@@ -126,13 +127,13 @@ public class MainActivity
                     400);
     }
 
-    private void updateUserProfileHeaderView(User user){
-        if(user == null) return;
+    private void updateUserProfileHeaderView(User userEntity){
+        if(userEntity == null) return;
 
         View headerView = navigationView.getHeaderView(0);
-        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(user.getRole().toString());
-        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(user.getName());
-        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[user.getProfilePicture()]);
+        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(userEntity.getEntity().getRole().toString());
+        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(userEntity.getName());
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[userEntity.getEntity().getProfilePicture()]);
     }
 
     /**

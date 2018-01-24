@@ -1,5 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,7 +8,6 @@ import android.view.ViewGroup;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -17,7 +17,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 
@@ -46,32 +45,29 @@ public class DamageCaseListAdapter
         return new DamageCaseViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(DamageCaseViewHolder holder, int position) {
         DamageCase damageCase = dataHolder.dataList.get(position);
 
-        holder.damageIdentification.setText(damageCase.toString());
-        holder.location.setText(String.valueOf(damageCase.getAreaCode()));
-        holder.area.setText(calculateAreaValue(damageCase.getAreaSize()));
+        holder.damageIdentification.setText(damageCase.getEntity().toString());
+        holder.location.setText(String.valueOf(damageCase.getContract().getAreaCode()));
+        holder.area.setText(calculateAreaValue(damageCase.getEntity().getAreaSize()));
 
-        try {
-            User user = damageCase.getContractHolderAsync();
-            holder.policyHolder.setText(user != null ? user.toString() : "");
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        holder.policyHolder.setText(damageCase.getContract().getHolderID() + "");
+     
     }
 
     @Override
     public void onCardViewPressed(View view, int position) {
         DamageCase damageCase = dataHolder.dataList.get(position);
 
-        damageCaseHandler.loadFromDatabase(damageCase.getID());
+        damageCaseHandler.loadFromDatabase(damageCase.getEntity().getID());
         EventBus.getDefault().post(new EventOpenMapFragment(DamageCase.class));
     }
 
     @Override
     public long getItemId(int position) {
-        return dataHolder.dataList.get(position).getID();
+        return dataHolder.dataList.get(position).getEntity().getID();
     }
 }

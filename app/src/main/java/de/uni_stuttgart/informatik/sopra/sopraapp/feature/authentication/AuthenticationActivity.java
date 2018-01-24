@@ -9,7 +9,20 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,25 +31,20 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.BaseActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
 
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
-
 /**
- * The {@link AuthenticationActivity} provides a UI for the user to Login :3
+ * The {@link AuthenticationActivity} provides a UI for the userEntity to Login :3
  * The Activity is started by the {@link UserHandler} whenever a {@link de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException}
  * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
-
-    @Inject UserRepository userRepository;
+    
+    @Inject UserEntityRepository userEntityRepository;
     @Inject UserHandler userHandler;
 
     @BindView(R.id.signup_layout)   View signupView;
@@ -62,7 +70,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
     @BindString(R.string.activity_authenticate_create_new_account) String createNewAccountString;
     @BindString(R.string.activity_authenticate_back_to_login) String backToLoginString;
 
-    private User.EnumUserRoles userRole;
+    private UserEntity.EnumUserRoles userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,18 +95,18 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         spinner.setOnItemSelectedListener(this);
 
         //Insert the dummy object if it not exists
-        userRepository.insertDummyIfNotExist();
+        userEntityRepository.insertDummyIfNotExist();
     }
 
     /**
-     * Starts the Demo modus with a default user!
+     * Starts the Demo modus with a default userEntity!
      */
     @OnClick(R.id.activity_authentication_demo_modus)
     public void onDemoMode(){
         try {
-            User user = userRepository.getByEmailAsync("dummy@dummy.net");
-            if(user == null) return;
-            userHandler.login(user);
+            UserEntity userEntity = userEntityRepository.getByEmailAsync("dummy@dummy.net");
+            if(userEntity == null) return;
+            userHandler.login(userEntity);
             gotoMainActivity();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -137,13 +145,13 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                         if (!Pattern.matches(Constants.EMAIL_REGEX, email))
                             throw new EditFieldValueException(loginEmail, "Invalid mail address!");
 
-                        User user = userRepository.getByEmailAsync(email);
-                        if (user == null) throw new EditFieldValueException(loginEmail, "User not found!");
+                        UserEntity userEntity = userEntityRepository.getByEmailAsync(email);
+                        if (userEntity == null) throw new EditFieldValueException(loginEmail, "UserEntity not found!");
 
-                        if (!user.getPassword().equals(password))
+                        if (!userEntity.getPassword().equals(password))
                             throw new EditFieldValueException(loginPassword, "Password Incorrect!");
 
-                        userHandler.login(user);
+                        userHandler.login(userEntity);
                         gotoMainActivity();
 
                     } catch (EditFieldValueException e) {
@@ -195,23 +203,23 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                     if(!Pattern.matches(Constants.EMAIL_REGEX, email))
                         throw new EditFieldValueException(signUpEmail, "Das ist keine valida Email-Adresse!");
 
-                    if(userRole == User.EnumUserRoles.NULL)
+                    if(userRole == UserEntity.EnumUserRoles.NULL)
                         throw new IllegalArgumentException("Keine Benutzerrolle ausgewählt!");
 
 
-                    User userAsync = userRepository.getByEmailAsync(email);
+                    UserEntity userEntityAsync = userEntityRepository.getByEmailAsync(email);
 
-                    if(userAsync != null && userAsync.getEmail().equals(email))
+                    if(userEntityAsync != null && userEntityAsync.getEmail().equals(email))
                         throw new EditFieldValueException(signUpEmail, "Ein Benutzer mit dieser Email-Adresse existiert bereits!");
 
-                    User user = new User.Builder()
+                    UserEntity userEntity = new UserEntity.Builder()
                             .setEmail(email)
                             .setPassword(password)
                             .setName(nameFirst + " " + nameLast)
                             .setRole(userRole)
                             .create();
 
-                    userRepository.insert(user);
+                    userEntityRepository.insert(userEntity);
                     onClickToLogin();
                 } catch(EditFieldValueException e) {
                     e.showError();
@@ -298,10 +306,10 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         try{
-            userRole = User.EnumUserRoles.valueOf(parent.getItemAtPosition(position).toString());
+            userRole = UserEntity.EnumUserRoles.valueOf(parent.getItemAtPosition(position).toString());
         } catch(Exception e){
             Log.e("SignUpActivity", "Could not find enum for given role", e);
-            userRole = User.EnumUserRoles.NULL;
+            userRole = UserEntity.EnumUserRoles.NULL;
         }
     }
 
@@ -314,11 +322,11 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
      */
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        this.userRole = User.EnumUserRoles.NULL;
+        this.userRole = UserEntity.EnumUserRoles.NULL;
     }
 
     /**
-     * Lock the User in place ¯\_(ツ)_/¯
+     * Lock the UserEntity in place ¯\_(ツ)_/¯
      */
     @Override
     public void onBackPressed() {}

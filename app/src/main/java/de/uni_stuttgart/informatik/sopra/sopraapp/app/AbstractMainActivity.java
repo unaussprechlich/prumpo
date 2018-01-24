@@ -7,6 +7,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+
+import java.util.Stack;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListFragment;
@@ -17,11 +24,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPr
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.about.AboutFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.settings.SettingsFragment;
-
-import javax.inject.Inject;
-import java.util.Stack;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
@@ -67,11 +69,10 @@ abstract public class AbstractMainActivity extends BaseEventBusActivity {
 
         // Invoke active fragments BackPress
         FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
-        FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
+        boolean shouldPerformBackpress = activeFragment.shouldPerformBackpress();
 
         // 2: If fragment consumed BackPress -> Stop
-        if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
-            return;
+        if (!shouldPerformBackpress) return;
 
         // 3: Switch to recent Fragment
         if (fragmentStack.size() > 1) {

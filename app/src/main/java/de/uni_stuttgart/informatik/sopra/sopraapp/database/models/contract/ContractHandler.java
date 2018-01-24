@@ -12,10 +12,10 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBotto
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 
 
-public class ContractHandler extends AbstractModelHandler<Contract, ContractRepository>{
+public class ContractHandler extends AbstractModelHandler<Contract, ContractEntity, ContractRepository, ContractEntityRepository>{
 
-    @Inject
-    ContractRepository contractRepository;
+    @Inject ContractEntityRepository contractEntityRepository;
+    @Inject ContractRepository contractRepository;
 
     public ContractHandler() {
         super();
@@ -25,7 +25,7 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
 
     @Override
     protected Contract createNewObject() throws NoUserException {
-        return new Contract.Builder().create();
+        return new Contract().setContractEntity(new ContractEntity.Builder().create());
     }
 
     @Override
@@ -33,8 +33,13 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractRepo
         return contractRepository;
     }
 
+    @Override
+    protected ContractEntityRepository getEntityRepository() {
+        return contractEntityRepository;
+    }
+
     @Subscribe
-    public void onDamageCaseSelected(EventsPolygonSelected.Contract event) {
+    public void onDContractSelected(EventsPolygonSelected.Contract event) {
         loadFromDatabase(event.uniqueId);
     }
 

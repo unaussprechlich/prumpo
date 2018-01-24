@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 
 /**
  * Typeconverters for Room.
@@ -32,12 +32,12 @@ public class Converters {
 
     //EnumRoles ####################################################################################
     @TypeConverter
-    public User.EnumUserRoles convertEnumRoles(String string){
-        return User.EnumUserRoles.valueOf(string);
+    public UserEntity.EnumUserRoles convertEnumRoles(String string){
+        return UserEntity.EnumUserRoles.valueOf(string);
     }
 
     @TypeConverter
-    public String convertEnumRoles(User.EnumUserRoles role){
+    public String convertEnumRoles(UserEntity.EnumUserRoles role){
         return role.toString();
     }
 

@@ -9,19 +9,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import butterknife.BindString;
-import butterknife.BindView;
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
-import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import butterknife.BindString;
+import butterknife.BindView;
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ActivityScope;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 
 @ActivityScope
 public class ContractListFragment
@@ -78,19 +79,16 @@ public class ContractListFragment
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        ArrayList<Contract> contracts = contractList.stream()
+        ArrayList<Contract> contractEntities = contractList.stream()
                 .filter(contract -> {
-                    try {
-                        User value = contract.getHolderAsync();
-                        return compareBothUpper(value != null ? value.toString() : null, newText);
-                    } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return false;
+
+                    UserEntity value = contract.getHolder();
+                    return compareBothUpper(value != null ? value.toString() : null, newText);
+
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        recyclerView.setAdapter(createNewListContractListAdapter(contracts));
+        recyclerView.setAdapter(createNewListContractListAdapter(contractEntities));
 
         return true; // true -> listener handled query already, nothing more needs to be done
     }
@@ -103,11 +101,11 @@ public class ContractListFragment
     /**
      * Helper method which returns an updated contractListAdapter
      *
-     * @param contractList the new items
+     * @param contractEntityList the new items
      * @return the new contractListAdapter
      */
-    private ContractListAdapter createNewListContractListAdapter(List<Contract> contractList) {
-        return contractListAdapter = new ContractListAdapter(contractList, this);
+    private ContractListAdapter createNewListContractListAdapter(List<Contract> contractEntityList) {
+        return contractListAdapter = new ContractListAdapter(contractEntityList, this);
     }
 
 }

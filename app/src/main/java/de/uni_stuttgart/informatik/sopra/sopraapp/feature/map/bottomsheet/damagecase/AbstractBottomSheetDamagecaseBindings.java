@@ -3,6 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damag
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;

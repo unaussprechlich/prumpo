@@ -48,12 +48,12 @@ import javax.inject.Inject;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.EventsAuthentication;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
@@ -71,10 +71,12 @@ import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper
  */
 public class SopraMap implements LifecycleObserver {
 
-    @Inject DamageCaseRepository damageCaseRepository;
+    @Inject
+    DamageCaseEntityRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
 
-    @Inject ContractRepository contractRepository;
+    @Inject
+    ContractEntityRepository contractRepository;
     @Inject ContractHandler contractHandler;
 
     @Inject Vibrator vibrator;
@@ -485,7 +487,7 @@ public class SopraMap implements LifecycleObserver {
 
     /* <----- helper section -----> */
 
-    private PolygonContainer wrap(Contract contract) {
+    private PolygonContainer wrap(ContractEntity contract) {
 
         long polygonId = contract.getID();
 
@@ -496,7 +498,7 @@ public class SopraMap implements LifecycleObserver {
         );
     }
 
-    private PolygonContainer wrap(DamageCase damageCase) {
+    private PolygonContainer wrap(DamageCaseEntity damageCase) {
 
         long polygonId = damageCase.getID();
 

@@ -2,15 +2,15 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user;
 
 public class CurrentUser {
 
-    private static User currentUser = null;
+    private static UserEntity currentUserEntity = null;
 
-    static void set(User currentUser) {
-        CurrentUser.currentUser = currentUser;
+    static void set(UserEntity currentUserEntity) {
+        CurrentUser.currentUserEntity = currentUserEntity;
     }
 
-    public static User get() throws NoUserException{
-        if(currentUser == null){
+    public static UserEntity get() throws NoUserException{
+        if(currentUserEntity == null){
             throw new NoUserException();
-        }else return currentUser;
+        }else return currentUserEntity;
     }
 }
