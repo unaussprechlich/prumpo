@@ -37,7 +37,8 @@ public class UserHandler extends AbstractModelHandler<User, UserEntity, UserRepo
     @Override
     protected void set(User user) {
         super.set(user);
-        CurrentUser.set(user.getEntity());
+        if(user == null) CurrentUser.set(null);
+        else CurrentUser.set(user.getEntity());
     }
 
     public void login(@NonNull UserEntity userEntity){

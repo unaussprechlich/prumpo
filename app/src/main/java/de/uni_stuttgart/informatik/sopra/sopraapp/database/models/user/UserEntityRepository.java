@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -18,6 +19,14 @@ public class UserEntityRepository extends AbstractEntityRepository<UserEntity, U
     @Inject
     public UserEntityRepository(@NonNull UserEntityDao dao) {
         super(dao);
+    }
+
+    public LiveData<List<UserEntity>> getAll(){
+        return dao.getAllBypass();
+    }
+
+    public LiveData<UserEntity> getById(long id){
+        return dao.getByIdBypass(id);
     }
 
     public void insertDummyIfNotExist(){
