@@ -58,3 +58,4 @@ Die automatisierte Testabdeckung beträgt 58%, einige Features können jedoch nu
 - Der User kann aus vorgefertigten Profilbildern auswählen
 - Die Daten können verschlüsselt exportiert werden, sowohl in Json als Auch Plaintext. Dies kann man dann bequem direkt übder die Android-Teilen-Funtionen versenden
 - Es wurde viel wert auf die Gestaltung der UI gelegt, und durch animationen aufgehübscht
+- In der Readme finden sich noch viele andere Additional Features
