@@ -19,6 +19,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListF
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @ActivityScope
@@ -66,10 +67,15 @@ public class DamageCaseListFragment
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        ArrayList<DamageCase> damageCases = damageCaseList.stream()
-
-                // todo -> wirft noch nullpointer
-                .filter(damageCase -> compareBothUpper(damageCase.getContract().getValue().getHolder().getValue().toString(), newText))
+        ArrayList<DamageCase> damageCases = damageCaseList.stream().filter(damageCase -> {
+                    try {
+                        return compareBothUpper(damageCase.getContractAsync().getHolderAsync().toString(),
+                                newText);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                })
                 .collect(Collectors.toCollection(ArrayList::new));
 
         recyclerView.swapAdapter(new DamageCaseListAdapter(damageCases), true);

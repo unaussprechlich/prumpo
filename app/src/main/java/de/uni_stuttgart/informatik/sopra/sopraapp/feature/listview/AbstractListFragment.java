@@ -114,7 +114,7 @@ public abstract class AbstractListFragment
      * @param s2 - String nr 2
      * @return true, if one contains the other, false else
      */
-    protected boolean compareBothUpper(@Nullable Object o1, @Nullable String s2) {
+    protected static boolean compareBothUpper(@Nullable Object o1, @Nullable String s2) {
         if (o1 == null || s2 == null)
             return false;
 

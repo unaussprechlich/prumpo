@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @ActivityScope
@@ -79,9 +80,13 @@ public class ContractListFragment
 
         ArrayList<Contract> contracts = contractList.stream()
                 .filter(contract -> {
-                    User value = contract.getHolder().getValue();
-                    // todo -> value ist noch null
-                    return compareBothUpper(value != null ? value.getName() : null, newText);
+                    try {
+                        User value = contract.getHolderAsync();
+                        return compareBothUpper(value != null ? value.toString() : null, newText);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 

@@ -60,7 +60,8 @@ public class UserListFragment
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        List<User> list = userList.stream().filter(user -> compareBothUpper(user.getName(), newText))
+        List<User> list = userList.stream()
+                .filter(user -> compareBothUpper(user.getName(), newText))
                 .collect(Collectors.toList());
 
         recyclerView.swapAdapter(new UserListAdapter(list, getActivity(), navMenuBlocker), true);
