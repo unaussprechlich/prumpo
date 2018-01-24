@@ -22,6 +22,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
@@ -30,6 +32,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.TestHelper.first;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
@@ -83,6 +86,40 @@ public class UserListViewCheck {
         navigationMenuItemView.perform(click());
 
         onView(first(withId(R.id.user_card))).perform(click());
+
+        ViewInteraction actionMenuItemView = onView(
+                allOf(withId(R.id.action_search), withContentDescription("Search"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.toolbar),
+                                        2),
+                                0),
+                        isDisplayed()));
+        actionMenuItemView.perform(click());
+
+        ViewInteraction searchAutoComplete = onView(
+                allOf(withId(R.id.search_src_text),
+                        childAtPosition(
+                                allOf(withId(R.id.search_plate),
+                                        childAtPosition(
+                                                withId(R.id.search_edit_frame),
+                                                1)),
+                                0),
+                        isDisplayed()));
+        searchAutoComplete.perform(replaceText("m"), closeSoftKeyboard());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pressBack();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pressBack();
 
         ViewInteraction appCompatImageButton2 = onView(first(
                 allOf(withId(R.id.view_user_contract_btn),
@@ -197,7 +234,7 @@ public class UserListViewCheck {
             e.printStackTrace();
         }
 
-        ViewInteraction actionMenuItemView = onView(
+        ViewInteraction actionMenuItemView2 = onView(
                 allOf(withId(R.id.action_logout), withContentDescription("Logout"),
                         childAtPosition(
                                 childAtPosition(
@@ -205,7 +242,7 @@ public class UserListViewCheck {
                                         2),
                                 1),
                         isDisplayed()));
-        actionMenuItemView.perform(click());
+        actionMenuItemView2.perform(click());
 
         ViewInteraction appCompatButton = onView(
                 allOf(withId(android.R.id.button2), withText("Ja"),
@@ -238,26 +275,7 @@ public class UserListViewCheck {
     }
 
 
-    private <T> Matcher<T> first(final Matcher<T> matcher) {
-        return new BaseMatcher<T>() {
-            boolean isFirst = true;
 
-            @Override
-            public boolean matches(final Object item) {
-                if (isFirst && matcher.matches(item)) {
-                    isFirst = false;
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public void describeTo(final Description description) {
-                description.appendText("should return first matching item");
-            }
-        };
-    }
 
 
 }
