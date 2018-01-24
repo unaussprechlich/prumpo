@@ -330,7 +330,6 @@ public class SopraMap implements LifecycleObserver {
             return;
         }
 
-
         activePolygon.addAndDisplay(event.position);
         activePolygon.redrawHighlightCircles();
 
@@ -345,6 +344,8 @@ public class SopraMap implements LifecycleObserver {
     private boolean activeContractContains(EventVertexLocationReceived event) {
         if (activePolygon == null) return false;
 
+        if (event.polygonType == PolygonType.CONTRACT) return true;
+
         return (event.polygonType == PolygonType.DAMAGE_CASE
                 && activePolygon.data.size() > 2
                 && activePolygon.data.containsPoint(event.position));
@@ -355,6 +356,7 @@ public class SopraMap implements LifecycleObserver {
 
         PolygonContainer lastContract = contracts.get(lastHighlightedContractId);
 
+        if (activePolygon.type == PolygonType.CONTRACT) return true;
         if (lastContract == null) return false;
 
         return (activePolygon.type == PolygonType.DAMAGE_CASE
