@@ -288,8 +288,9 @@ public class SopraMap implements LifecycleObserver {
                 if (damageCase.getID() == activePolygon.uniqueId) return;
             }
 
-
-            lastHighlightedContractId = damageCase.getContract().getID();
+            if (damageCase.getContract() != null) {
+                lastHighlightedContractId = damageCase.getContract().getID();
+            }
 
             selectPolygon(damageCase.getID(), PolygonType.DAMAGE_CASE);
         });
@@ -331,12 +332,13 @@ public class SopraMap implements LifecycleObserver {
 
         if (activePolygon.type == PolygonType.CONTRACT
                 && event.polygonType == PolygonType.DAMAGE_CASE) {
-            activePolygon.toggleHighlight();
 
             if (!isValidVertexAddition(event)) {
                 showVertexInvalidToast();
                 return;
             }
+
+            activePolygon.toggleHighlight();
 
             newPolygon(event.position, PolygonType.DAMAGE_CASE);
 
@@ -359,13 +361,13 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private boolean isValidVertexAddition(EventVertexLocationReceived event) {
-        if (activePolygon == null) return false;
-
-        if (event.polygonType == PolygonType.CONTRACT) return true;
-
-        return (event.polygonType == PolygonType.DAMAGE_CASE
-                && activePolygon.data.size() > 2
-                && activePolygon.data.containsPoint(event.position));
+        return true;
+//        if (activePolygon == null) return false;
+//
+//        if (event.polygonType == PolygonType.CONTRACT) return true;
+//
+//        return (event.polygonType == PolygonType.DAMAGE_CASE
+//                && activePolygon.data.containsPoint(event.position));
     }
 
     private boolean isValidVertexAddition(LatLng point) {
@@ -374,7 +376,6 @@ public class SopraMap implements LifecycleObserver {
         PolygonContainer lastContract = contracts.get(lastHighlightedContractId);
 
         if (activePolygon.type == PolygonType.CONTRACT) return true;
-        if (lastContract == null) return false;
 
         return (activePolygon.type == PolygonType.DAMAGE_CASE
                 && lastContract.data.containsPoint(point));

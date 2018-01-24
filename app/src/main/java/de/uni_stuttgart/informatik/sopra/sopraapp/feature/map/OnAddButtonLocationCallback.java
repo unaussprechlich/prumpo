@@ -8,7 +8,6 @@ import android.widget.Toast;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.EventVertexLocationReceived;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.Helper;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import org.greenrobot.eventbus.EventBus;
 

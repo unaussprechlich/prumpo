@@ -87,7 +87,7 @@
 
     <string name="map_fab_no_gps">Es konnten keine Positionsdaten im Zeitrahmen von 10 Sekunden empfangen werden.</string>
 
-    <string name="map_frag_invalid_vertex">Die Eckpunkte eines Schadensfalls müssen sich innerhalb einer Versicherungsfläche befinden.</string>
+    <string name="map_frag_invalid_vertex">Punkt ungültig.</string>
 
     <string name="map_frag_botsheet_dialog_default_header">"Bitte eingeben …"</string>
     <string name="map_frag_botsheet_dialog_positive">OK</string>

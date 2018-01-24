@@ -5,8 +5,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
-
 import static de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.Helper.contains;
 
 /**
