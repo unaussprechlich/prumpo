@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Helper {
 
-    public static double EPSILON = 0.001;
+    public static final double EPSILON = 0.00001;
 
     private static boolean equals(final double a, final double b) {
 
@@ -28,11 +28,8 @@ public class Helper {
                         : + 1;
     }
 
-    public static List<LatLng> test_pints;
-
     public static boolean doesPolygonSelfIntersect(List<LatLng> points) {
         if (points.size() == 3) return false;
-        test_pints = points;
 
         ArrayList<Point2D> point2DS = projectAndNormalize(points);
 
@@ -55,9 +52,6 @@ public class Helper {
     }
 
     private static boolean intersect(Point2D a, Point2D b, Point2D c, Point2D d) {
-
-        //PolyUtil.intersects()
-
 //
 //        int orientABC = isCCw(a, b, c);
 //        int orientABD = isCCw(a, b, d);
@@ -81,8 +75,8 @@ public class Helper {
 //        // neither of those cases hold, return false!
 //        return false;
 
-       return isCCw(a, c, d) != isCCw(b, c, d)
-               && isCCw(a, b, c) != isCCw(a, b, d);
+        return isCCw(a, c, d) != isCCw(b, c, d)
+                && isCCw(a, b, c) != isCCw(a, b, d);
 
     }
 

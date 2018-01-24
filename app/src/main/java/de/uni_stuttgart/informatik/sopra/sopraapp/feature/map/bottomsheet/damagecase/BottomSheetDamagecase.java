@@ -24,14 +24,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 
-@SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
 
     // ### Constructor Variables ############################################################ Constructor Variables ###
@@ -74,20 +72,14 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    protected DamageCaseEntity collectDataForSave(DamageCaseEntity model){
+    protected DamageCase collectDataForSave(DamageCase model){
         try {
 
-            if (true == false) throw new EditFieldValueIsEmptyException(contentInputDate);
-
-            model.setDate(dateTime)
+            model.getEntity().setDate(dateTime)
                     .setAreaSize(iBottomSheetOwner.getSopraMap().getArea())
                     .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
                     .setContractID(contract.getID());
 
-        } catch (EditFieldValueIsEmptyException e) {
-            e.showError();
-            iBottomSheetOwner.getLockableBottomSheetBehaviour().setState(BottomSheetBehavior.STATE_EXPANDED);
-            return null;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "ERROR!", Toast.LENGTH_SHORT).show();
@@ -103,11 +95,11 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
     }
 
     @Override
-    protected void insertExistingData(DamageCaseEntity damageCaseEntity) {
-        damageCaseEntity.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
-        setDate(damageCaseEntity.getDate());
-        toolbarDamagecaseNr.setText(damageCaseEntity.toString());
-        contractHandler.loadFromDatabase(damageCaseEntity.getContractID());
+    protected void insertExistingData(DamageCase damageCase) {
+        damageCase.getEntity().getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
+        setDate(damageCase.getEntity().getDate());
+        toolbarDamagecaseNr.setText(damageCase.toString());
+        contractHandler.loadFromDatabase(damageCase.getContract().getID());
         contractHandler.getLiveData().observe(this, this::insertContract);
     }
 

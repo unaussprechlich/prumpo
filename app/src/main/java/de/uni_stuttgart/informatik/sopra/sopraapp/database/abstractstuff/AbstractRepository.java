@@ -24,11 +24,11 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     }
 
     public LiveData<List<Model>> getAll(){
-        return dao.getAll(getUserId());
+        return dao.getAllBypass();
     }
 
     public LiveData<Model> getById(long id){
-        return dao.getById(id, getUserId());
+        return dao.getByIdBypass(id);
     }
 
     protected long getUserId() {

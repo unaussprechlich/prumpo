@@ -35,7 +35,7 @@ public class ContractHandler extends AbstractModelHandler<Contract, ContractEnti
 
     @Override
     protected ContractEntityRepository getEntityRepository() {
-        return null;
+        return contractEntityRepository;
     }
 
     @Subscribe

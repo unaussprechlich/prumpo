@@ -22,7 +22,9 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contr
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
@@ -36,6 +38,9 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
     @Inject
     DamageCaseHandler damageCaseHandler;
+
+    @Inject
+    UserEntityRepository userEntityRepository;
 
     // ### Constructor ################################################################################ Constructor ###
 
@@ -82,8 +87,10 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     protected void insertExistingData(Contract contract) {
 
 
-        inputPolicyholder.setText(contract.getHolder().toString());
-        toolbarContractName.setText(contract.getHolder().toString());
+        if(contract.getHolder() != null){
+            inputPolicyholder.setText(contract.getHolder().toString());
+            toolbarContractName.setText(contract.getHolder().toString());
+        }
 
         ContractEntity entity = contract.getEntity();
 
@@ -146,7 +153,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
                     .withAutocompletion(users)
                     .onSelection(o -> {
                         if (o != null) {
-                            UserEntity userEntity = (UserEntity) o;
+                            UserEntity userEntity = ((User) o).getEntity();
                             this.userEntity = userEntity;
                             toolbarContractName.setText(userEntity.toString());
                         }

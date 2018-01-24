@@ -3,6 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
@@ -15,13 +16,13 @@ public class User implements ModelDB<UserEntity> {
     UserEntity userEntity;
 
     @Relation(parentColumn = "_id", entityColumn = "created_by_id", entity = ContractEntity.class)
-    List<ContractEntity> ownedContracts;
+    List<ContractEntity> ownedContracts = new ArrayList<>();
 
     @Relation(parentColumn = "_id", entityColumn = "expert_id", entity = ContractEntity.class)
-    List<ContractEntity> expertOfContracts;
+    List<ContractEntity> expertOfContracts = new ArrayList<>();
 
     @Relation(parentColumn = "_id", entityColumn = "holder_id", entity = ContractEntity.class)
-    List<ContractEntity> holderOfContracts;
+    List<ContractEntity> holderOfContracts = new ArrayList<>();
 
     User setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;

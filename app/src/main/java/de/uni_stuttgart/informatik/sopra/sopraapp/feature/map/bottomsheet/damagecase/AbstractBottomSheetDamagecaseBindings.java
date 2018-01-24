@@ -3,16 +3,17 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damag
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.AbstractBottomSheetBase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 
-public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBottomSheetBase<DamageCaseEntity, DamageCaseHandler> {
+public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBottomSheetBase<DamageCase, DamageCaseHandler> {
 
     // ### Dimensions ################################################################################## Dimensions ###
 

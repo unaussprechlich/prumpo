@@ -3,6 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
@@ -16,13 +17,13 @@ public class Contract implements ModelDB<ContractEntity>{
     ContractEntity contractEntity;
 
     @Relation(parentColumn = "holder_id", entityColumn = "_id", entity = UserEntity.class)
-    List<UserEntity> holder;
+    List<UserEntity> holder = new ArrayList<>();
 
     @Relation(parentColumn = "expert_id", entityColumn = "_id", entity = UserEntity.class)
-    List<UserEntity> expert;
+    List<UserEntity> expert = new ArrayList<>();
 
     @Relation(parentColumn = "_id", entityColumn = "contract_id", entity = DamageCaseEntity.class)
-    List<DamageCaseEntity> damageCaseEntities;
+    List<DamageCaseEntity> damageCaseEntities = new ArrayList<>();
 
     Contract setContractEntity(ContractEntity contractEntity) {
         this.contractEntity = contractEntity;
@@ -40,6 +41,7 @@ public class Contract implements ModelDB<ContractEntity>{
     }
 
     public UserEntity getExpert() {
+        if(holder.isEmpty()) return null;
         return expert.get(0);
     }
 
@@ -48,6 +50,7 @@ public class Contract implements ModelDB<ContractEntity>{
     }
 
     public UserEntity getHolder() {
+        if(holder.isEmpty()) return null;
         return holder.get(0);
     }
 

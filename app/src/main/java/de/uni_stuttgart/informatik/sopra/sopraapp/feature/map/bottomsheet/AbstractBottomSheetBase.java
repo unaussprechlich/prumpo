@@ -169,7 +169,6 @@ public abstract class AbstractBottomSheetBase<
         } else {
             loadModelFromHandler();
         }
-
     }
 
     private void loadModelFromHandler() {

@@ -43,9 +43,8 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
  * is thrown.
  */
 public class AuthenticationActivity extends BaseActivity  implements AdapterView.OnItemSelectedListener {
-
-    @Inject
-    UserEntityRepository userRepository;
+    
+    @Inject UserEntityRepository userEntityRepository;
     @Inject UserHandler userHandler;
 
     @BindView(R.id.signup_layout)   View signupView;
@@ -96,7 +95,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
         spinner.setOnItemSelectedListener(this);
 
         //Insert the dummy object if it not exists
-        userRepository.insertDummyIfNotExist();
+        userEntityRepository.insertDummyIfNotExist();
     }
 
     /**
@@ -105,7 +104,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
     @OnClick(R.id.activity_authentication_demo_modus)
     public void onDemoMode(){
         try {
-            UserEntity userEntity = userRepository.getByEmailAsync("dummy@dummy.net");
+            UserEntity userEntity = userEntityRepository.getByEmailAsync("dummy@dummy.net");
             if(userEntity == null) return;
             userHandler.login(userEntity);
             gotoMainActivity();
@@ -146,7 +145,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                         if (!Pattern.matches(Constants.EMAIL_REGEX, email))
                             throw new EditFieldValueException(loginEmail, "Invalid mail address!");
 
-                        UserEntity userEntity = userRepository.getByEmailAsync(email);
+                        UserEntity userEntity = userEntityRepository.getByEmailAsync(email);
                         if (userEntity == null) throw new EditFieldValueException(loginEmail, "UserEntity not found!");
 
                         if (!userEntity.getPassword().equals(password))
@@ -208,7 +207,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                         throw new IllegalArgumentException("Keine Benutzerrolle ausgewählt!");
 
 
-                    UserEntity userEntityAsync = userRepository.getByEmailAsync(email);
+                    UserEntity userEntityAsync = userEntityRepository.getByEmailAsync(email);
 
                     if(userEntityAsync != null && userEntityAsync.getEmail().equals(email))
                         throw new EditFieldValueException(signUpEmail, "Ein Benutzer mit dieser Email-Adresse existiert bereits!");
@@ -220,7 +219,7 @@ public class AuthenticationActivity extends BaseActivity  implements AdapterView
                             .setRole(userRole)
                             .create();
 
-                    userRepository.insert(userEntity);
+                    userEntityRepository.insert(userEntity);
                     onClickToLogin();
                 } catch(EditFieldValueException e) {
                     e.showError();
