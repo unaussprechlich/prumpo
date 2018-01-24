@@ -4,6 +4,9 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +30,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntit
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
@@ -65,7 +69,8 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
             if (this.userEntity == null && contract.getEntity().getHolderID() == -1) throw new EditFieldValueIsEmptyException(inputPolicyholder);
             else if(this.userEntity != null) contract.getEntity().setHolderID(userEntity.getID());
 
-            contract.getEntity().setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
+            contract.getEntity()
+                    .setCoordinates(iBottomSheetOwner.getSopraMap().getActivePoints())
                     .setAreaCode(getIfNotEmptyElseThrow(inputLocation))
                     .setDamageType(getIfNotEmptyElseThrow(inputDamages));
 
@@ -200,14 +205,19 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         ContractEntity contract = getHandler().getEntityValue();
 
+        if(contract.isChanged()){
+            Toast.makeText(getContext(), "Bitte speichern!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         close(); //TODO replace with showCloseAlert()
 
         try {
             damageCaseHandler.createTemporaryNew(contract);
-
         } catch (NoUserException e) {
             e.printStackTrace();
         }
+
         iBottomSheetOwner.openBottomSheet(DamageCaseEntity.class);
     }
 
@@ -218,8 +228,17 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         String[] items = damageCasesOfThisContract.stream().map(Object::toString).toArray(String[]::new);
         builder.setItems(items, (dialog, itemIdx) -> {
-            // todo elias: DialogList of damagecases -> list item onClick
-            damageCasesOfThisContract.get(itemIdx);
+
+
+
+            if(getHandler().getEntityValue().isChanged()){
+                Toast.makeText(getContext(), "Bitte speichern!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            close();
+            DamageCaseEntity damageCaseEntity = damageCasesOfThisContract.get(itemIdx);
+            EventBus.getDefault().postSticky(new EventsPolygonSelected.DamageCase(damageCaseEntity.getID()));
         });
 
         AlertDialog dialog = builder.create();

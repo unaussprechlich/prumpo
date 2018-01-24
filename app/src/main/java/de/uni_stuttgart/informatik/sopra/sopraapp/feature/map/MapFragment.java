@@ -31,7 +31,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
@@ -277,7 +276,7 @@ public class MapFragment
 
             @Override
             public void onStateChanged(@NonNull View bottomSheetContainer, int newState) {
-                ((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
+                //((MainActivity) getActivity()).setDrawerEnabled(newState == BottomSheetBehavior.STATE_HIDDEN);
             }
 
             @Override
@@ -332,7 +331,10 @@ public class MapFragment
 
     @Override
     public boolean shouldPerformBackpress() {
-        if(currentBottomSheet != null) currentBottomSheet.showCloseAlert();
+        if(currentBottomSheet != null){
+           if(currentBottomSheet.isChanged()) currentBottomSheet.showCloseAlert();
+           else currentBottomSheet.close();
+        }
         return currentBottomSheet == null;
     }
 }

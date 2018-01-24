@@ -127,13 +127,13 @@ public class MainActivity
                     400);
     }
 
-    private void updateUserProfileHeaderView(User userEntity){
-        if(userEntity == null) return;
+    private void updateUserProfileHeaderView(User user){
+        if(user == null) return;
 
         View headerView = navigationView.getHeaderView(0);
-        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(userEntity.getEntity().getRole().toString());
-        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(userEntity.getName());
-        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[userEntity.getEntity().getProfilePicture()]);
+        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(user.getEntity().getRole().toString());
+        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(user.getName());
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[user.getEntity().getProfilePicture()]);
     }
 
     /**
@@ -173,12 +173,10 @@ public class MainActivity
      *                if false -> navigation drawer disabled
      */
     @Override
-    public void setDrawerEnabled(boolean enabled) {
+    public void setDrawerEnabled(boolean enabled, boolean hide) {
 
-        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().hide();
-        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().show();
+        if (!enabled && hide) getSupportActionBar().hide();
+        else getSupportActionBar().show();
 
         // lock or unlock drawer
         int lockMode = enabled

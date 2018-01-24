@@ -23,7 +23,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
  * annotation if you change any of the models.
  */
 @ApplicationScope
-@Database(entities = {UserEntity.class, DamageCaseEntity.class, ContractEntity.class}, version = 19)
+@Database(entities = {UserEntity.class, DamageCaseEntity.class, ContractEntity.class}, version = 20)
 @TypeConverters({Converters.class})
 public abstract class DatabaseManager extends RoomDatabase {
 

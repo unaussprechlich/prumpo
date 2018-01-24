@@ -173,7 +173,7 @@ public final class ContractEntity implements ModelEntityDB<ContractEntityReposit
     // SETTER ######################################################################################
 
     public ContractEntity setCoordinates(List<LatLng> coordinates) {
-        if(coordinates == this.coordinates) return this;
+        if(coordinates.equals(this.coordinates)) return this;
 
         isChanged = true;
         this.coordinates = coordinates;
@@ -189,7 +189,7 @@ public final class ContractEntity implements ModelEntityDB<ContractEntityReposit
     }
 
     public ContractEntity setDate(DateTime date) {
-        if(date == this.date) return this;
+        if(date.equals(this.date)) return this;
 
         isChanged = true;
         this.date = date;

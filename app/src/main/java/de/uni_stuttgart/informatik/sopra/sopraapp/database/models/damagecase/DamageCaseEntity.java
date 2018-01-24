@@ -44,6 +44,9 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
     @ColumnInfo(index = true, name = "contract_id")
     long contractID;
 
+    @ColumnInfo(index = true, name = "holder_id")
+    long holderID;
+
     @ColumnInfo(index = true,  name = "created_by_id")
     long createdByID;
 
@@ -59,17 +62,19 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
     //##############################################################################################
 
     public DamageCaseEntity(
+            long holderID,
             long contractID,
             long createdByID,
             double areaSize,
             List<LatLng> coordinates,
             DateTime date,
             boolean intial) {
-        this(contractID, createdByID,areaSize, coordinates, date);
+        this(holderID, contractID, createdByID,areaSize, coordinates, date);
         this.initial = intial;
     }
 
     public DamageCaseEntity(
+            long holderID,
             long contractID,
             long createdByID,
             double areaSize,
@@ -79,6 +84,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
         //Inject repository
         SopraApp.getAppComponent().inject(this);
 
+        this.holderID = holderID;
         this.contractID = contractID;
         this.createdByID = createdByID;
         this.areaSize = areaSize;
@@ -135,6 +141,10 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
         return createdByID;
     }
 
+    public long getHolderID() {
+        return holderID;
+    }
+
     @Override
     public long getID() {
         return id;
@@ -143,6 +153,16 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
 
 
     // SETTER ######################################################################################
+
+
+    public DamageCaseEntity setHolderID(long holderID) {
+        if(holderID == -1 || this.holderID == holderID) return this;
+
+        isChanged = true;
+        this.holderID = holderID;
+
+        return this;
+    }
 
     public DamageCaseEntity setContractID(long contractID) throws ExecutionException, InterruptedException {
         if(contractID == -1 || this.contractID == contractID) return this;
@@ -163,7 +183,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
     }
 
     public DamageCaseEntity setCoordinates(List<LatLng> coordinates) {
-        if(this.coordinates == coordinates) return this;
+        if(this.coordinates.equals(coordinates)) return this;
 
         isChanged = true;
         this.coordinates = coordinates;
@@ -171,7 +191,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
     }
 
     public DamageCaseEntity setDate(DateTime date) {
-        if(this.date == date) return this;
+        if(this.date.equals(date)) return this;
 
         isChanged = true;
         this.date = date;
@@ -203,6 +223,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
 
     public static final class Builder {
         private long contractID = -1;
+        private long holderID = -1;
         private double areaSize = 0;
         private List<LatLng> coordinates = new ArrayList<>();
         private DateTime date = DateTime.now();
@@ -218,6 +239,10 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
             return this;
         }
 
+        public Builder setHolderID(long holderID) {
+            this.holderID = holderID;
+            return this;
+        }
 
         public Builder setAreaSize(double areaSize) {
             this.areaSize = areaSize;
@@ -236,7 +261,7 @@ public final class DamageCaseEntity implements ModelEntityDB<DamageCaseEntityRep
 
         public DamageCaseEntity create() throws NoUserException {
             long createdBy = userHandler.getCurrentUser().getID();
-            return new DamageCaseEntity(contractID, createdBy, areaSize, coordinates, date, true);
+            return new DamageCaseEntity(holderID, contractID, createdBy, areaSize, coordinates, date, true);
         }
     }
 }

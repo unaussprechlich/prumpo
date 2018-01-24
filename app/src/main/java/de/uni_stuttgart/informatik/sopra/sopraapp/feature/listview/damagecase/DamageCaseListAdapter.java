@@ -17,6 +17,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.AbstractListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 
@@ -27,6 +28,7 @@ public class DamageCaseListAdapter
 
     @Inject DamageCaseRepository damageCaseRepository;
     @Inject DamageCaseHandler damageCaseHandler;
+    @Inject UserEntityRepository userEntityRepository;
 
     public DamageCaseListAdapter(List<DamageCase> damageCaseList) {
         super(damageCaseList);
@@ -54,8 +56,8 @@ public class DamageCaseListAdapter
         holder.location.setText(String.valueOf(damageCase.getContract().getAreaCode()));
         holder.area.setText(calculateAreaValue(damageCase.getEntity().getAreaSize()));
 
-        holder.policyHolder.setText(damageCase.getContract().getHolderID() + "");
-     
+        if(damageCase.getHolder() != null)
+            holder.policyHolder.setText(damageCase.getHolder().toString());
     }
 
     @Override

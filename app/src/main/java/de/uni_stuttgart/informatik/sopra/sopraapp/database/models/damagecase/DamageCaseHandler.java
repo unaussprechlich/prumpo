@@ -30,7 +30,7 @@ public class DamageCaseHandler extends AbstractModelHandler<DamageCase, DamageCa
     }
 
     public void createTemporaryNew(ContractEntity contractEntity) throws NoUserException {
-        set(new DamageCase().setContract(contractEntity).setDamageCaseEntity(new DamageCaseEntity.Builder().setContractID(contractEntity.getID()).create()));
+        set(new DamageCase().setContract(contractEntity).setDamageCaseEntity(new DamageCaseEntity.Builder().setContractID(contractEntity.getID()).setHolderID(contractEntity.getHolderID()).create()));
     }
 
     @Override

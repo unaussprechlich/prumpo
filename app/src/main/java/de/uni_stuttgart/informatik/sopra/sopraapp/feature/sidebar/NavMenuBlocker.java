@@ -23,10 +23,10 @@ public class NavMenuBlocker implements MenuItem.OnActionExpandListener {
     }
 
     private void lock() {
-        navigationDrawLocker.setDrawerEnabled(false);
+        navigationDrawLocker.setDrawerEnabled(false, false);
     }
 
     public void unlock() {
-        navigationDrawLocker.setDrawerEnabled(true);
+        navigationDrawLocker.setDrawerEnabled(true, false);
     }
 }

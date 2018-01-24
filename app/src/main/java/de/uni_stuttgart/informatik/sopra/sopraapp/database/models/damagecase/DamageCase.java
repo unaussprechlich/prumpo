@@ -9,6 +9,7 @@ import java.util.List;
 
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 
 public class DamageCase implements ModelDB<DamageCaseEntity>{
 
@@ -17,6 +18,9 @@ public class DamageCase implements ModelDB<DamageCaseEntity>{
 
     @Relation(parentColumn = "contract_id", entityColumn = "_id", entity = ContractEntity.class)
     List<ContractEntity> contract;
+
+    @Relation(parentColumn = "holder_id", entityColumn = "_id", entity = UserEntity.class)
+    List<UserEntity> holder;
 
     DamageCase setContract(ContractEntity contract) {
         this.contract = new ArrayList<>();
@@ -39,11 +43,17 @@ public class DamageCase implements ModelDB<DamageCaseEntity>{
         return damageCaseEntity.getID();
     }
 
+    public UserEntity getHolder() {
+        if(holder.isEmpty()) return null;
+        return holder.get(0);
+    }
+
     public DamageCaseEntity getEntity() {
         return damageCaseEntity;
     }
 
     public ContractEntity getContract() {
+        if(contract.isEmpty()) return null;
         return contract.get(0);
     }
 }

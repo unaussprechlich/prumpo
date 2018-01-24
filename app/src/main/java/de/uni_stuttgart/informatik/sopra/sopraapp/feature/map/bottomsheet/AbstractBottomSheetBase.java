@@ -33,6 +33,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
@@ -40,6 +41,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepos
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.LocationCallbackListener;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.OnAddButtonLocationCallback;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
@@ -142,7 +144,7 @@ public abstract class AbstractBottomSheetBase<
         tbCloseButton = viewBottomSheetToolbar.getMenu().findItem(R.id.act_botsheet_close);
         tbCloseButton.setOnMenuItemClickListener(i ->
                 returnThisAfter(true, () -> {
-                    if ((getHandler().getValue() != null && getHandler().getEntityValue().isChanged())) showCloseAlert();
+                    if (isChanged()) showCloseAlert();
                     else close();
                 }));
 
@@ -155,6 +157,12 @@ public abstract class AbstractBottomSheetBase<
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setPeekHeight(dimenBottomSheetPeekHeight);
 
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+    }
+
+    public boolean isChanged(){
+        if(!getHandler().hasValue()) return false;
+        Model model = collectDataForSave((Model) handler.getValue());
+        return (model.getEntity().isChanged());
     }
 
     protected void init() {
@@ -281,6 +289,10 @@ public abstract class AbstractBottomSheetBase<
     }
 
     public void show() {
+
+        //CAST AND CAST AN CAST AN CAST
+        ((MainActivity)((MapFragment) iBottomSheetOwner).getActivity()).setDrawerEnabled(false, true);
+
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
 
         iBottomSheetOwner.getLockableBottomSheetBehaviour().setHideable(false);
@@ -306,6 +318,9 @@ public abstract class AbstractBottomSheetBase<
             gpsService.stopSingleCallback();
 
         handler.closeCurrent();
+
+        ((MainActivity)((MapFragment) iBottomSheetOwner).getActivity()).setDrawerEnabled(true, false);
+
         onClose();
 
     }
