@@ -32,6 +32,11 @@
                 android:text="@string/about_fragment_contact_message"
                 android:id="@+id/about_frag_textView_contact_mailintent"/>
 
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_fragment_contact_message_email"
+                android:id="@+id/about_frag_textView_contact_sendMail"/>
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

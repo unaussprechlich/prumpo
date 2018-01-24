@@ -20,7 +20,35 @@ Auch ein Export aller bisherig erfassten Schäden ist möglich.
 
 ## Features
 
-**TODO:** Hier die Features (Additional Features) aufzählen und evtl. mit einem Screenshot/Gif demonstrieren o. ä.
+### Login
+Die App bringt ein Benutzerkontenverwaltungsystem mit. 
+Nutzer können einen neuen Account anlegen, einen bestehenden Account nutzen 
+oder für Erkundungszwecke einfach nur den Demo-Modus nutzen.
+
+**TODO:** Zwei (hochgeladene Screenshots einbetten)
+
+### Benutzerkontrollzentrum und -customization
+Nutzer können einige ihrer Daten (Profilbild, Email und Passwort) im Benutzerkontrollzetrum nach Belieben editieren.
+Auch ein Loggout von hieraus ist möglich.
+
+**TODO:** Zwei (hochgeladene Screenshots einbetten)
+
+### Versicherungsverträge exportieren
+Angelegte Versicherungsverträge können über die Listenansicht der Versicherungen (erreichbar durch das 
+Hamburger-Menu) exportiert werden.
+
+**TODO:** Zwei (hochgeladene Screencasts einbetten)
+
+### Erweiterte Aktionen unter *Weitere Informationen*
+Über den Punkt *Weitere Informationen* (erreichbar durch das Hamburger-Menu) können weitere Aktionen initiiert werden.
+Diese umfassen sowohl die Möglichkeit, sich per Mail an die Entwickler zu wenden, als auch die Möglichkeit, 
+Einsicht in die Lizenzbestimmungen nehmen zu können.
+
+**TODO:** Zwei (hochgeladene Screencasts einbetten)
+
+
+-->
+**TODO:** Weitere (Additional Features) aufzählen und evtl. mit einem Screenshot/Gif demonstrieren o. ä.
 
 ## Installation
 
@@ -43,7 +71,7 @@ Um einen Schadensfall anzulegen, **muss zuerst eine Versicherung angelegt werden
 
 ### Versicherung anlegen
 1. Die App starten und falls noch nicht gemacht einloggen.
-2. Im Navigation Drawer (erreichbar durch das Hamburger-Menu) den Punkt *Versicherungen* auswählen.
+2. Im Navigation Drawer den Punkt *Versicherungen* auswählen (erreichbar durch das Hamburger-Menu).
 3. In der Toolbar auf das Plus (*Hinzufügen*) drücken. 
 
 Die Karte wird nun angezeigt und die Erfassung kann beginnen.
