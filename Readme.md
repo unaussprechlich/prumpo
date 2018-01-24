@@ -23,14 +23,14 @@ Auch ein Export aller bisherig erfassten Schäden ist möglich.
 ### Login
 Die App bringt ein Benutzerkontenverwaltungsystem mit. 
 Nutzer können einen neuen Account anlegen, einen bestehenden Account nutzen 
-oder für Erkundungszwecke einfach nur den Demo-Modus nutzen.
+oder für Erkundungszwecke einfach auf den Demo-Modus zurückgreifen.
 
 <img src="doc/images/feature_login_1.png"  width="360" height="640" />
 <img src="doc/images/feature_login_2.png"  width="360" height="640" />
 
 ### Benutzerkontrollzentrum und -customization
 Nutzer können einige ihrer Daten (Profilbild, Email und Passwort) im Benutzerkontrollzetrum nach Belieben editieren.
-Auch ein Loggout von hieraus ist möglich.
+Auch ein Logout von hieraus ist möglich.
 
 <img src="doc/images/feature_profile_1.png"  width="360" height="640" />
 <img src="doc/images/feature_profile_2.png"  width="360" height="640" />
@@ -49,9 +49,13 @@ Einsicht in die Lizenzbestimmungen nehmen zu können.
 
 <img src="doc/images/feature_about.gif"  width="360" height="640" />
 
+### Map Customization
+
+In den Einstellungen ist es möglich, die favorisierte Darstellung zu wählen
+
+<img src="doc/images/feature_mapcustom.gif"  width="360" height="640" />
 
 
--->
 **TODO:** Weitere (Additional Features) aufzählen und evtl. mit einem Screenshot/Gif demonstrieren o. ä.
 
 ## Installation
@@ -82,10 +86,10 @@ Die Karte wird nun angezeigt und die Erfassung kann beginnen.
 Um eine Versicherung speichern zu können, *müssen* die folgenden Kriterien erfüllt sein:
 - Es muss eine Fläche (also mindestens drei Eckpunkte) eingetragen sein. *Erst danach können weitere Meta-Daten 
 erfasst werden*
-- Es wurde ein im System bestehender Kunde eingetragen (Beim Eingeben des Kundennamen werden alle passenden Kunden 
-angezeigt, aus dem einer ausgewählt werden muss)
-- Es muss mindestens eine Versicherungsart ausgewählt worden sein
-- Es muss ein Ort eingetragen sein
+- Es wurde ein im System bestehender Kunde eingetragen (Beim Eingeben des Kundennamen werden alle verfügbaren Kunden 
+angezeigt, aus dem einer ausgewählt werden muss).
+- Es muss mindestens eine Versicherungsart ausgewählt worden sein.
+- Es muss ein Ort eingetragen sein.
 
 ### Schädensfall erfassen
 1. Die App starten und falls noch nicht gemacht einloggen.
@@ -95,12 +99,11 @@ angezeigt, aus dem einer ausgewählt werden muss)
 Ein neuer Dialog wird nun angezeigt und die Erfassung kann beginnen.
 Um einen Schadensfall speichern zu können, *müssen* die folgenden Kriterien erfüllt sein:
 - Es muss eine Fläche (also mindestens drei Eckpunkte) eingetragen sein. *Erst danach können weitere Meta-Daten 
-erfasst werden*
-- Es muss ein Datum eingetragen sein
+erfasst werden.*
+- Es muss ein Datum eingetragen sein.
 
 
 **TODO:** Weitere kritische Anwendungsfälle beschreiben
-
 
 ## Changelog
 

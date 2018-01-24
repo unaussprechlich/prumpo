@@ -53,7 +53,7 @@
 
     <string name="title_activity_maps">Map</string>
     <string name="damage_case_pre_policyholder">Versicherungsnehmer</string>
-    <string name="map_frag_bs_contract_input_hint_damages">Schäden</string>
+    <string name="map_frag_bs_contract_input_hint_damages">Absicherung</string>
 
     <string name="dc_fragment_search_hint">Suche …</string>
 
