@@ -1,6 +1,6 @@
 # Prumpo
 
-![Das Interface zur Schadenerfassung](doc/images/header.png)
+<img src="doc/images/header.png"  width="360" height="640" />
 
 Für Landwirtinnen und Landwirte, die viele Bodenflächen für den Anbau von
 Nutzpflanzen ihr Eigen nennen, sind Schäden auf den Feldern nicht nur lästig,
@@ -25,26 +25,30 @@ Die App bringt ein Benutzerkontenverwaltungsystem mit.
 Nutzer können einen neuen Account anlegen, einen bestehenden Account nutzen 
 oder für Erkundungszwecke einfach nur den Demo-Modus nutzen.
 
-**TODO:** Zwei (hochgeladene Screenshots einbetten)
+<img src="doc/images/feature_login_1.png"  width="360" height="640" />
+<img src="doc/images/feature_login_2.png"  width="360" height="640" />
 
 ### Benutzerkontrollzentrum und -customization
 Nutzer können einige ihrer Daten (Profilbild, Email und Passwort) im Benutzerkontrollzetrum nach Belieben editieren.
 Auch ein Loggout von hieraus ist möglich.
 
-**TODO:** Zwei (hochgeladene Screenshots einbetten)
+<img src="doc/images/feature_profile_1.png"  width="360" height="640" />
+<img src="doc/images/feature_profile_2.png"  width="360" height="640" />
 
 ### Versicherungsverträge exportieren
 Angelegte Versicherungsverträge können über die Listenansicht der Versicherungen (erreichbar durch das 
 Hamburger-Menu) exportiert werden.
 
-**TODO:** Zwei (hochgeladene Screencasts einbetten)
+<img src="doc/images/feature_export_1.gif"  width="360" height="640" />
+<img src="doc/images/feature_export_2.gif"  width="360" height="640" />
 
 ### Erweiterte Aktionen unter *Weitere Informationen*
 Über den Punkt *Weitere Informationen* (erreichbar durch das Hamburger-Menu) können weitere Aktionen initiiert werden.
 Diese umfassen sowohl die Möglichkeit, sich per Mail an die Entwickler zu wenden, als auch die Möglichkeit, 
 Einsicht in die Lizenzbestimmungen nehmen zu können.
 
-**TODO:** Zwei (hochgeladene Screencasts einbetten)
+<img src="doc/images/feature_about.gif"  width="360" height="640" />
+
 
 
 -->
