@@ -92,6 +92,7 @@ public class Helper {
                         : + 1;
     }
 
+    // TODO: fix intersection check
     public static boolean doesPolygonSelfIntersect(List<LatLng> points) {
         if (points.size() == 3) return false;
 

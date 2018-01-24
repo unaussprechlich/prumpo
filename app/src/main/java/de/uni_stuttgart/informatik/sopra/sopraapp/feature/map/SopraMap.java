@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -114,9 +115,12 @@ public class SopraMap implements LifecycleObserver {
 
     private long lastHighlightedContractId;
 
+    private Toast signifyInvalidVertex;
+
     SopraMap(GoogleMap googleMap, Context context, int viewType) {
 
         SopraApp.getAppComponent().inject(this);
+
         this.resources = context.getResources();
         this.gMap = googleMap;
 
@@ -124,6 +128,14 @@ public class SopraMap implements LifecycleObserver {
 
         initResources(context);
         initMap(viewType);
+
+        signifyInvalidVertex =
+                Toast.makeText(
+                        context,
+                        resources.getText(R.string.map_frag_invalid_vertex),
+                        Toast.LENGTH_LONG
+                );
+        signifyInvalidVertex.setGravity(Gravity.CENTER, 0, 0);
 
     }
 
@@ -313,19 +325,27 @@ public class SopraMap implements LifecycleObserver {
 
         if (activePolygon == null) {
             newPolygon(event.position, event.polygonType);
+            EventBus.getDefault().post(new EventsVertex.Created(event.position, event.polygonType));
             return;
         }
 
         if (activePolygon.type == PolygonType.CONTRACT
                 && event.polygonType == PolygonType.DAMAGE_CASE) {
             activePolygon.toggleHighlight();
+
+            if (!isValidVertexAddition(event)) {
+                showVertexInvalidToast();
+                return;
+            }
+
             newPolygon(event.position, PolygonType.DAMAGE_CASE);
+
+            EventBus.getDefault().post(new EventsVertex.Created(event.position, event.polygonType));
             return;
         }
 
         // not a valid position for damage case vertices!
-        if (!activeContractContains(event)) {
-            vibrator.vibrate(500);
+        if (!isValidVertexAddition(event)) {
             showVertexInvalidToast();
             return;
         }
@@ -338,10 +358,7 @@ public class SopraMap implements LifecycleObserver {
         EventBus.getDefault().post(new EventsVertex.Created(event.position, event.polygonType));
     }
 
-    private void showVertexInvalidToast() {
-    }
-
-    private boolean activeContractContains(EventVertexLocationReceived event) {
+    private boolean isValidVertexAddition(EventVertexLocationReceived event) {
         if (activePolygon == null) return false;
 
         if (event.polygonType == PolygonType.CONTRACT) return true;
@@ -351,7 +368,7 @@ public class SopraMap implements LifecycleObserver {
                 && activePolygon.data.containsPoint(event.position));
     }
 
-    private boolean activeContractContains(LatLng point) {
+    private boolean isValidVertexAddition(LatLng point) {
         if (activePolygon == null) return false;
 
         PolygonContainer lastContract = contracts.get(lastHighlightedContractId);
@@ -385,7 +402,10 @@ public class SopraMap implements LifecycleObserver {
 
    /* <----- exposed methods -----> */
 
-    public List<LatLng> getActivePoints() {
+    public @Nullable List<LatLng> getActivePoints() {
+        if (activePolygon == null) return null;
+        if (activePolygon.data == null) return null;
+
         return activePolygon.data.getPoints();
     }
 
@@ -826,6 +846,11 @@ public class SopraMap implements LifecycleObserver {
         previewPolyline.setPoints(adjacentPoints);
     }
 
+    private void showVertexInvalidToast() {
+        vibrator.vibrate(500);
+        signifyInvalidVertex.show();
+    }
+
     private void onMarkerDragEnd(Marker marker) {
 
         // TODO: this should be an assertion
@@ -833,7 +858,6 @@ public class SopraMap implements LifecycleObserver {
 
         // not a valid position for damage case vertices!
         if (!activePolygon.moveAndDisplay(indexActiveVertex, marker.getPosition())) {
-            vibrator.vibrate(500);
             showVertexInvalidToast();
         }
 
@@ -880,7 +904,7 @@ public class SopraMap implements LifecycleObserver {
         }
 
         boolean moveAndDisplay(int index, LatLng point) {
-            if (!data.movePoint(index, point, activeContractContains(point))) return false;
+            if (!data.movePoint(index, point, isValidVertexAddition(point))) return false;
 
             mapObject.setPoints(data.getPoints());
             return true;
