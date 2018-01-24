@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Serving mostly-accurate GpsService-readings since 2017.
@@ -39,6 +40,8 @@ public class GpsService {
     private boolean hadPermission = false;
 
     private List<LocationCallbackListener> subscribers = new ArrayList<>();
+
+    private RetryRunUntil retryRunUntil;
 
     // to manage single location callbacks
     private boolean singleCallbackOver = false;
@@ -64,10 +67,12 @@ public class GpsService {
         // in case the settings changed since the last stop
         locationWasDisabled = !isLocationEnabled();
 
+        // TODO: try to make sure it's enabled on startup!
         if ((ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)) {
             hadPermission = false;
+            retryRunUntil.run();
             return false;
         }
 
@@ -82,6 +87,11 @@ public class GpsService {
         return true;
     }
 
+    public boolean startGps(RetryRunUntil retryRunUntil) {
+        this.retryRunUntil = retryRunUntil;
+        return startGps();
+    }
+
     /**
      * This method must be called in either
      * {@link Activity#onDestroy} or {@link Activity#onStop()}.
@@ -92,12 +102,15 @@ public class GpsService {
         // clear for accuracy reasons
         lastLocation = null;
 
+        retryRunUntil.stop();
+
         /* unbinding callbacks reduces battery-usage dramatically */
         if (locationListener != null)
             locationManager.removeUpdates(locationListener);
 
         // orphan object to disable callbacks ASAP
         locationListener = null;
+
 
     }
 
@@ -258,4 +271,37 @@ public class GpsService {
         }
     }
 
+    public static class RetryRunUntil implements Runnable {
+
+        Runnable nextTry;
+
+        AtomicBoolean succeeded;
+        long period;
+
+        public RetryRunUntil(Runnable runnable, AtomicBoolean succeeded, long period) {
+            nextTry = runnable;
+            this.succeeded = succeeded;
+            this.period = period;
+        }
+
+        void stop() {
+            succeeded.set(true);
+        }
+
+        @Override
+        public void run() {
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                if (succeeded.get()) return;
+                nextTry.run();
+                retry();
+            }, period);
+        }
+
+        public void retry() {
+            if (succeeded.get()) return;
+
+            run();
+        }
+    }
 }

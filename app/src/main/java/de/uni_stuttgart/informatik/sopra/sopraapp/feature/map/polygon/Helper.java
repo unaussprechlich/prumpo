@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Helper {
 
-    public static final double EPSILON = 0.001;
+    public static final double EPSILON = 0.00001;
 
     private static boolean equals(final double a, final double b) {
 

@@ -23,6 +23,8 @@ public class Helper {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
+    public static final LatLng GERMANY_ROUGH_CENTROID = new LatLng(51.428719, 10.262536);
+
     public static LatLng getRandomLatLng() {
         LatLng base = Constants.LOCATION_SUPPLIER_BASE;
 

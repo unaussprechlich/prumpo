@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.google.android.gms.maps.MapsInitializer;
+
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
@@ -43,6 +44,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.inject.Inject;
 
 @SuppressWarnings("unchecked")
@@ -62,7 +65,6 @@ public class MapFragment
 
     private SopraMap sopraMap;
     private View mRootView;
-    private boolean isGpsServiceBound;
 
     @Nullable
     @Override
@@ -125,12 +127,15 @@ public class MapFragment
             /* determine map-type variant */
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
+
+            if (preferencesString == null) return;
+            if (preferencesString.equals("")) return;
+
             Integer viewType = Integer.valueOf(preferencesString);
 
             sopraMap = new SopraMap(googleMap, getContext(), viewType);
 
             getLifecycle().addObserver(sopraMap);
-
         });
 
     }
@@ -141,9 +146,8 @@ public class MapFragment
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String preferencesString = preferences.getString(strPreferenceMapViewType, strPreferenceMapViewTypeDefault);
 
-        if (preferencesString.equals("")) {
-            return;
-        }
+        if (preferencesString == null) return;
+        if (preferencesString.equals("")) return;
 
         Integer viewType = Integer.valueOf(preferencesString);
 
@@ -197,37 +201,43 @@ public class MapFragment
 
     @Override
     public void onStart() {
+
         super.onStart();
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        // start gps
-        gpsService.startGps();
-        isGpsServiceBound = true;
 
+        /* start location/gps-services */
+        AtomicBoolean hasPermission = new AtomicBoolean(false);
+        // retries starting/binding GpsService object until it receives permission
+        gpsService.startGps(new GpsService.RetryRunUntil(() -> hasPermission.set(gpsService.startGps()), hasPermission, 1000) {
+        });
+
+        // bind to ongoing callback for estimating current user location
         gpsService.ongoingLocationCallback(this);
     }
 
     @Override
     public void onStop() {
         Log.i("onStop", "init");
+
         super.onStop();
+
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
 
-        // stop gps
-        if (isGpsServiceBound) {
-            gpsService.stopGps();
-            isGpsServiceBound = false;
-        }
-
+        gpsService.stopGps();
         gpsService.stopAllCallbacks();
+
         currentBottomSheet = null;
     }
 
     @Override
     public void onPause() {
         Log.i("onPause", "init");
+
         super.onPause();
+
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
     }
@@ -235,9 +245,12 @@ public class MapFragment
     @Override
     public void onResume() {
         Log.i("onResume", "init");
+
         super.onResume();
+
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
+
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
         // update SopraMap object after potential changes to the settings
