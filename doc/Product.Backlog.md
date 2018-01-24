@@ -35,9 +35,7 @@ In diesem Abschnitt sind alle Activities bzw. Screens aufgeführt, die der **Ben
 
 - Aufwandsschätzung: <span style="color:orange">[L]</span>
 - Akzeptanztests:
-    - [ ] *Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
-    - [ ] *Die Hauptansicht (Karte) soll mit höchstens zwei Eingaben erreichbar sein.*
-    - [ ] *Weitere optionale Einstellungen der App müssen in das Kontrollzentrum eingebettet sein.*
+    - [x] *Die Metadaten (Name, Kundennummer, etc.) sind einsehbar und gemäß der Nutzerrolle editierbar.*
     - [x] *Der* **Benutzer** *muss sich ausloggen können.*
 
 ### Feature 1.4 *Detail-Ansichten*
@@ -97,6 +95,7 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 - Akzeptanztests:
     - [ ] *Nur* **Admins** *und* **Gutachter** *dürfen alle Verträge sehen.*
     - [ ] *Nur* **Admins** *dürfen Verträge anlegen und bearbeiten.*
+    - [ ] **Kunden** *dürfen keine Verträge löschen können.*
 
 ### Feature 2.5 *Verwaltung von Versicherungsobjekten*
 
@@ -143,4 +142,13 @@ Hier werden alle integralen Hintergrundprozesse aufgelistet, die die Gesamtfunkt
 - Aufwandsschätzung: <span style="color:lime">[S]</span>
 - Akzeptanztests:
     - [ ] *Die Daten können in Textform oder JSON/XML-Format geteilt werden.*
-    - [ ] *Die Daten können auf dem Hauptspeicher abgelegt werden.*
+    - [ ] *Die Daten können als Fließtext geteilt werden.*
+    - [ ] *Die Ausgabe der Daten kann sowohl im Klartext als auch verschlüsselt erfolgen.*
+
+Die Daten können im JSON-Format auf dem Hauptspeicher abgelegt werden.
+
+
+ Die Daten können als Fließtext geteilt werden.
+
+
+ Die Ausgabe der Daten kann sowohl im Klartext als auch verschlüsselt erfolgen.
