@@ -61,7 +61,7 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
     }
 
     /**
-     * Specifies what should be done when user presses list item
+     * Specifies what should be done when userEntity presses list item
      *
      * @param view     the view which got pressed
      * @param position the position in the current list
@@ -69,7 +69,7 @@ public abstract class AbstractListAdapter<Item, ViewHolder extends RecyclerView.
     protected abstract void onCardViewPressed(View view, int position);
 
     /**
-     * Specifies what should be done when user presses list item with a long click.
+     * Specifies what should be done when userEntity presses list item with a long click.
      * <p>
      * <i>This method is not abstract to let the child classes decide
      * whether they want to invoke some action here.</i>

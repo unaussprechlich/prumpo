@@ -31,18 +31,19 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDialog;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetrieverRegular;
 
 /**
- * Profile activity. The user is able to change email, password and profile image.
+ * Profile activity. The userEntity is able to change email, password and profile image.
  * Logout also is supported.
  */
 public class ProfileActivity extends ProfileActivityBindings {
 
-    /** User handler to obtain the current logged in user */
+    /** UserEntity handler to obtain the current logged in userEntity */
     @Inject UserHandler userHandler;
 
     /** The menu item for saving the changed profile */
@@ -120,12 +121,14 @@ public class ProfileActivity extends ProfileActivityBindings {
     private void updateUserData(User user){
         if(user == null) return;
 
-        textViewUserName.setText(user.toString());
-        textViewUserRole.setText(user.getRole().toString());
+        UserEntity entity = user.getEntity();
 
-        lastSelectedImagePosition = user.getProfilePicture();
-        imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[user.getProfilePicture()]);
-        editTextEmailField.setText(user.getEmail());
+        textViewUserName.setText(entity.toString());
+        textViewUserRole.setText(entity.getRole().toString());
+
+        lastSelectedImagePosition = entity.getProfilePicture();
+        imageViewProfilePicture.setImageResource(Constants.PROFILE_IMAGE_RESOURCES[entity.getProfilePicture()]);
+        editTextEmailField.setText(entity.getEmail());
 
         editTextEmailField.addTextChangedListener(textWatcher);
         editTextPassword.addTextChangedListener(textWatcher);
@@ -203,7 +206,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     // ### Helper #####################################################################################################
 
     /**
-     * Invoked when user hits the save button in the menu bar
+     * Invoked when userEntity hits the save button in the menu bar
      * (This method should only be invoked when the save button is enabled).
      *
      * @param __ the menu item
@@ -216,7 +219,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     }
 
     /**
-     * Invoked when user hits back button or when user hits the back button in the toolbar.
+     * Invoked when userEntity hits back button or when userEntity hits the back button in the toolbar.
      */
     private void onUserWantsToLeave() {
 
@@ -248,7 +251,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     }
 
     /**
-     * Will save the actual changed user.
+     * Will save the actual changed userEntity.
      */
     private void saveUserNow() {
 
@@ -256,16 +259,16 @@ public class ProfileActivity extends ProfileActivityBindings {
 
         try {
 
-            User currentUser = userHandler.getCurrentUser();
+            UserEntity currentUserEntity = userHandler.getCurrentUser().getEntity();
 
-            currentUser.setEmail(editTextEmailField.getText().toString());
-            currentUser.setProfilePicture(lastSelectedImagePosition);
+            currentUserEntity.setEmail(editTextEmailField.getText().toString());
+            currentUserEntity.setProfilePicture(lastSelectedImagePosition);
 
             String newPassword = editTextPassword.getText().toString();
             if (!newPassword.isEmpty())
-                currentUser.setPassword(newPassword);
+                currentUserEntity.setPassword(newPassword);
 
-            currentUser.save();
+            currentUserEntity.save();
 
             editTextPassword.getText().clear();
             editTextPasswordConfirm.getText().clear();
@@ -293,7 +296,7 @@ public class ProfileActivity extends ProfileActivityBindings {
     }
 
     /**
-     * Will display the dialog hinting the user that his changes will be abandoned.
+     * Will display the dialog hinting the userEntity that his changes will be abandoned.
      */
     private void showLeaveWithoutSaveDialog() {
         new FixedDialog(ProfileActivity.this)
@@ -309,15 +312,15 @@ public class ProfileActivity extends ProfileActivityBindings {
     // ### Validation logic for the menu save button ##################################################################
 
     /**
-     * Always call this method if relevant user information is changed in the UI.
+     * Always call this method if relevant userEntity information is changed in the UI.
      * <p>
      * This method will turn on the save button in the menu bar, if
      * <ul>
      * <li>
-     * any user info in the ui does not match the user info in the data base
+     * any userEntity info in the ui does not match the userEntity info in the data base
      * </li>
      * <li>
-     * all user info (in the input fields) is valid
+     * all userEntity info (in the input fields) is valid
      * </li>
      * </ul>
      */
@@ -334,17 +337,17 @@ public class ProfileActivity extends ProfileActivityBindings {
     }
 
     /**
-     * Checks whether user has changed something.
+     * Checks whether userEntity has changed something.
      *
-     * @return true, if user changed something
+     * @return true, if userEntity changed something
      */
     private boolean hasUserChangedSomething() {
 
         try {
-            User currentUser = userHandler.getCurrentUser();
+            UserEntity currentUserEntity = userHandler.getCurrentUser().getEntity();
 
-            return !currentUser.getEmail().equals(editTextEmailField.getText().toString())
-                    || currentUser.getProfilePicture() != lastSelectedImagePosition
+            return !currentUserEntity.getEmail().equals(editTextEmailField.getText().toString())
+                    || currentUserEntity.getProfilePicture() != lastSelectedImagePosition
                     || !editTextPassword.getText().toString().isEmpty()
                     || !editTextPasswordConfirm.getText().toString().isEmpty();
 

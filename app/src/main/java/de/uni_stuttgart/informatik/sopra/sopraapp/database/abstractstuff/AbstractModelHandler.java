@@ -12,7 +12,7 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserExc
 
 
 @SuppressWarnings("unchecked")
-public abstract class AbstractModelHandler<Model extends ModelDB, Repository extends AbstractRepository> implements LifecycleOwner {
+public abstract class AbstractModelHandler<Model extends ModelDB, EntityModel extends ModelEntityDB, Repo extends AbstractRepository, EntityRepo extends AbstractEntityRepository> implements LifecycleOwner {
 
 
     private MutableLiveData<Model> modelLiveData = new MutableLiveData<>();
@@ -42,16 +42,18 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
 
         this.modelLiveData.postValue(model);
         this.model = model;
+
     }
 
     protected abstract Model createNewObject() throws NoUserException;
-    protected abstract Repository getRepository();
+    protected abstract Repo getRepository();
+    protected abstract EntityRepo getEntityRepository();
 
     //##############################################################################################
 
     /**
      * Does create a temporary Model.
-     * @throws NoUserException if there is no Logged in User
+     * @throws NoUserException if there is no Logged in UserEntity
      */
     public void createTemporaryNew() throws NoUserException {
         if(modelDB != null){
@@ -87,6 +89,11 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
         return model;
     }
 
+
+    public EntityModel getEntityValue() {
+        return (EntityModel) model.getEntity();
+    }
+
     /**
      * Get the Model as LiveData object, that can be observed.
      * @return Model wrapped in LiveData
@@ -101,19 +108,19 @@ public abstract class AbstractModelHandler<Model extends ModelDB, Repository ext
      */
     public void deleteCurrent(){
         if(modelDB != null && modelDB.getValue() != null)
-            getRepository().delete(modelDB.getValue());
+            getEntityRepository().delete(getEntityValue());
         modelLiveData.setValue(null);
     }
 
     /**
      * Loads the Model from the database and observes the given LiveData.
-     * @param id the ID of the DamageCase/Contract
+     * @param id the ID of the DamageCaseEntity/ContractEntity
      */
     public void loadFromDatabase(long id){
         if(modelDB != null)
             modelDB.removeObservers(this);
 
-        this.modelDB = getRepository().getById(id);
+        modelDB = getRepository().getById(id);
         modelDB.observe(this, this::set);
     }
 }

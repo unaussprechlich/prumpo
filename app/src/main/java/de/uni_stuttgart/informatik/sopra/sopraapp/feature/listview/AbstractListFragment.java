@@ -62,17 +62,16 @@ public abstract class AbstractListFragment
     }
 
     @Override
-    public BackButtonProceedPolicy onBackPressed() {
+    public boolean shouldPerformBackpress() {
 
         // if search view is open -> fragment handles back button
         if (searchView != null && !searchView.isIconified()) {
-
             // close search menu
             searchView.setIconified(true);
-            return BackButtonProceedPolicy.SKIP_ACTIVITY;
+            return false;
         }
 
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
+        return true;
     }
 
     /**

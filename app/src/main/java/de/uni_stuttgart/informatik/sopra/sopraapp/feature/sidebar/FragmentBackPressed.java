@@ -11,12 +11,8 @@ public interface FragmentBackPressed {
      *
      * @return how to continue with back press handle.
      */
-    default BackButtonProceedPolicy onBackPressed() {
-        return BackButtonProceedPolicy.WITH_ACTIVITY;
+    default boolean shouldPerformBackpress() {
+        return true;
     }
 
-    enum BackButtonProceedPolicy {
-        WITH_ACTIVITY,
-        SKIP_ACTIVITY
-    }
 }

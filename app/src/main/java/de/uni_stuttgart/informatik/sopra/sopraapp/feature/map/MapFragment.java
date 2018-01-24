@@ -16,18 +16,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+
+import com.google.android.gms.maps.MapsInitializer;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.google.android.gms.maps.MapsInitializer;
-
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.ModelDB;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
@@ -40,13 +51,6 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damage
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsPolygonSelected;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
 
 @SuppressWarnings("unchecked")
 @SuppressLint("SetTextI18n")
@@ -56,7 +60,8 @@ public class MapFragment
 
     @Inject GpsService gpsService;
     @Inject DamageCaseRepository damageCaseRepository;
-    @Inject ContractRepository contractRepository;
+    @Inject
+    ContractEntityRepository contractEntityRepository;
     @Inject DamageCaseHandler damageCaseHandler;
     @Inject ContractHandler contractHandler;
 
@@ -92,14 +97,20 @@ public class MapFragment
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onOpenDamageCase(EventsPolygonSelected.DamageCase event) {
-        damageCaseHandler.loadFromDatabase(event.uniqueId);
-        new Handler().postDelayed(() -> openBottomSheet(DamageCase.class), 400);
+        damageCaseHandler.getLiveData().observe(this, damageCase -> {
+            if(damageCase == null || damageCase.getID() != event.uniqueId) return;
+            damageCaseHandler.getLiveData().removeObservers(this);
+            openBottomSheet(DamageCaseEntity.class);
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onOpenContract(EventsPolygonSelected.Contract event){
-        contractHandler.loadFromDatabase(event.uniqueId);
-        new Handler().postDelayed(() -> openBottomSheet(Contract.class), 400);
+        contractHandler.getLiveData().observe(this, contract -> {
+            if(contract == null || contract.getID() != event.uniqueId) return;
+            contractHandler.getLiveData().removeObservers(this);
+            openBottomSheet(ContractEntity.class);
+        });
     }
 
     @Subscribe
@@ -303,10 +314,10 @@ public class MapFragment
             currentBottomSheet = null;
         }
 
-        if(clazz == DamageCase.class){
+        if(clazz == DamageCase.class || clazz == DamageCaseEntity.class){
             currentBottomSheet = new BottomSheetDamagecase(this);
             showCurrentBottomSheet();
-        } else if(clazz == Contract.class){
+        } else if(clazz == Contract.class || clazz == ContractEntity.class){
             currentBottomSheet = new BottomSheetContract(this);
             showCurrentBottomSheet();
         } else {
@@ -320,11 +331,8 @@ public class MapFragment
     }
 
     @Override
-    public BackButtonProceedPolicy onBackPressed() {
-
-        /* Consume BackPress if bottom sheet is shown */
-        return currentBottomSheet != null
-                ? BackButtonProceedPolicy.SKIP_ACTIVITY
-                : BackButtonProceedPolicy.WITH_ACTIVITY;
+    public boolean shouldPerformBackpress() {
+        if(currentBottomSheet != null) currentBottomSheet.showCloseAlert();
+        return currentBottomSheet == null;
     }
 }

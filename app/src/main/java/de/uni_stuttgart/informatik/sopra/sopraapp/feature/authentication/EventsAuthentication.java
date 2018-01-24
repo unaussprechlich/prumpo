@@ -1,6 +1,6 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 
 
 public class EventsAuthentication {
@@ -10,18 +10,18 @@ public class EventsAuthentication {
     }
 
     public static class Login {
-        public final User user;
+        public final UserEntity userEntity;
 
-        public Login(User user) {
-            this.user = user;
+        public Login(UserEntity userEntity) {
+            this.userEntity = userEntity;
         }
     }
 
     public static class Logout {
-        public final User user;
+        public final UserEntity userEntity;
 
-        public Logout(User user) {
-            this.user = user;
+        public Logout(UserEntity userEntity) {
+            this.userEntity = userEntity;
         }
     }
 }

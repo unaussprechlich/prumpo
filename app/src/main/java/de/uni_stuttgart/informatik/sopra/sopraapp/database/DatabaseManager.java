@@ -4,12 +4,15 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.Contract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityDao;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
 
 /**
@@ -20,12 +23,16 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.App
  * annotation if you change any of the models.
  */
 @ApplicationScope
-@Database(entities = {User.class, DamageCase.class, Contract.class}, version = 19)
+@Database(entities = {UserEntity.class, DamageCaseEntity.class, ContractEntity.class}, version = 19)
 @TypeConverters({Converters.class})
 public abstract class DatabaseManager extends RoomDatabase {
 
     public abstract UserDao userDao();
     public abstract DamageCaseDao damageCaseDao();
     public abstract ContractDao contractDao();
+
+    public abstract UserEntityDao userEntityDao();
+    public abstract DamageCaseEntityDao damageCaseEntityDao();
+    public abstract ContractEntityDao contractEntityDao();
 
 }

@@ -1,13 +1,8 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff;
 
 
-import java.util.concurrent.ExecutionException;
+public interface ModelDB<T extends ModelEntityDB> {
 
-public interface   ModelDB<Repository extends AbstractRepository> {
     long getID();
-    long getOwnerID();
-    long save() throws ExecutionException, InterruptedException;
-    Repository getRepository();
-    boolean isChanged();
-    boolean isInitial();
+    public T getEntity();
 }

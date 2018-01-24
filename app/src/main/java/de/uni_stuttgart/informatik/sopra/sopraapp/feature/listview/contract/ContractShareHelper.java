@@ -42,7 +42,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class ContractShareHelper extends ContractShareHelperBindings {
 
     private FragmentActivity fragmentActivity;
-    private List<Contract> contracts;
+    private List<Contract> contractEntities;
 
     private ContractShareCallback onShareAbort = () -> { /* Ignore */ };
     private ContractShareCallback onShareDone = () -> { /* Ignore */ };
@@ -53,10 +53,10 @@ public class ContractShareHelper extends ContractShareHelperBindings {
 
     // Constructor
     ContractShareHelper(View shareView,
-                        List<Contract> contracts,
+                        List<Contract> contractEntities,
                         FragmentActivity fragmentActivity) {
 
-        this.contracts = contracts;
+        this.contractEntities = contractEntities;
         this.fragmentActivity = fragmentActivity;
 
         ButterKnife.bind(this, shareView);
@@ -81,7 +81,7 @@ public class ContractShareHelper extends ContractShareHelperBindings {
         String delimiter = String.format("%s%n", strFormatUtilsShort);
         String prefix = String.format("%s%n", strFormatUtilsLong);
         String suffix = String.format("%s", strFormatUtilsLong);
-        String shareString = contracts.stream()
+        String shareString = contractEntities.stream()
                 .map(this::contractToString)
                 .collect(Collectors.joining(delimiter, prefix, suffix));
 
@@ -113,25 +113,25 @@ public class ContractShareHelper extends ContractShareHelperBindings {
      * Using https://dzone.com/articles/java-string-format-examples
      * todo check whether all necessary info is shared
      *
-     * @param c the Contract to format
+     * @param c the ContractEntity to format
      * @return the preformatted String to share
      */
     private String contractToString(Contract c) {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        String policyholder = c.getHolder().getValue() != null
-                ? String.format(Locale.GERMAN, ": %s", c.getHolder().getValue().getName())
-                : String.format(Locale.GERMAN, "-ID: %d", c.getHolderID());
+        String policyholder = c.getHolder() != null
+                ? String.format(Locale.GERMAN, ": %s", c.getHolder().getName())
+                : String.format(Locale.GERMAN, "-ID: %d", c.getEntity().getHolderID());
 
         Formatter formatter = new Formatter(stringBuilder);
-        formatter.format("%s %d:%n", strContractHeader, c.getID());
+        formatter.format("%s %d:%n", strContractHeader, c.getEntity().getID());
         formatter.format("%s%s%n", strContractPolicyholder, policyholder);
-        formatter.format("%s: %s%n", strContractDamagetypes, c.getDamageType());
-        formatter.format("%s: %s%n", strContractLocation, c.getAreaCode());
-        formatter.format("%s: %s%n", strContractDate, c.getDate()
+        formatter.format("%s: %s%n", strContractDamagetypes, c.getEntity().getDamageType());
+        formatter.format("%s: %s%n", strContractLocation, c.getEntity().getAreaCode());
+        formatter.format("%s: %s%n", strContractDate, c.getEntity().getDate()
                 .toString(strSimpleDateFormatPattern, Locale.GERMAN));
-        formatter.format("%s: %s%n", strContractSize, AbstractBottomSheetBase.calculateAreaValue(c.getAreaSize()));
+        formatter.format("%s: %s%n", strContractSize, AbstractBottomSheetBase.calculateAreaValue(c.getEntity().getAreaSize()));
 
         return plainText
                 ? stringBuilder.toString()
@@ -146,7 +146,7 @@ public class ContractShareHelper extends ContractShareHelperBindings {
     public void saveAsJsonFile() {
         if (isReadyToSaveAsFile())
             try {
-                invokeWriteAction(contracts);
+                invokeWriteAction(contractEntities);
                 showSharingResult(true);
 
             } catch (IOException e) {
@@ -174,15 +174,15 @@ public class ContractShareHelper extends ContractShareHelperBindings {
      * Will write the given contract list to file.
      * Each contract will be written into a separate file.
      *
-     * @param contracts the list of contracts to write
+     * @param contractEntities the list of contractEntities to write
      * @throws IOException if something goes wrong while writing
      */
-    private void invokeWriteAction(List<Contract> contracts) throws IOException {
-        for (Contract c : contracts)
+    private void invokeWriteAction(List<Contract> contractEntities) throws IOException {
+        for (Contract c : contractEntities)
             try (Writer writer =
                          new FileWriter(String.format(Locale.GERMAN, "%s/Contract_%d_%s.json",
                                  getExportDirectoryPath(),
-                                 c.getID(),
+                                 c.getEntity().getID(),
                                  getDateStringReadyForExport()))) {
 
                 String json = new GsonBuilder()

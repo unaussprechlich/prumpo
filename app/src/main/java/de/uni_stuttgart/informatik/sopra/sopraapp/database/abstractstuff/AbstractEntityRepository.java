@@ -11,11 +11,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUs
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
 
 
-public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao<Model>> {
+public abstract class AbstractEntityRepository<Model extends ModelEntityDB, Dao extends IDaoEntity<Model>> {
 
     protected final Dao dao;
 
-    public AbstractRepository(@NonNull Dao dao){
+    public AbstractEntityRepository(@NonNull Dao dao){
         this.dao = dao;
     }
 
@@ -24,11 +24,15 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     }
 
     public LiveData<List<Model>> getAll(){
-        return dao.getAllBypass();
+        return dao.getAll(getUserId());
     }
 
     public LiveData<Model> getById(long id){
-        return dao.getByIdBypass(id);
+        return dao.getById(id, getUserId());
+    }
+
+    public void update(Model model) {
+        AsyncTask.execute(() -> dao.update(model));
     }
 
     protected long getUserId() {
@@ -47,7 +51,7 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
     @SuppressWarnings("unchecked")
     //@SafeVarargs is present in the actual async task .... so I don't care!
     public Model getAsync(long id) throws ExecutionException, InterruptedException{
-        return new AbstractRepository.GetAsyncTask<>(dao, getUserId()).execute(id).get();
+        return new AbstractEntityRepository.GetAsyncTask<>(dao, getUserId()).execute(id).get();
     }
 
     private static class GetAsyncTask<Model, Dao extends IDao<Model>> extends AbstractAsyncTaskT<Long, Dao, Model> {
@@ -61,6 +65,50 @@ public abstract class AbstractRepository<Model extends ModelDB, Dao extends IDao
         protected final Model doInBackground(final Long... params) {
             return dao.getByIdDirect(params[0], userID);
         }
+    }
+
+    // CREATE ######################################################################################
+
+    @SuppressWarnings("unchecked")
+    //@SafeVarargs is present in the actual async task .... so I don't care!
+    public void delete(@NonNull Model model) {
+        new AbstractEntityRepository.DeleteAsyncTask<>(dao, getUserId()).execute(model);
+    }
+
+    private static class DeleteAsyncTask<Model extends  ModelEntityDB, Dao extends IDaoEntity<Model>> extends AbstractAsyncTask<Model, Dao, Void>{
+
+
+        public DeleteAsyncTask(Dao dao, Long userID) {
+            super(dao, userID);
+        }
+
+        @SafeVarargs
+        protected final Void doInBackground(final Model... params) {
+            dao.delete(params[0]);
+            return null;
+        }
+    }
+
+
+    // DELETE ######################################################################################
+
+    private static class InsertAsyncTask<Model extends ModelEntityDB, Dao extends IDaoEntity<Model>> extends AbstractAsyncTask<Model, Dao, Long> {
+
+
+        public InsertAsyncTask(Dao dao, Long userID) {
+            super(dao, userID);
+        }
+
+        @SafeVarargs
+        protected final Long doInBackground(final Model... params) {
+            return dao.insert(params[0]);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked") //@SafeVarargs is present in the actual async task .... so I don't care!
+    public Long insert(@NonNull Model model) throws ExecutionException, InterruptedException {
+        return new InsertAsyncTask<>(dao, getUserId()).execute(model).get();
     }
 
     // ABSTRACT TASK ###############################################################################
