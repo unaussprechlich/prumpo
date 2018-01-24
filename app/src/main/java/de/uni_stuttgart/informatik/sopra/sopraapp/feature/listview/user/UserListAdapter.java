@@ -72,10 +72,9 @@ public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
         mainActivity.displayContractFragment();
 
         ContractListFragment contractListFragment = mainActivity.getContractListFragment();
-        contractListFragment.setOnViewCreatedDone(() ->
-                contractListFragment.insertSearchString(user.getName())
-        );
-
+        contractListFragment.setOnViewCreatedDone(()
+                -> contractListFragment.insertSearchString(user.getName(),
+                "Zeige Versicherungen für \"" + user.getName() + "\""));
     }
 
     private void onDamageCaseButtonPressed(User user) {
@@ -84,7 +83,7 @@ public class UserListAdapter extends AbstractListAdapter<User, UserViewHolder> {
         mainActivity.displayDamageCaseListFragment();
         DamageCaseListFragment damageCaseListFragment = mainActivity.getDamageCaseListFragment();
         damageCaseListFragment.setOnViewCreatedDone(() ->
-                damageCaseListFragment.insertSearchString(user.getName())
-        );
+                damageCaseListFragment.insertSearchString(user.getName(),
+                "Zeige Schadensfälle für \"" + user.getName() + "\""));
     }
 }

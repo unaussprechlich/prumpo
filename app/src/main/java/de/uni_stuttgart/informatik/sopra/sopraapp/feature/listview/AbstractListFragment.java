@@ -1,10 +1,12 @@
 package de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
 import android.view.*;
+import android.widget.Toast;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
@@ -82,7 +84,8 @@ public abstract class AbstractListFragment
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return onQueryTextChange(query); // true -> listener handled query already
+        new Handler().postDelayed(() -> onQueryTextChange(query), 70);
+        return true;// true -> listener handled query already
     }
 
     /**
@@ -132,10 +135,15 @@ public abstract class AbstractListFragment
         this.onViewCreatedDone = onViewCreatedDone;
     }
 
-    public void insertSearchString(String searchString) {
+    public void insertSearchString(String searchString, String toastMessage) {
         if (searchMenuItem != null && searchView != null) {
             searchMenuItem.expandActionView();
             searchView.setQuery(searchString, true);
+
+            if (toastMessage != null) {
+                Toast.makeText(searchView.getContext(), toastMessage, Toast.LENGTH_SHORT)
+                        .show();
+            }
         }
     }
 
