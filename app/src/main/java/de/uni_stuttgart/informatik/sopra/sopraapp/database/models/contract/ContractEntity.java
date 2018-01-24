@@ -52,7 +52,6 @@ public final class ContractEntity implements ModelEntityDB<ContractEntityReposit
     long holderID;
 
     @ColumnInfo(index = true, name = "expert_id")
-    @Expose
     long expertID;
 
     @ColumnInfo(index = true, name = "created_by_id")
@@ -101,6 +100,7 @@ public final class ContractEntity implements ModelEntityDB<ContractEntityReposit
             DateTime date,
             String damageType) {
         SopraApp.getAppComponent().inject(this);
+        this.createdByID = createdByID;
         this.areaCode = areaCode;
         this.areaSize = areaSize;
         this.holderID = holderID;

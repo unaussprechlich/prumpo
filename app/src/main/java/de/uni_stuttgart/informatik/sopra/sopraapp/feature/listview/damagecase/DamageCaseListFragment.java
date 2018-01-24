@@ -68,7 +68,7 @@ public class DamageCaseListFragment
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        ArrayList<DamageCase> damageCaseEntities = damageCaseList.stream().filter(damageCase -> compareBothUpper(damageCase.getContract().getHolderID(), newText))
+        ArrayList<DamageCase> damageCaseEntities = damageCaseList.stream().filter(damageCase -> compareBothUpper(damageCase.getHolder().toString(), newText))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         recyclerView.swapAdapter(new DamageCaseListAdapter(damageCaseEntities), true);
