@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+
+    <PreferenceCategory
+            android:title="@string/preference_map_category_title">
+
+        <ListPreference
+                android:key="@string/preference_map_key"
+                android:title="@string/preferences_map_view_title"
+                android:summary="@string/preferences_map_view_summary"
+                android:entries="@array/preferences_map_view"
+                android:entryValues="@array/preferences_map_view_values"
+                android:defaultValue="@string/preferences_map_view_default_value"
+                android:dialogTitle="@string/preferences_map_view_title" />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

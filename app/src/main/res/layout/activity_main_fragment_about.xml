@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/content_main_fragment_about"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <include layout="@layout/activity_main_fragment_about_contributors"/>
+
+    <include layout="@layout/activity_main_fragment_about_contact"/>
+
+    <include layout="@layout/activity_main_fragment_about_licence"/>
+
+    <include layout="@layout/activity_main_fragment_about_version"/>
+
+</LinearLayout>

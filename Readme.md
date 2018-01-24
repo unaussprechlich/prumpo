@@ -1,26 +1,62 @@
-# App-Name
+# Prumpo
 
-![Das Interface zur Schadenerfassung](doc/images/header.png)
+<img src="doc/images/header.png" />
 
 Für Landwirtinnen und Landwirte, die viele Bodenflächen für den Anbau von
 Nutzpflanzen ihr Eigen nennen, sind Schäden auf den Feldern nicht nur lästig,
 sondern mitunter auch existenzbedrohend.
 
 Um sich gegen Hagelschäden, Überschwemmungen und Schädlinge abzusichern,
-hgibt es schon länger die Möglichkeit,
-Versicherungen abzuschließen.
+gibt es schon länger die Möglichkeit, Versicherungen abzuschließen.
 
 Die Aufnahme der Schäden, die von den Landwirtinnen und Landwirten gemeldet und von Gutachter*innen erfasst werden,
 soll durch diese App erleichtert und beschleunigt werden.
 
-Die App ermöglicht es, Felder mittels GPS zu erfassen und Schäden darauf zu markieren.
+Die App ermöglicht es, Versicherungen & Felder mittels GPS zu erfassen und Schäden darauf zu markieren.
 Für den Schadensfall eingeteilte Gutachter können die Schäden nach dem Namen der Versicherungsnehmer filtern
-um auch bei vielen Versicherungsnehmern/Kunden den Überblick zu behalten.
-Auch ein Export aller bisherig erfassten Schäden ist vorgesehen.
+um auch bei vielen Kunden den Überblick zu behalten.
+
+Auch ein Export aller bisherig erfassten Schäden ist möglich.
 
 ## Features
 
-**TODO:** Hier die Features (Additional Features) aufzählen und evtl. mit einem Screenshot/Gif demonstrieren o. ä.
+### Login
+Die App bringt ein Benutzerkontenverwaltungsystem mit. 
+Nutzer können einen neuen Account anlegen, einen bestehenden Account nutzen 
+oder für Erkundungszwecke einfach auf den Demo-Modus zurückgreifen.
+
+<img src="doc/images/feature_login_1.png"  width="360" height="640" />
+<img src="doc/images/feature_login_2.png"  width="360" height="640" />
+
+### Benutzerkontrollzentrum und -customization
+Nutzer können einige ihrer Daten (Profilbild, Email und Passwort) im Benutzerkontrollzetrum nach Belieben editieren.
+Auch ein Logout von hieraus ist möglich.
+
+<img src="doc/images/feature_profile_1.png"  width="360" height="640" />
+<img src="doc/images/feature_profile_2.png"  width="360" height="640" />
+
+### Versicherungsverträge exportieren
+Angelegte Versicherungsverträge können über die Listenansicht der Versicherungen (erreichbar durch das 
+Hamburger-Menu) exportiert werden.
+
+<img src="doc/images/feature_export_1.gif"  width="360" height="640" />
+<img src="doc/images/feature_export_2.gif"  width="360" height="640" />
+
+### Erweiterte Aktionen unter *Weitere Informationen*
+Über den Punkt *Weitere Informationen* (erreichbar durch das Hamburger-Menu) können weitere Aktionen initiiert werden.
+Diese umfassen sowohl die Möglichkeit, sich per Mail an die Entwickler zu wenden, als auch die Möglichkeit, 
+Einsicht in die Lizenzbestimmungen nehmen zu können.
+
+<img src="doc/images/feature_about.gif"  width="360" height="640" />
+
+### Map Customization
+
+In den Einstellungen ist es möglich, die favorisierte Darstellung zu wählen
+
+<img src="doc/images/feature_mapcustom.gif"  width="360" height="640" />
+
+
+**TODO:** Weitere (Additional Features) aufzählen und evtl. mit einem Screenshot/Gif demonstrieren o. ä.
 
 ## Installation
 
@@ -35,16 +71,39 @@ Sihe *User opt-in for installing unknown apps* unter https://developer.android.c
 
 ## Verwendung der App
 
-### Schädensflächen erfassen
+Um einen Schadensfall anzulegen, **muss zuerst eine Versicherung angelegt werden**. 
 
-Gutachter sollen die Möglichkeit haben, während der Besichtigung der Schäden
-die Feld- und Schadensfeldgrößen der versicherten Objekte zu erfassen.
+**Die notwendigen Schritte sind mindestens:**
+1. Versicherung anlegen und speichern.
+2. Schadensfall hinzufügen.
 
-### Metadaten erfassen und bearbeiten
+### Versicherung anlegen
+1. Die App starten und falls noch nicht gemacht einloggen.
+2. Im Navigation Drawer den Punkt *Versicherungen* auswählen (erreichbar durch das Hamburger-Menu).
+3. In der Toolbar auf das Plus (*Hinzufügen*) drücken. 
 
-Wichtige Metadaten wie Name des Gutachters bzw. des Versicherungsnehmers
-müssen eingegeben werden.
-Andere Metadaten wie zum Beispiel die Fläche werden automatisch berechnet.
+Die Karte wird nun angezeigt und die Erfassung kann beginnen.
+Um eine Versicherung speichern zu können, *müssen* die folgenden Kriterien erfüllt sein:
+- Es muss eine Fläche (also mindestens drei Eckpunkte) eingetragen sein. *Erst danach können weitere Meta-Daten 
+erfasst werden*
+- Es wurde ein im System bestehender Kunde eingetragen (Beim Eingeben des Kundennamen werden alle verfügbaren Kunden 
+angezeigt, aus dem einer ausgewählt werden muss).
+- Es muss mindestens eine Versicherungsart ausgewählt worden sein.
+- Es muss ein Ort eingetragen sein.
+
+### Schädensfall erfassen
+1. Die App starten und falls noch nicht gemacht einloggen.
+2. Eine zuvor angelegte Versicherung zum Beispiel über *Versicherungen* (im Hamburger-Menu) auswählen.
+3. Im sich ausfahrenden Dialog auf *Schaden hinzufügen* drücken.
+
+Ein neuer Dialog wird nun angezeigt und die Erfassung kann beginnen.
+Um einen Schadensfall speichern zu können, *müssen* die folgenden Kriterien erfüllt sein:
+- Es muss eine Fläche (also mindestens drei Eckpunkte) eingetragen sein. *Erst danach können weitere Meta-Daten 
+erfasst werden.*
+- Es muss ein Datum eingetragen sein.
+
+
+**TODO:** Weitere kritische Anwendungsfälle beschreiben
 
 ## Changelog
 
@@ -52,9 +111,9 @@ Die Entwicklungsgeschichte befindet sich in [CHANGELOG.md](CHANGELOG.md).
 
 ## Verwendete Bibliotheken
 
-**TODO:** Verwendete Bibliotheken auflisten
 
 Android Support
+* android support preference-v7 v26.1.0
 * android support appcompat-v7 v26.1.0
 * android support constraint constraint-layout v1.0.2
 * android support design v26.1.0
@@ -87,5 +146,6 @@ Sonstige
 
 ## Lizenz
 
-**TODO Lizenz nennen**. 
+Apache License 2.0
+
 Genaue Bedingungen der Lizenz können in [LICENSE](LICENSE) nachgelesen werden.

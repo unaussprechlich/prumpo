@@ -6,40 +6,13 @@
     android:layout_height="match_parent">
 
 
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="de.uni_stuttgart.informatik.sopra.sopraapp.app.MainActivity">
-
-        <android.support.v7.widget.RecyclerView
+    <android.support.v7.widget.RecyclerView
             android:id="@+id/dc_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            tools:listitem="@layout/activity_main_fragment_mapview_bottom_sheet_list_item">
+            tools:listitem="@layout/activity_main_fragment_damagecases_list_item">
 
-        </android.support.v7.widget.RecyclerView>
-
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--app:layout_anchor="@+id/dc_recycler_view"-->
-        <!--app:layout_anchorGravity="bottom|right">-->
-
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/dc_fab_ADD"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="15dp"-->
-        <!--android:layout_marginLeft="15dp"-->
-        <!--android:layout_marginRight="15dp"-->
-        <!--android:clickable="true"-->
-        <!--android:focusable="true"-->
-        <!--app:elevation="8dp"-->
-        <!--app:srcCompat="@drawable/ic_add_black_24dp"-->
-        <!--app:backgroundTint="@color/white"/>-->
-        <!--</LinearLayout>-->
-    </android.support.design.widget.CoordinatorLayout>
+    </android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>

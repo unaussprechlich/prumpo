@@ -78,8 +78,8 @@ Die Google-Location-API stellt Funktionen und Klassen bereit, um eine Standorter
 ### AuthorizationManager
 Der AuthorizationManager stellt sicher, dass der User nur Aktionen ausführen kann, die für seine Benutzerrolle zugelassen sind. Ein Landwirt kann zum Beispiel nicht ohne Weiteres seine versicherten Flächen anpassen, ein Gutachter dagegen schon.
 
-### UserManager
-Der UserManager verwaltet die Benutzer, sowie dessen Berechtigungen  und Rollen. Über ein *DataModel* werden diese Informationen dann sicher in der Datenbank verwahrt.
+### UserHandler
+Der UserHandler verwaltet die Benutzer, sowie dessen Berechtigungen  und Rollen. Über ein *DataModel* werden diese Informationen dann sicher in der Datenbank verwahrt.
 
 ## Datamodels
 

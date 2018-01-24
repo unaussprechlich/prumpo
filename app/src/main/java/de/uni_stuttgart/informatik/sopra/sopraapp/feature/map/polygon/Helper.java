@@ -11,6 +11,140 @@ import java.util.List;
  */
 public class Helper {
 
+    public static final double EPSILON = 0.01;
+
+    public static boolean contains(List<LatLng> polygon, LatLng point) {
+
+        int crossings = 0;
+
+        for (int i = 0; i < polygon.size(); ++i) {
+            LatLng a = polygon.get(i);
+            int j = i + 1;
+
+            if (j >= polygon.size()) {
+                j = 0;
+            }
+
+            LatLng b = polygon.get(j);
+
+            if (rayCrossesSegment(point, a, b)) {
+                crossings++;
+            }
+        }
+
+        return crossings % 2 == 1;
+    }
+
+    private static boolean rayCrossesSegment(LatLng point, LatLng a, LatLng b) {
+        double px = point.longitude;
+        double py = point.latitude;
+
+        double ax = a.longitude;
+        double ay = a.latitude;
+
+        double bx = b.longitude;
+        double by = b.latitude;
+
+        if (ay > by) {
+            ax = b.longitude;
+            ay = b.latitude;
+            bx = a.longitude;
+            by = a.latitude;
+        }
+
+        if (px < 0) {
+            px += 360;
+        }
+
+        if (ax < 0) {
+            ax += 360;
+        }
+
+        if (bx < 0) {
+            bx += 360;
+        }
+
+        if (py == ay || py == by) {
+            py += 0.00000001;
+        }
+
+        if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
+        if (px < Math.min(ax, bx)) return true;
+
+        double red = (ax != bx) ? ((by-ay) / (bx-ax)) : Double.POSITIVE_INFINITY;
+        double blue = (ax != px) ? ((py-ay)/(px-ax)) : Double.POSITIVE_INFINITY;
+
+        return blue >= red;
+    }
+
+    private static boolean equals(final double a, final double b) {
+
+        if (a == b) return true;
+
+        return Math.abs(a-b) < EPSILON;
+    }
+
+    private static int compare(final double a, final double b) {
+        return equals(a, b)
+                    ? 0
+                    : (a < b)
+                        ? -1
+                        : + 1;
+    }
+
+    // TODO: fix intersection check
+    public static boolean doesPolygonSelfIntersect(List<LatLng> points) {
+        if (points.size() == 3) return false;
+
+        ArrayList<Point2D> point2DS = projectAndNormalize(points);
+
+        for (int i = 0; i < point2DS.size(); ++i) {
+            for (int j = i+2; j < point2DS.size()+i-1; ++j) {
+
+                Point2D a = circularGet(i, point2DS);
+                Point2D b = circularGet(i+1, point2DS);
+
+                Point2D c = circularGet(j, point2DS);
+                Point2D d = circularGet(j+1, point2DS);
+
+                if (intersect(a, b, c, d)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean intersect(Point2D a, Point2D b, Point2D c, Point2D d) {
+
+        if (a == null || b == null || c == null || d == null) return false;
+
+        double lsign;
+        double rsign;
+
+        lsign = isLeft(a, b, c);
+        rsign = isLeft(a, b, d);
+
+        if (compare(lsign * rsign, 0) > 0) return false;
+
+        lsign = isLeft(c, d, a);
+        rsign = isLeft(c, d, b);
+
+        return !(compare(lsign * rsign, 0) > 0);
+
+    }
+
+    private static double isLeft(Point2D a, Point2D b, Point2D c) {
+        return (b.x - a.x) * (c.y - a.y)
+                - (c.x - a.x) * (b.y - a.y);
+    }
+
+    private static boolean onSegment(Point2D a, Point2D b, Point2D c) {
+        return b.x <= Math.max(a.x, c.x) && b.x >= Math.min(a.x, c.x)
+                && b.y <= Math.max(a.y, c.y) && b.y >= Math.min(a.y, c.y);
+    }
+
     // the radius of the earth is approximated in Kilometres (6371 km)
     private static final double RADIUS_EARTH_180TH_PI = Math.PI * 6371/180;
 
@@ -131,7 +265,7 @@ public class Helper {
      *
      * @param list      the list in question
      *
-     * @return          the element at position number 'index'
+     * @return          the element at polygonType number 'index'
      */
     private static Point2D circularGet(int index, List<Point2D> list) {
         int length = list.size();
@@ -171,5 +305,4 @@ public class Helper {
             this.angle = angle;
         }
     }
-    
 }

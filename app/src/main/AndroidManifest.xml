@@ -2,16 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.uni_stuttgart.informatik.sopra.sopraapp">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <!-- To auto-complete the email text field in the login form with userEntityuser's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
+         location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATIONS" />
@@ -29,28 +30,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".feature.authentication.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".app.MainActivity"
-            android:label="@string/title_activity_main"
-            android:launchMode="singleTask"
-            android:parentActivityName=".feature.authentication.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.LoginActivity" />
 
+        <activity android:name=".app.StartSplashActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".app.MainActivity"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity
             android:name=".feature.sidebar.profile.ProfileActivity"
             android:launchMode="singleTask"
@@ -75,11 +73,9 @@
         <activity
             android:name=".feature.authentication.AuthenticationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_authentication"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".feature.authentication.SignUpActivity"
-            android:label="@string/title_activity_sign_up" />
     </application>
 
 </manifest>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer-array name="profile_imgs">
+        <item>@drawable/zprofile_1</item>
+        <item>@drawable/zprofile_2</item>
+        <item>@drawable/zprofile_3</item>
+        <item>@drawable/zprofile_4</item>
+        <item>@drawable/zprofile_5</item>
+        <item>@drawable/zprofile_6</item>
+        <item>@drawable/zprofile_7</item>
+        <item>@drawable/zprofile_8</item>
+        <item>@drawable/zprofile_9</item>
+        <item>@drawable/zprofile_10</item>
+        <item>@drawable/zprofile_11</item>
+        <item>@drawable/zprofile_12</item>
+        <item>@drawable/zprofile_13</item>
+        <item>@drawable/zprofile_14</item>
+        <item>@drawable/zprofile_15</item>
+        <item>@drawable/zprofile_16</item>
+        <item>@drawable/zprofile_17</item>
+        <item>@drawable/zprofile_18</item>
+        <item>@drawable/zprofile_19</item>
+        <item>@drawable/zprofile_20</item>
+        <item>@drawable/zprofile_21</item>
+        <item>@drawable/zprofile_22</item>
+        <item>@drawable/zprofile_23</item>
+        <item>@drawable/zprofile_24</item>
+        <item>@drawable/zprofile_25</item>
+        <item>@drawable/zprofile_26</item>
+        <item>@drawable/zprofile_28</item>
+        <item>@drawable/zprofile_29</item>
+    </integer-array>
+
+</resources>

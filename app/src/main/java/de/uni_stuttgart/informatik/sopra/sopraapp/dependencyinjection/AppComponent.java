@@ -15,44 +15,84 @@ import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.Converters;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.DatabaseManager;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractEntityRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.contract.ContractHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.damagecase.DamageCaseRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityDao;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntityRepository;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserRepository;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.UserManager;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueException;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.Converters;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.DatabaseManager;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCase;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseBuilder;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.damagecase.DamageCaseRepository;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.database.models.user.UserDao;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.gson.GsonModule;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.damagecase.DamageCaseListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.user.UserListAdapter;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.location.GpsService;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.DamageCaseHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.SopraMap;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.InputRetriever;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.BottomSheetListAdapter;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.contract.BottomSheetContract;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damagecase.BottomSheetDamagecase;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.GsonModule;
+import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
 
 @ApplicationScope
 @Component(
         modules = {
-            AndroidInjectionModule.class,
-            AndroidSupportInjectionModule.class,
-            AppModule.class,
-            ActivityBuilderModule.class,
-            GsonModule.class
+                AndroidInjectionModule.class,
+                AndroidSupportInjectionModule.class,
+                AppModule.class,
+                ActivityBuilderModule.class,
+                GsonModule.class
         }
 )
 public interface AppComponent extends AndroidInjector<SopraApp> {
 
-    void inject(DamageCaseListAdapter damageCaseListAdapter);
-    void inject(SopraMap sopraMap);
-    void inject(Converters converters);
-    void inject(InputRetriever inputRetriever);
-    void inject(EditFieldValueException e);
-    void inject(DamageCaseBuilder damageCaseBuilder);
-    void inject(DamageCase damageCase);
-    void inject(DamageCaseHandler damageCaseHandler);
-    void inject(DamageCaseRepository damageCaseRepository);
+    void inject(DamageCaseListAdapter __);
+    void inject(ContractListAdapter __);
+    void inject(UserListAdapter __);
+
+    void inject(SopraMap __);
+
+    void inject(Converters __);
+
+    void inject(InputRetriever __);
+
+    void inject(EditFieldValueException __);
+
+    void inject(DamageCaseEntity.Builder __);
+    void inject(ContractEntity.Builder __);
+
+    void inject(DamageCaseEntity __);
+    void inject(ContractEntity __);
+    void inject(UserEntity __);
+
+    void inject(DamageCaseHandler __);
+    void inject(ContractHandler __);
+    void inject(UserHandler __);
+    void inject(NoUserException __);
+
+    void inject(DamageCaseRepository __);
+    void inject(ContractEntityRepository __);
+
+    void inject(BottomSheetListAdapter __);
+
+    void inject(BottomSheetContract __);
+    void inject(BottomSheetDamagecase __);
+
+
 
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<SopraApp> {
@@ -68,10 +108,39 @@ public interface AppComponent extends AndroidInjector<SopraApp> {
 @Module
 abstract class AppModule {
 
-    @ApplicationScope //TODO move this to a lower level
+    @ApplicationScope
     @Provides
-    public static DamageCaseHandler provideDamageCaseHandler(SopraApp app){
-        return new DamageCaseHandler(app);
+    public static DamageCaseHandler provideDamageCaseHandler() {
+        return new DamageCaseHandler();
+    }
+
+    @ApplicationScope
+    @Provides
+    public static ContractHandler provideContractHandler() {
+        return new ContractHandler();
+    }
+
+    @ApplicationScope
+    @Provides
+    public static UserHandler provideUserHandler(SopraApp app, UserRepository userRepository, UserEntityRepository userEntityRepository) {
+        return new UserHandler(app, userRepository, userEntityRepository);
+    }
+
+    @ApplicationScope
+    @Provides
+    public static UserRepository provideUserRepository(UserDao userDao) {
+        return new UserRepository(userDao);
+    }
+
+    @ApplicationScope
+    @Provides
+    public static AnimationHelper provideAnimationHelper() {
+        return new AnimationHelper();
+    }
+
+    @Provides
+    static BottomSheetListAdapter provides(){
+        return new BottomSheetListAdapter();
     }
 
     @Provides
@@ -82,14 +151,8 @@ abstract class AppModule {
 
     @ApplicationScope
     @Provides
-    static Vibrator provideVibrator(Application application){
+    static Vibrator provideVibrator(Application application) {
         return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
-    }
-
-    @Provides
-    @ApplicationScope
-    static UserManager userManager(SopraApp sopraApp) {
-        return new UserManager(sopraApp);
     }
 
     @NonNull
@@ -110,8 +173,32 @@ abstract class AppModule {
 
     @Provides
     @ApplicationScope
+    static ContractDao provideContractDao(DatabaseManager db) {
+        return db.contractDao();
+    }
+
+    @Provides
+    @ApplicationScope
     static UserDao provideUserDao(DatabaseManager db) {
         return db.userDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static DamageCaseEntityDao provideDamageCaseEntityDao(DatabaseManager db) {
+        return db.damageCaseEntityDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static ContractEntityDao provideContractEntityDao(DatabaseManager db) {
+        return db.contractEntityDao();
+    }
+
+    @Provides
+    @ApplicationScope
+    static UserEntityDao provideUserEntityDao(DatabaseManager db) {
+        return db.userEntityDao();
     }
 
     @Provides
@@ -122,4 +209,6 @@ abstract class AppModule {
 
     @Binds
     abstract Application application(SopraApp sopraApp);
+
+
 }

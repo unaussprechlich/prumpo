@@ -5,11 +5,11 @@
     <!--android:centerColor="#009688"-->
     <!--android:endColor="#00695C"-->
     <!--android:startColor="#4DB6AC"-->
-    <!--android:type="linear" />-->
+    <!--andrpolygonTypetype="linear" />-->
     <gradient
         android:angle="0"
-        android:centerColor="@color/primary"
-        android:endColor="@color/primary"
-        android:startColor="@color/primary"
+        android:centerColor="@color/greyblue_def"
+        android:endColor="@color/greyblue_def"
+        android:startColor="@color/greyblue_def"
         android:type="linear" />
 </shape>

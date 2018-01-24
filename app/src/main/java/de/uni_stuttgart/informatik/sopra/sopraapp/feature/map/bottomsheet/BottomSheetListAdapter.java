@@ -9,7 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsVertex;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -17,31 +18,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.uni_stuttgart.informatik.sopra.sopraapp.R;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexCreated;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexDeleted;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.VertexSelected;
-
 public class BottomSheetListAdapter
         extends RecyclerView.Adapter<BottomSheetListAdapter.BottomSheetItemViewHolder>
-        implements RecyclerViewOperation, LifecycleObserver {
+        implements LifecycleObserver {
 
-    // TODO! Remove "MapPoint" Implement DamageCase
 
     private ItemCountListener itemCountListener;
+    private AddButtonPressed addButtonPressed;
     private Holder bubbleHolder = new Holder();
     private AtomicInteger counter;
+    private RecyclerView recyclerViewAttached;
 
     /**
-     * Save the selected view position.
+     * Save the selected view polygonType.
      */
     private int selectedViewIndex = -1;
+
+    private static final int TYPE_ELEMENT = 0;
+    private static final int TYPE_BUTTON = 1;
+
+    public BottomSheetListAdapter() {
+        this(0);
+    }
+
 
     public BottomSheetListAdapter(Integer amountBubbles) {
         super();
         counter = new AtomicInteger(bubbleHolder.bubbleList.size());
+        add(false); // + Button
         for (int i = 0; i < amountBubbles; i++)
-            add();
+            add(true);
     }
 
     //LifecycleObserver ############################################################################
@@ -73,13 +79,14 @@ public class BottomSheetListAdapter
     //EventBus #####################################################################################
 
     @Subscribe
-    public void onVertexSelected(VertexSelected event) {
+    public void onVertexSelected(EventsVertex.Selected event) {
         updateSelectedViewIndex(event.vertexNumber);
+        scrollToPosition(event.vertexNumber);
     }
 
     @Subscribe
-    public void onVertexCreated(VertexCreated event) {
-        add();
+    public void onVertexCreated(EventsVertex.Created event) {
+        add(true);
     }
 
     //##############################################################################################
@@ -89,31 +96,44 @@ public class BottomSheetListAdapter
      * Inflates the layout of the list item.
      *
      * @param parent   The parent view group
-     * @param viewType The view type of the new view.
+     * @param viewType The view polygonType of the new view.
      */
     @Override
     public BottomSheetItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
-                        parent,
-                        false);
+
+        View view;
+
+        if (viewType == TYPE_ELEMENT) {
+            view = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_item,
+                            parent,
+                            false);
+        } else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.activity_main_fragment_mapview_bottom_sheet_list_button_item,
+                            parent,
+                            false);
+        }
 
         return new BottomSheetItemViewHolder(view);
     }
 
     /**
-     * Binds the view holder to the item at the {@code position}.
+     * Binds the view holder to the item at the {@code polygonType}.
      * Method gets called when called {@code notifyDataSetChanged} or when scrolled.
      *
-     * @param holder   The holder at {@code position} of the recycler view.
-     * @param position The position in the recycler view
+     * @param holder   The holder at {@code polygonType} of the recycler view.
+     * @param position The polygonType in the recycler view
      */
     @Override
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
 
         // set bindings
-        holder.label.setText(String.valueOf(bubbleHolder.bubbleList.get(position).position + 1));
+        if (position == bubbleHolder.bubbleList.size() - 1)
+            holder.label.setText("+");
+        else
+            holder.label.setText(String.valueOf(bubbleHolder.bubbleList.get(position).position + 1));
 
         // set click listener
         holder.label.setOnClickListener(v -> onClick(v, position));
@@ -135,12 +155,18 @@ public class BottomSheetListAdapter
         return bubbleHolder.bubbleList.size();
     }
 
-    @Override
-    public void add() {
-        bubbleHolder.bubbleList.add(new Bubble(counter.getAndIncrement()));
-        if (itemCountListener != null)
+    public void add(boolean notify) {
+        bubbleHolder.bubbleList.add(bubbleHolder.bubbleList.size(), new Bubble(counter.getAndIncrement()));
+        if (itemCountListener != null && notify)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
-        notifyDataSetChanged();
+        notifyItemInserted(bubbleHolder.bubbleList.size());
+
+        scrollToPosition(Math.max(getItemCount() - 1, 0));
+    }
+
+    private void scrollToPosition(int position) {
+        if (recyclerViewAttached != null)
+            recyclerViewAttached.smoothScrollToPosition(position);
     }
 
     private void remove(int position) {
@@ -153,30 +179,43 @@ public class BottomSheetListAdapter
 
         if (itemCountListener != null)
             itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
-        notifyDataSetChanged();
+
+        // Remove animation
+        notifyItemRemoved(position);
+
+        // Let all items refresh their listeners (else the wrong item would be removed)
+        notifyItemRangeChanged(0, bubbleHolder.bubbleList.size());
     }
 
     /**
      * Method called after a click.
      *
      * @param view     The view which got clicked
-     * @param position The current position in the visible list.
+     * @param position The current polygonType in the visible list.
      */
     public void onClick(View view, int position) {
-        EventBus.getDefault().post(new VertexSelected(position));
+        if (position == bubbleHolder.bubbleList.size() - 1) {
+            if (addButtonPressed != null)
+                addButtonPressed.onAddButtonPressed();
+        } else
+            EventBus.getDefault().post(new EventsVertex.Selected(position));
     }
 
     /**
      * Method called after a long click.
-     * position
+     * polygonType
      *
      * @param view     The view which got clicked
-     * @param position The current position in the visible list.
+     * @param position The current polygonType in the visible list.
      * @return true if this adapter handled the click, false else
      */
     public boolean onLongClick(View view, int position) {
-        if (bubbleHolder.bubbleList.size() > 1) {
-            EventBus.getDefault().post(new VertexDeleted(position));
+
+        if (position == bubbleHolder.bubbleList.size() - 1)
+            return true;
+
+        if (bubbleHolder.bubbleList.size() > 2) {
+            EventBus.getDefault().post(new EventsVertex.Deleted(position));
             remove(position);
         }
         return true;
@@ -192,6 +231,13 @@ public class BottomSheetListAdapter
         super.onDetachedFromRecyclerView(recyclerView);
         recyclerView.getRecycledViewPool().clear();
         itemCountListener = null;
+        recyclerViewAttached = null;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        recyclerViewAttached = recyclerView;
     }
 
     public ItemCountListener getItemCountListener() {
@@ -202,11 +248,19 @@ public class BottomSheetListAdapter
         this.itemCountListener = itemCountListener;
     }
 
+    public AddButtonPressed getAddButtonPressed() {
+        return addButtonPressed;
+    }
+
+    public void setAddButtonPressed(AddButtonPressed addButtonPressed) {
+        this.addButtonPressed = addButtonPressed;
+    }
+
     /**
      * Updates the selected view index.
      * Calls to refresh recycler view.
      *
-     * @param position The new position of the selected item.
+     * @param position The new polygonType of the selected item.
      */
     private void updateSelectedViewIndex(int position) {
         if (selectedViewIndex == position)
@@ -214,12 +268,14 @@ public class BottomSheetListAdapter
         else
             selectedViewIndex = position;
         notifyDataSetChanged();
-        if (itemCountListener != null)
-            itemCountListener.onItemCountChanged(bubbleHolder.bubbleList.size());
     }
 
     public interface ItemCountListener {
         void onItemCountChanged(int newItemCount);
+    }
+
+    public interface AddButtonPressed {
+        void onAddButtonPressed();
     }
 
     /**
@@ -248,10 +304,16 @@ public class BottomSheetListAdapter
     }
 
     class Bubble {
-        int position = -1;
+        int position;
 
         Bubble(int position) {
             this.position = position;
         }
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == bubbleHolder.bubbleList.size() - 1) ? TYPE_BUTTON : TYPE_ELEMENT;
+    }
+
 }

@@ -3,10 +3,17 @@
     <!-- Bapption theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/greyblue_def</item>
+        <item name="colorPrimaryDark">@color/greyblue_darker</item>
+        <item name="colorAccent">@color/coffee_1_light</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_arrow_back_white_24dp</item>
+        <item name="actionModeStyle">@style/ActionModeStyle</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -31,7 +38,40 @@
     </style>
 
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/black_overlay</item>
+        <item name="android:background">@color/greyblue_darker</item>
+    </style>
+
+    <style name="Spinner" parent="android:Widget.Spinner.DropDown">
+        <item name="android:background">@color/text_hint</item>
+    </style>
+
+    <style name="EditText" parent="Widget.AppCompat.EditText">
+        <item name="colorControlNormal">@color/text_hint</item>
+        <item name="colorControlActivated">@color/text</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:drawableTint">@color/text</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="colorAccent">@color/text</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+
+    <style name="ActionModeStyle" parent="Base.Widget.AppCompat.ActionMode">
+        <item name="background">@color/coffee_1_light</item>
+
+        <item name="titleTextStyle">@style/ActionModeTitleTextStyle</item>
+        <item name="subtitleTextStyle">@style/ActionModeSubTitleTextStyle</item>
+    </style>
+
+    <style name="ActionModeTitleTextStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ActionModeSubTitleTextStyle" parent="TextAppearance.AppCompat.Widget.ActionMode.Subtitle">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/start_splash</item>
     </style>
 
 </resources>

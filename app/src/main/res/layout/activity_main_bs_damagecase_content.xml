@@ -1,0 +1,24 @@
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bstop"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp">
+
+        <include layout="@layout/activity_main_bs_damagecase_input_date"/>
+
+        <include layout="@layout/activity_main_bs_damagecase_input_policyholder"/>
+
+        <include layout="@layout/activity_main_bs_damagecase_input_contract"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,103 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    android:id="@+id/contract_card"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="6dp"
+                                    android:elevation="8dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+        >
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/contract_identification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contract name"
+                    android:textSize="18sp"/>
+
+            <TextView
+                    android:id="@+id/contract_area"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Fläche"
+                    android:gravity="end"
+                    android:textStyle="bold|italic"
+                    android:layout_weight="1"
+                    android:textSize="14sp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:textStyle="bold|italic"
+                    android:text="ha"
+                    android:gravity="end"
+                    android:textSize="14sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="2dp"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bottomsheet_contract_toolbar_placeholder_name"
+                    android:layout_marginEnd="10dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+
+            <TextView
+                    android:id="@+id/contract_policyholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Policyholder"
+                    android:lines="1"
+                    android:textSize="14sp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="0dp"
+                android:layout_height="wrap_content">
+
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contract_export_damagetypes"
+                    android:layout_marginEnd="10dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"/>
+
+            <TextView
+                    android:id="@+id/contract_damagetypes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Damage Types"
+                    android:textSize="14sp"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

@@ -5,165 +5,135 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.stream.Stream;
+
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.CurrentUser;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.NoUserException;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserEntity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.UserHandler;
 import de.uni_stuttgart.informatik.sopra.sopraapp.dependencyinjection.scopes.ApplicationScope;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationEvents;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.DamageCaseListFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.MapFragment;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.OpenMapFragmentEvent;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.FragmentBackPressed;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.AuthenticationActivity;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.listview.contract.ContractShareHelper;
+import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventOpenMapFragment;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.NavigationDrawLocker;
-import de.uni_stuttgart.informatik.sopra.sopraapp.feature.sidebar.profile.ProfileActivity;
 
 import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_LOCATION_PERMISSION;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.app.Constants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION;
 
 @ApplicationScope
-public class MainActivity extends BaseEventBusActivity implements
+public class MainActivity
+        extends AbstractMainActivity
+        implements
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         NavigationDrawLocker {
 
-    @Inject
-    MapFragment mapFragment;
-
-    @Inject
-    DamageCaseListFragment damageCaseListFragment;
-
-    @BindView(R.id.nav_view)
-    NavigationView navigationView;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawer;
-
+    private ContractShareHelper contractShareHelper = null;
     private ActionBarDrawerToggle drawerToggle;
 
-    private int fragmentCreatedCounter = 0;
+    @Inject UserHandler userHandler;
+
+    /**
+     * OnClick listener for Header and Profile image
+     */
+    private View.OnClickListener onHeaderIconPressed = v -> displayActivity(R.id.profile_layout);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        try {
+            super.onCreate(savedInstanceState);
 
-        // set main layout
-        setContentView(R.layout.activity_main);
+            boolean enabled = CurrentUser.get().getRole() != UserEntity.EnumUserRoles.BAUER;
 
-        ButterKnife.bind(this);
+            // set main layout
+            setContentView(R.layout.activity_main);
 
-        setSupportActionBar(toolbar);
+            ButterKnife.bind(this);
 
-        // set navigation menu view
-        navigationView.setNavigationItemSelectedListener(this);
+            setSupportActionBar(toolbar);
 
-        // set navigation menu header
-        View headerView = navigationView.getHeaderView(0);
-        LinearLayout header = headerView.findViewById(R.id.nav_header);
+            // disable if current userEntity is BAUER
+            MenuItem item = navigationView.getMenu().findItem(R.id.nav_users);
+            item.setEnabled(enabled);
+            item.setVisible(enabled);
 
-        // set navigation header listener to display profile view
-        header.setOnClickListener(view -> displayActivity(R.id.profile_layout));
+            // set navigation menu view
+            navigationView.setNavigationItemSelectedListener(this);
 
-        // set navigation menu drawer toggle
-        drawerToggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
-        );
+            // set navigation menu header
+            View headerView = navigationView.getHeaderView(0);
+            LinearLayout header = headerView.findViewById(R.id.nav_header);
+            ImageButton imageButton = headerView.findViewById(R.id.nav_user_icon);
 
-        drawer.addDrawerListener(drawerToggle);
-        drawerToggle.setDrawerSlideAnimationEnabled(true);
-        drawerToggle.syncState();
+            // set navigation header listener to display profile view
+            Stream.of(header, imageButton)
+                    .forEach(view -> view.setOnClickListener(onHeaderIconPressed));
 
-        displayMapFragment(false);
-        navigationView.setCheckedItem(R.id.nav_map);
+            // set navigation menu drawer toggle
+            drawerToggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_closed
+            );
 
-        checkPermissions();
+
+            drawer.addDrawerListener(drawerToggle);
+            drawerToggle.setDrawerSlideAnimationEnabled(true);
+            drawerToggle.syncState();
+
+            userHandler.getLiveData().observe(this, this::updateUserProfileHeaderView);
+
+            displayMapFragment();
+            checkPermissions();
+
+        } catch (NoUserException e) {
+            Intent intent = new Intent(this, AuthenticationActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Subscribe
-    public void onOpenMapFragmentEvent(OpenMapFragmentEvent openMapFragmentEvent){
-        displayMapFragment(true);
+    public void onOpenMapFragmentEvent(EventOpenMapFragment openMapFragmentEvent) {
+        displayMapFragment();
+
+        Class targetBottomSheet = openMapFragmentEvent.targetBottomSheet;
+
+        if (targetBottomSheet != null)
+            new Handler().postDelayed(() -> mapFragment.openBottomSheet(targetBottomSheet),
+                    400);
     }
 
-    public void displayMapFragment(boolean withBackpress) {
-        switchToFragment(mapFragment, withBackpress);
-        navigationView.setCheckedItem(R.id.nav_map);
-    }
+    private void updateUserProfileHeaderView(User user){
+        if(user == null) return;
 
-    public void displayDamageCaseListFragment(boolean withBackPress) {
-        switchToFragment(damageCaseListFragment, withBackPress);
-        navigationView.setCheckedItem(R.id.nav_damageCases);
-    }
-
-    private void switchToFragment(Fragment fragment, boolean withBackPress) {
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.frag_enter,
-                R.anim.frag_exit,
-                R.anim.frag_pop_enter,
-                R.anim.frag_pop_exit);
-
-        transaction.replace(R.id.content_main_frame, fragment);
-
-//        if (withBackPress)
-//            transaction.addToBackStack("Fragment" + fragmentCreatedCounter);
-
-        transaction.commit();
-
-        drawer.closeDrawer(GravityCompat.START);
-        navigationView.setCheckedItem(fragment.getId());
-    }
-
-    @Subscribe(sticky = true)
-    public void handleLogin(AuthenticationEvents.Login event) {
-        if (findViewById(R.id.user_role_text) == null) return;
-        // TODO: fix null binding
-
-        ((TextView) findViewById(R.id.user_role_text)).setText(event.user.role.toString());
-        ((TextView) findViewById(R.id.user_name_text)).setText(event.user.name);
-    }
-
-    /**
-     * When hitting the Android back button
-     */
-    @Override
-    public void onBackPressed() {
-
-        // if drawer is open -> close it
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-            return;
-        }
-
-        // if active fragment wants to override back button -> perform fragment back button action
-        FragmentBackPressed activeFragment = (FragmentBackPressed) getCurrentlyActiveFragment();
-        FragmentBackPressed.BackButtonProceedPolicy proceedPolicy = activeFragment.onBackPressed();
-
-        if (proceedPolicy == FragmentBackPressed.BackButtonProceedPolicy.SKIP_ACTIVITY)
-            return;
-
-
-        super.onBackPressed();
-
+        View headerView = navigationView.getHeaderView(0);
+        ((TextView) headerView.findViewById(R.id.user_role_text)).setText(user.getEntity().getRole().toString());
+        ((TextView) headerView.findViewById(R.id.user_name_text)).setText(user.getName());
+        ((ImageView) headerView.findViewById(R.id.nav_user_icon)).setImageResource(Constants.PROFILE_IMAGE_RESOURCES[user.getEntity().getProfilePicture()]);
     }
 
     /**
@@ -174,35 +144,27 @@ public class MainActivity extends BaseEventBusActivity implements
         switch (item.getItemId()) {
 
             case R.id.nav_damageCases:
-                displayDamageCaseListFragment(false);
+                displayDamageCaseListFragment();
                 break;
-
+            case R.id.nav_contract:
+                displayContractFragment();
+                break;
+            case R.id.nav_users:
+                displayUserFragment();
+                break;
+            case R.id.nav_settings:
+                displaySettingsFragment();
+                break;
+            case R.id.nav_about:
+                displayAboutFragment();
+                break;
             default:
-                displayMapFragment(false);
+                displayMapFragment();
                 break;
         }
         return true;
     }
 
-    /**
-     * Calls another activity specified by the activity id.
-     * Back navigation is automatically handled by the system
-     * as long as hierarchy is specified in the manifest.
-     *
-     * @param itemId The id of the activity's main view.
-     */
-    public void displayActivity(int itemId) {
-
-        switch (itemId) {
-            case R.id.profile_layout:
-                Intent myIntent = new Intent(this, ProfileActivity.class);
-                startActivity(myIntent);
-                break;
-        }
-
-        /* close drawer when selecting any icon.*/
-        drawer.postDelayed(() -> drawer.closeDrawer(GravityCompat.START), 500);
-    }
 
     /**
      * Method which allows fragments to lock the navigation drawer.
@@ -211,12 +173,10 @@ public class MainActivity extends BaseEventBusActivity implements
      *                if false -> navigation drawer disabled
      */
     @Override
-    public void setDrawerEnabled(boolean enabled) {
+    public void setDrawerEnabled(boolean enabled, boolean hide) {
 
-        if (!enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().hide();
-        else if (enabled && getCurrentlyActiveFragment().equals(mapFragment))
-            getSupportActionBar().show();
+        if (!enabled && hide) getSupportActionBar().hide();
+        else getSupportActionBar().show();
 
         // lock or unlock drawer
         int lockMode = enabled
@@ -230,26 +190,6 @@ public class MainActivity extends BaseEventBusActivity implements
 
         // sync state
         drawerToggle.syncState();
-    }
-
-    /**
-     * Get a reference to the active fragment
-     *
-     * @return The current visible active fragment
-     */
-    public Fragment getCurrentlyActiveFragment() {
-
-        if (damageCaseListFragment.isVisible())
-            return damageCaseListFragment;
-
-        return mapFragment;
-    }
-
-    public int getMenuItemIDForFragment(Fragment fragment) {
-
-        if (fragment.equals(damageCaseListFragment))
-            return 1;
-        return 0;
     }
 
     private void checkPermissions() {
@@ -274,7 +214,21 @@ public class MainActivity extends BaseEventBusActivity implements
                     return;
 
                 checkPermissions();
+                break;
+            }
+            case REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    if (contractShareHelper != null)
+                        contractShareHelper.saveAsJsonFile();
+
+                if (contractShareHelper != null)
+                    contractShareHelper.requestWritePermission();
+                break;
             }
         }
+    }
+
+    public void setContractShareHelper(@Nullable ContractShareHelper contractShareHelper) {
+        this.contractShareHelper = contractShareHelper;
     }
 }

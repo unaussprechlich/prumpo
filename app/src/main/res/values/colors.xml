@@ -1,23 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#3F51B5</color>
-    <color name="primaryDark">#303f9f</color>
 
-    <color name="accent">#ffff4081</color>
-    <color name="accent_light">#ff85af</color>
-    <color name="accent_15percent">#26ff4081</color>
+    <color name="greyblue_lighter">#5a6775</color>
+    <color name="greyblue_light">#404C59</color>
+    <color name="greyblue_def">#242C35</color>
+    <color name="greyblue_dark">#182431</color>
+    <color name="greyblue_darker">#0D1927</color>
 
-    <color name="contrast">#ff9900ff</color>
-    <color name="contrast_15percent">#269900ff</color>
-    <color name="contrastComplement">#ff66ff00</color>
+    <color name="green_lighter_30">#4D6C8F6C</color>
+    <color name="green_lighter">#6C8F6C</color>
+    <color name="green_light">#4C6D4C</color>
+    <color name="green_def">#2A412A</color>
+    <color name="green_dark">#1A3C1A</color>
+    <color name="green_darker">#0D300D</color>
 
-    <color name="orange">#ffff5f1a</color>
-    <color name="orange_50percent">#7fff5f1a</color>
+    <color name="red_lighter_30">#4DB38787</color>
+    <color name="red_lighter">#B38787</color>
+    <color name="red_light">#885F5F</color>
+    <color name="red_def">#513535</color>
+    <color name="red_dark_30">#4D4B2121</color>
+    <color name="red_dark">#4B2121</color>
+    <color name="red_darker">#3B1010</color>
 
-    <color name="red">#ffff2b00</color>
-    <color name="white">#ffffffff</color>
-    <color name="white_15percent">#26ffffff</color>
+    <color name="purple_lighter_30">#4D695F7A</color>
+    <color name="purple_lighter">#695F7A</color>
+    <color name="purple_light">#4C435D</color>
+    <color name="purple_def">#2C2637</color>
+    <color name="purple_dark">#231933</color>
+    <color name="purple_darker">#180E28</color>
 
-    <color name="black_overlay">#66000000</color>
-    <color name="gray_50percent">#7fa2a2a2</color>
+    <color name="coffee_1_lighter_30">#4DB3AE87</color>
+    <color name="coffee_1_lighter">#B3AE87</color>
+    <color name="coffee_1_light">#88835F</color>
+    <color name="coffee_1_def">#514E35</color>
+    <color name="coffee_1_dark">#4B4621</color>
+    <color name="coffee_1_darker">#3B3610</color>
+
+    <color name="coffee_2_lighter">#B3A287</color>
+    <color name="coffee_2_light">#88785F</color>
+    <color name="coffee_2_def">#514635</color>
+    <color name="coffee_2_dark">#4B3A21</color>
+    <color name="coffee_2_darker">#3B2A10</color>
+
+    <color name="h_yellow_lighter">#FFEAA3</color>
+    <color name="h_yellow_light">#F5D873</color>
+    <color name="h_yellow_def_30">#4DD3B347</color>
+    <color name="h_yellow_def">#D3B347</color>
+    <color name="h_yellow_dark">#B59526</color>
+    <color name="h_yellow_darker_30">#4D8F720D</color>
+    <color name="h_yellow_darker">#8F720D</color>
+
+    <color name="h_green_lighter">#B9EA96</color>
+    <color name="h_green_light">#95D866</color>
+    <color name="h_green_def">#72BA3F</color>
+    <color name="h_green_dark">#56A022</color>
+    <color name="h_green_darker">#3B7E0B</color>
+
+    <color name="h_red_lighter">#EE98AF</color>
+    <color name="h_red_light">#DE6988</color>
+    <color name="h_red_def">#BF4062</color>
+    <color name="h_red_dark">#A42346</color>
+    <color name="h_red_darker_30">#4D820B2B</color>
+    <color name="h_red_darker">#820B2B</color>
+
+    <color name="h_purple_lighter">#908AC9</color>
+    <color name="h_purple_light">#645DAA</color>
+    <color name="h_purple_def">#473F93</color>
+    <color name="h_purple_dark">#30287E</color>
+    <color name="h_purple_darker">#1C1564</color>
+
+    <color name="white">#ffffff</color>
+    <color name="white_80">#CCffffff</color>
+
+    <color name="map_contract_stroke">@color/h_yellow_def</color>
+    <color name="map_contract_fill">@color/h_yellow_def_30</color>
+
+    <color name="map_damagecase_stroke">@color/h_red_darker</color>
+    <color name="map_damagecase_fill">@color/h_red_darker_30</color>
+
+    <color name="text">@color/white</color>
+    <color name="text_hint">#66ffffff</color>
+
+    <color name="accent_light">@color/coffee_1_light</color>
+    <color name="black_overlay">@color/greyblue_darker</color>
+
 </resources>
