@@ -247,6 +247,7 @@ public class SopraMap implements LifecycleObserver {
 
             reloadPolygons(polygons, PolygonType.CONTRACT);
 
+
             cacheContracts = polygons;
         });
 
@@ -566,7 +567,6 @@ public class SopraMap implements LifecycleObserver {
                         SopraPolygon.loadPolygon(coordinates),
                         type
                 );
-        polygon.printPoints();
         polygonMapObject.setTag(polygon);
 
         return polygonMapObject;
@@ -650,9 +650,7 @@ public class SopraMap implements LifecycleObserver {
     }
 
     private void removeActivePolygon() {
-        System.out.println("REMOVE ACTIVE PRE");
         if (activePolygon == null || !isHighlighted) return;
-        System.out.println("REMOVE ACTIVE POST");
         // -1 == temporary polygon, which isn't stored yet anyways, so no need to delete it
         if (activePolygon.uniqueId != -1) {
             isStoredIn(activePolygon.type).remove(activePolygon.uniqueId);
@@ -826,11 +824,6 @@ public class SopraMap implements LifecycleObserver {
             this.type = type;
         }
 
-        void printPoints() {
-            for (int i = 0; i < data.getPoints().size(); ++i) {
-                System.out.println(String.format(Locale.getDefault(), "Now Printing Lat Nr [%d]: %f", i, data.getPoint(i).latitude));
-            }
-        }
         boolean addAndDisplay(LatLng point) {
              if (!data.addPoint(point)) return false;
 
