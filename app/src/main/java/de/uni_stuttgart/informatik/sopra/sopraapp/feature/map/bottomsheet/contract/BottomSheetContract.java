@@ -4,16 +4,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 import android.widget.EditText;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -27,6 +17,14 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBotto
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.exceptions.LocationNotFound;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.InputRetriever;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
@@ -46,6 +44,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         super(owner);
         SopraApp.getAppComponent().inject(this);
         init();
+        toolbarThemeArea.setBackgroundColor(getThemeColor());
         iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
     }
 
@@ -86,6 +85,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         });
 
         contract.getCoordinates().forEach(__ -> getBottomSheetListAdapter().add(true));
+        // todo elias: DialogList of damagecases -> fill related damagecases into "damageCasesOfThisContract"
 
         displayCurrentAreaValue(contract.getAreaSize());
         setSelectedDamageTypes(contract.getDamageType());
@@ -94,7 +94,6 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         buttonViewDamageCases.setEnabled(!damageCasesOfThisContract.isEmpty());
         toolbarContractDate.setText(contract.getDate().toString(strSimpleDateFormatPattern, Locale.GERMAN));
     }
-
 
     @Override
     public int getLayoutResourceFile() {
@@ -115,6 +114,11 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
         } catch (LocationNotFound locationNotFound) {
             locationNotFound.printStackTrace();
         }
+    }
+
+    @Override
+    protected int getThemeColor() {
+        return contractDefaultColor;
     }
 
     // ### OnClick Methods ######################################################################## OnClick Methods ###
@@ -199,6 +203,7 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
 
         String[] items = damageCasesOfThisContract.stream().map(Object::toString).toArray(String[]::new);
         builder.setItems(items, (dialog, itemIdx) -> {
+            // todo elias: DialogList of damagecases -> list item onClick
             damageCasesOfThisContract.get(itemIdx);
         });
 

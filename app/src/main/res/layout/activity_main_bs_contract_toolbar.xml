@@ -35,128 +35,144 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-        <RelativeLayout
-                android:layout_width="match_parent"
+        <TextView
+                android:id="@+id/bs_contract_toolbar_theme"
+                android:layout_width="10dp"
+                android:layout_height="@dimen/bottomsheet_toolbar_height"/>
+                <!--android:background="@color/accent_light"-->
+
+        <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                    android:id="@+id/bs_contract_toolbar_placeholder_nr"
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginEnd="8dp"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:text="@string/bottomsheet_contract_toolbar_placeholder_nr"
-                    android:visibility="visible"
-                    />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/bs_contract_toolbar_contract_nr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_toEndOf="@id/bs_contract_toolbar_placeholder_nr"
-                android:background="@null"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:visibility="visible" />
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_placeholder_nr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="8dp"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:text="@string/bottomsheet_contract_toolbar_placeholder_nr"
+                        android:visibility="visible"
+                        />
 
-        </RelativeLayout>
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_contract_nr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_toEndOf="@id/bs_contract_toolbar_placeholder_nr"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
 
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+            </RelativeLayout>
 
-            <TextView
-                    android:id="@+id/bs_contract_toolbar_placeholder_name"
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginEnd="8dp"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:text="@string/bottomsheet_contract_toolbar_placeholder_name"
-                    android:visibility="visible"
-                    />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/bs_contract_toolbar_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_toEndOf="@id/bs_contract_toolbar_placeholder_name"
-                android:background="@null"
-                android:textColor="@color/white"
-                android:visibility="visible" />
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_placeholder_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="8dp"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:text="@string/bottomsheet_contract_toolbar_placeholder_name"
+                        android:visibility="visible"
+                        />
 
-        </RelativeLayout>
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_toEndOf="@id/bs_contract_toolbar_placeholder_name"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:visibility="visible" />
 
-        <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+            </RelativeLayout>
 
-            <TextView
-                    android:id="@+id/bs_contract_toolbar_area"
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginEnd="4dp"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:text="0.0"
-                    android:visibility="visible"
-                    />
-            <TextView
-                    android:id="@+id/bs_contract_toolbar_separator1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginEnd="4dp"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:text="ha"
-                    android:visibility="visible"
-                    android:layout_toEndOf="@id/bs_contract_toolbar_area"
-                    />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-            <TextView
-                    android:id="@+id/bs_contract_toolbar_separator2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginEnd="4dp"
-                    android:background="@null"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:text="|"
-                    android:visibility="visible"
-                    android:layout_toEndOf="@id/bs_contract_toolbar_separator1"
-                    />
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="4dp"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:text="0.0"
+                        android:visibility="visible"
+                        />
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_separator1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="4dp"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:text="ha"
+                        android:visibility="visible"
+                        android:layout_toEndOf="@id/bs_contract_toolbar_area"
+                        />
 
-            <TextView
-                android:id="@+id/bs_contract_toolbar_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginEnd="4dp"
-                android:layout_toEndOf="@id/bs_contract_toolbar_separator2"
-                android:background="@null"
-                android:textColor="@color/white"
-                android:visibility="visible" />
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_separator2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="4dp"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:text="|"
+                        android:visibility="visible"
+                        android:layout_toEndOf="@id/bs_contract_toolbar_separator1"
+                        />
 
-        </RelativeLayout>
+                <TextView
+                        android:id="@+id/bs_contract_toolbar_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="4dp"
+                        android:layout_toEndOf="@id/bs_contract_toolbar_separator2"
+                        android:background="@null"
+                        android:textColor="@color/white"
+                        android:visibility="visible" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
+
+
 
 </RelativeLayout>

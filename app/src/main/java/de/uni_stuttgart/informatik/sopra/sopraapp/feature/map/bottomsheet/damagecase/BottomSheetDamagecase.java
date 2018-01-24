@@ -10,15 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.OnClick;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.app.SopraApp;
@@ -30,6 +21,12 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.database.models.user.User;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.authentication.exceptions.EditFieldValueIsEmptyException;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.IBottomSheetOwner;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
+import org.joda.time.DateTime;
+
+import javax.inject.Inject;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings {
@@ -50,12 +47,20 @@ public class BottomSheetDamagecase extends AbstractBottomSheetDamagecaseBindings
         super(owner);
         SopraApp.getAppComponent().inject(this);
         init();
+
+        // If color should be map independant: sopraMap.getMapType() -> handle map and set color
+        toolbarThemeArea.setBackgroundColor(getThemeColor());
         iBottomSheetOwner.getSopraMap().areaLiveData().observe(this, this::displayCurrentAreaValue);
     }
 
     @Override
     protected void onClose() {
         contractHandler.closeCurrent();
+    }
+
+    @Override
+    protected int getThemeColor() {
+        return damagecaseDefaultColor;
     }
 
     // ### Implemented Methods ################################################################ Implemented Methods ###

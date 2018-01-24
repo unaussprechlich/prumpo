@@ -23,14 +23,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
 import de.uni_stuttgart.informatik.sopra.sopraapp.database.abstractstuff.AbstractModelHandler;
@@ -45,6 +37,11 @@ import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.controls.FixedDial
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.events.EventsBottomSheet;
 import de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.polygon.PolygonType;
 import de.uni_stuttgart.informatik.sopra.sopraapp.util.AnimationHelper;
+import org.greenrobot.eventbus.EventBus;
+
+import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("ALL")
 public abstract class AbstractBottomSheetBase<
@@ -339,6 +336,12 @@ public abstract class AbstractBottomSheetBase<
     }
 
     // ### Abstract Functions ################################################################## Abstract Functions ###
+
+    /**
+     * Should return the theme color of this bottom sheet type.
+     * @return main color
+     */
+    protected abstract int getThemeColor();
 
     protected abstract int getLayoutResourceFile();
 

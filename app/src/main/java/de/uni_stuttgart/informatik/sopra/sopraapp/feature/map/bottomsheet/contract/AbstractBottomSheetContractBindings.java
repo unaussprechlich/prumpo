@@ -5,6 +5,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import butterknife.BindArray;
+import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -34,6 +35,9 @@ public abstract class AbstractBottomSheetContractBindings
 
     @BindView(R.id.bs_contract_view_damagecases)
     Button buttonViewDamageCases;
+
+    @BindView(R.id.bs_contract_toolbar_theme)
+    TextView toolbarThemeArea;
 
     @BindView(R.id.bs_contract_toolbar_contract_nr)
     TextView toolbarContractNr;
@@ -96,6 +100,11 @@ public abstract class AbstractBottomSheetContractBindings
     protected ProgressBar getProgressBar() {
         return progressBar;
     }
+
+    // ### Colors ########################################################################################## Colors ###
+
+    @BindColor(R.color.map_contract_stroke)
+    int contractDefaultColor;
 
     // ### Constructor ################################################################################ Constructor ###
 

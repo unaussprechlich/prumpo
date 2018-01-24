@@ -3,7 +3,7 @@ package de.uni_stuttgart.informatik.sopra.sopraapp.feature.map.bottomsheet.damag
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import de.uni_stuttgart.informatik.sopra.sopraapp.R;
@@ -18,6 +18,9 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
 
 
     // ### Views ############################################################################################ Views ###
+
+    @BindView(R.id.bs_dc_toolbar_theme)
+    TextView toolbarThemeArea;
 
     @BindView(R.id.bs_dc_toolbar_dc_nr)
     TextView toolbarDamagecaseNr;
@@ -65,6 +68,11 @@ public abstract class AbstractBottomSheetDamagecaseBindings extends AbstractBott
     public ProgressBar getProgressBar() {
         return progressBar;
     }
+
+    // ### Colors ########################################################################################## Colors ###
+
+    @BindColor(R.color.map_damagecase_stroke)
+    int damagecaseDefaultColor;
 
     // ### Constructor ################################################################################ Constructor ###
 
