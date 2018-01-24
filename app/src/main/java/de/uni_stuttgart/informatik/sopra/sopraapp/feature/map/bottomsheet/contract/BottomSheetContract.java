@@ -244,7 +244,6 @@ public class BottomSheetContract extends AbstractBottomSheetContractBindings {
     }
 
     protected void setSelectedDamageTypes(String damages) {
-        if (damages.equals("")) return;
         selectedDamageTypes = Arrays.stream(damages.split(","))
                 .map(String::trim)
                 .filter(str -> !str.isEmpty())
